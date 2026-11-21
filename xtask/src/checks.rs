@@ -40,7 +40,6 @@ const NO_STD_PACKAGES: [&str; 19] = [
     "mcrs_minecraft_fog",
     "mcrs_minecraft_goal_world",
     "mcrs_minecraft_goals",
-    "mcrs_minecraft_vanilla_mobs",
     "mcrs_minecraft_inventory_click",
     "mcrs_minecraft_inventory_player",
     "mcrs_minecraft_inventory_transaction",
