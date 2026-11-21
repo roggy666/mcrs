@@ -154,9 +154,11 @@ fn initial_state(kind: &GoalKind) -> GoalState {
         GoalKind::HurtBy { .. } => GoalState::HurtBy(Default::default()),
         GoalKind::OwnerHurtBy | GoalKind::OwnerHurt => GoalState::Owner(Default::default()),
         GoalKind::ResetAnger { .. } => GoalState::Anger(Default::default()),
-        GoalKind::Float | GoalKind::Swell | GoalKind::Panic { .. } | GoalKind::Sit => {
-            GoalState::None
-        }
+        GoalKind::Float
+        | GoalKind::Swell
+        | GoalKind::FleeSun { .. }
+        | GoalKind::Panic { .. }
+        | GoalKind::Sit => GoalState::None,
     }
 }
 
@@ -360,6 +362,23 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
                 cx.destination = panic::panic_destination(cx.turn);
                 cx.destination.is_some()
             }
+            (GoalKind::FleeSun { .. }, _) => {
+                let me = *cx.me();
+                if cx.target.is_some()
+                    || !me.flags.contains(MobFlags::ON_FIRE)
+                    || !me.flags.contains(MobFlags::IN_SUN)
+                {
+                    return false;
+                }
+                cx.busy();
+                cx.destination = crate::random_position::default_search(
+                    cx.turn.world,
+                    me.position,
+                    crate::SearchRange::new(20, 3),
+                    &mut cx.turn.random(crate::FLEE_SUN_SEARCH),
+                );
+                cx.destination.is_some()
+            }
             (GoalKind::Breed { kinds, mates, .. }, GoalState::Breed(state)) => {
                 breed::can_start(cx, *kinds, *mates, state)
             }
@@ -419,7 +438,7 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
         self.with_state(goal, |cx, row, state| match (&row.goal, state) {
             (GoalKind::Float, _) => cx.me().flags.contains(MobFlags::AFLOAT),
             (GoalKind::Swell, _) => cx.me().flags.contains(MobFlags::SWELLING),
-            (GoalKind::Panic { .. }, _) => cx.path_running(),
+            (GoalKind::Panic { .. } | GoalKind::FleeSun { .. }, _) => cx.path_running(),
             (GoalKind::Breed { .. }, GoalState::Breed(state)) => breed::can_continue(cx, state),
             (GoalKind::Tempt { items, .. }, GoalState::Tempt(state)) => {
                 tempt::can_start(cx, *items, state)
@@ -464,7 +483,7 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
         self.cx.wake.changed = true;
         self.with_state(goal, |cx, row, state| {
             match (&row.goal, state) {
-                (GoalKind::Panic { speed }, _) => {
+                (GoalKind::Panic { speed } | GoalKind::FleeSun { speed }, _) => {
                     if let Some(destination) = cx.destination.take() {
                         cx.request_path(destination, *speed);
                     }

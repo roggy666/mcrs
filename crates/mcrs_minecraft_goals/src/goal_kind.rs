@@ -39,6 +39,9 @@ pub struct GoalTable {
 pub enum GoalKind {
     Float,
     Swell,
+    FleeSun {
+        speed: f32,
+    },
     Panic {
         speed: f32,
     },

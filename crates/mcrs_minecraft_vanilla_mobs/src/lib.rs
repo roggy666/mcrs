@@ -2,6 +2,8 @@ mod farm_animals;
 mod item_sets;
 mod kinds;
 mod llama;
+mod monsters;
+mod passive;
 #[cfg(feature = "testing")]
 mod pen;
 mod vanilla_brain;
@@ -11,6 +13,8 @@ pub use farm_animals::*;
 pub use item_sets::*;
 pub use kinds::*;
 pub use llama::*;
+pub use monsters::*;
+pub use passive::*;
 #[cfg(feature = "testing")]
 pub use pen::*;
 pub use vanilla_brain::*;
