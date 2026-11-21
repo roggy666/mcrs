@@ -183,8 +183,13 @@ impl<B> TileBrains<B> {
             })
     }
 
-    pub(crate) fn position(&self, mob: EntityId) -> Option<usize> {
-        self.ids.iter().position(|id| *id == mob)
+    pub(crate) fn position(&self, key: &EntityUuid) -> Option<usize> {
+        self.keys.binary_search(key).ok()
+    }
+
+    #[must_use]
+    pub fn brain(&self, key: &EntityUuid) -> Option<&B> {
+        self.brains.get(self.position(key)?)
     }
 }
 

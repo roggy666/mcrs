@@ -6,13 +6,18 @@ use crate::Cadence;
 use crate::Decision;
 use crate::Intents;
 use crate::IssuedDecisions;
+use crate::ItemTables;
+use crate::KindTable;
 use crate::MobBrain;
 use crate::MobView;
+use crate::Neighbours;
 use crate::PlayerRow;
+use crate::PlayerTable;
 use crate::Replica;
 use crate::StageConfig;
 use crate::TileBrains;
 use crate::Turn;
+use crate::TurnScratch;
 use crate::WakeMode;
 use crate::tile_brains::Removed;
 use glam::DVec3;
@@ -38,6 +43,8 @@ pub struct TickContext<'a, W: ?Sized> {
     pub tick: u64,
     pub config: StageConfig,
     pub replica: &'a Replica,
+    pub items: &'a ItemTables,
+    pub kinds: &'a KindTable,
     pub world: &'a W,
 }
 
@@ -157,6 +164,11 @@ impl<B> Stage<B> {
     }
 
     #[must_use]
+    pub fn key_of(&self, mob: EntityId) -> Option<EntityUuid> {
+        self.locations.get(&mob).map(|location| location.key)
+    }
+
+    #[must_use]
     pub fn len(&self) -> usize {
         self.locations.len()
     }
@@ -168,6 +180,12 @@ impl<B> Stage<B> {
 
     pub fn tiles(&self) -> impl Iterator<Item = (TileKey, &TileBrains<B>)> {
         self.tiles.iter().map(|(&tile, brains)| (tile, brains))
+    }
+
+    #[must_use]
+    pub fn brain(&self, mob: EntityId) -> Option<&B> {
+        let location = self.locations.get(&mob)?;
+        self.tiles.get(&location.tile)?.brain(&location.key)
     }
 
     #[must_use]
@@ -202,7 +220,7 @@ impl<B> TileWork<'_, B> {
         self.tile
     }
 
-    pub fn run<W: ?Sized>(&mut self, cx: &TickContext<'_, W>)
+    pub fn run<W: ?Sized>(&mut self, cx: &TickContext<'_, W>, scratch: &mut TurnScratch)
     where
         B: MobBrain<W>,
     {
@@ -211,7 +229,7 @@ impl<B> TileWork<'_, B> {
         brains.decisions.clear();
         brains.near_players.clear();
         for fact in cx.replica.facts(self.tile, tick) {
-            if let Some(at) = brains.position(fact.mob)
+            if let Some(at) = brains.position(&fact.key)
                 && let (Some(wake), Some(cadence)) =
                     (brains.wakes.get_mut(at), brains.cadences.get(at))
             {
@@ -219,6 +237,10 @@ impl<B> TileWork<'_, B> {
             }
         }
         let views = cx.replica.views(self.tile, tick);
+        let neighbours = Neighbours::new(self.tile, |tile| cx.replica.tile(tile, tick));
+        let table = cx.replica.players(tick);
+        let empty = PlayerTable::default();
+        let table = table.unwrap_or(&empty);
         let mut loaded_range: Option<f64> = None;
         let TileBrains {
             ids,
@@ -250,7 +272,7 @@ impl<B> TileWork<'_, B> {
             if loaded_range.is_none_or(|loaded| loaded < range) {
                 loaded_range = Some(range);
                 near_players.clear();
-                load_players(cx, views, range, near_players);
+                load_players(table, views, range, near_players);
             }
             let turn = Turn {
                 tick,
@@ -259,10 +281,15 @@ impl<B> TileWork<'_, B> {
                 cadence: *cadence,
                 view,
                 players: near_players,
+                table,
+                neighbours: &neighbours,
+                items: cx.items,
+                kinds: cx.kinds,
                 world: cx.world,
             };
             let mut intents = Intents::default();
-            let next = brain.evaluate(&turn, &mut intents);
+            scratch.clear();
+            let next = brain.evaluate(&turn, scratch, &mut intents);
             *evaluations += 1;
             *wake = match cx.config.wake() {
                 WakeMode::Sleep => next.max(tick.saturating_add(1)),
@@ -295,15 +322,7 @@ fn view_of<'a>(
     views.get(at).filter(|view| view.mob == mob)
 }
 
-fn load_players<W: ?Sized>(
-    cx: &TickContext<'_, W>,
-    views: &[MobView],
-    range: f64,
-    out: &mut Vec<PlayerRow>,
-) {
-    let Some(table) = cx.replica.players(cx.tick) else {
-        return;
-    };
+fn load_players(table: &PlayerTable, views: &[MobView], range: f64, out: &mut Vec<PlayerRow>) {
     if table.is_empty() {
         return;
     }
