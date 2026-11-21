@@ -37,7 +37,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     params: &AvoidParams,
     state: &mut AvoidState,
 ) -> bool {
-    if params.extra == AvoidExtra::LlamaStrength && cx.me().flags.contains(MobFlags::TAME) {
+    if params.extra != AvoidExtra::None && cx.me().flags.contains(MobFlags::TAME) {
         return false;
     }
     let probe = match params.set {

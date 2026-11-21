@@ -7,8 +7,9 @@ use mcrs_minecraft_goals::GoalTable;
 use mcrs_minecraft_goals::IDLE_RESET_RANGE;
 use mcrs_minecraft_goals::Kinds;
 use mcrs_minecraft_goals::Mates;
+use mcrs_minecraft_goals::Panicker;
 use mcrs_minecraft_goals::STROLL_IDLE_LIMIT;
-use mcrs_minecraft_goals::Water;
+use mcrs_minecraft_goals::StrollSearch;
 
 use crate::CARROT_ON_A_STICK;
 use crate::CHICKEN_FOOD;
@@ -50,7 +51,7 @@ const fn follow(speed: f32) -> GoalKind {
 
 const STROLL: GoalKind = GoalKind::Stroll {
     speed: 1.0,
-    water: Water::Avoid,
+    search: StrollSearch::Default,
 };
 
 const LOOK_AT_PLAYER: GoalKind = GoalKind::LookAtPlayer { range: LOOK_RANGE };
@@ -58,7 +59,14 @@ const LOOK_AT_PLAYER: GoalKind = GoalKind::LookAtPlayer { range: LOOK_RANGE };
 pub static PIG: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.25 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.25,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(3, MOVE_LOOK, breed()),
         GoalRow::new(4, MOVE_LOOK, tempt(CARROT_ON_A_STICK, 1.2)),
         GoalRow::new(4, MOVE_LOOK, tempt(ItemTest::Tag(PIG_FOOD), 1.2)),
@@ -74,7 +82,14 @@ pub static PIG: GoalTable = GoalTable {
 pub static COW: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 2.0 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 2.0,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(2, MOVE_LOOK, breed()),
         GoalRow::new(3, MOVE_LOOK, tempt(ItemTest::Tag(COW_FOOD), 1.25)),
         GoalRow::new(4, ControlFlags::NONE, follow(1.25)),
@@ -89,7 +104,14 @@ pub static COW: GoalTable = GoalTable {
 pub static SHEEP: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.25 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.25,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(2, MOVE_LOOK, breed()),
         GoalRow::new(3, MOVE_LOOK, tempt(ItemTest::Tag(SHEEP_FOOD), 1.1)),
         GoalRow::new(4, ControlFlags::NONE, follow(1.1)),
@@ -105,7 +127,14 @@ pub static SHEEP: GoalTable = GoalTable {
 pub static CHICKEN: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.4 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.4,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(2, MOVE_LOOK, breed()),
         GoalRow::new(3, MOVE_LOOK, tempt(ItemTest::Tag(CHICKEN_FOOD), 1.0)),
         GoalRow::new(4, ControlFlags::NONE, follow(1.1)),

@@ -18,6 +18,7 @@ use crate::GoalKind;
 use crate::GoalRow;
 use crate::GoalState;
 use crate::GoalTable;
+use crate::Panicker;
 use crate::PathTrack;
 use crate::avoid;
 use crate::avoid::AvoidParams;
@@ -156,6 +157,7 @@ fn initial_state(kind: &GoalKind) -> GoalState {
         GoalKind::ResetAnger { .. } => GoalState::Anger(Default::default()),
         GoalKind::Float
         | GoalKind::Swell
+        | GoalKind::RestrictSun
         | GoalKind::FleeSun { .. }
         | GoalKind::Panic { .. }
         | GoalKind::Sit => GoalState::None,
@@ -354,7 +356,11 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
         self.with_state(goal, |cx, row, state| match (&row.goal, state) {
             (GoalKind::Float, _) => cx.me().flags.contains(MobFlags::AFLOAT),
             (GoalKind::Swell, _) => cx.me().flags.contains(MobFlags::SWELLING),
-            (GoalKind::Panic { .. }, _) => {
+            (GoalKind::RestrictSun, _) => cx.me().flags.contains(MobFlags::IN_SUN),
+            (GoalKind::Panic { who, .. }, _) => {
+                if *who == Panicker::Baby && !cx.me().is_baby() {
+                    return false;
+                }
                 if !panic::panic_record_fresh(cx.me(), cx.tick()) {
                     return false;
                 }
@@ -389,8 +395,8 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
                 follow_adult::can_start(cx, *kinds, state)
             }
             (GoalKind::EatGrass, GoalState::Eat(state)) => eat_grass::can_start(cx, state),
-            (GoalKind::Stroll { .. }, GoalState::Stroll(stroll)) => {
-                cx.destination = stroll.start_destination(cx.turn);
+            (GoalKind::Stroll { search, .. }, GoalState::Stroll(stroll)) => {
+                cx.destination = stroll.start_destination(cx.turn, *search);
                 note_gate(cx, stroll.gate().due());
                 cx.destination.is_some()
             }
@@ -438,6 +444,7 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
         self.with_state(goal, |cx, row, state| match (&row.goal, state) {
             (GoalKind::Float, _) => cx.me().flags.contains(MobFlags::AFLOAT),
             (GoalKind::Swell, _) => cx.me().flags.contains(MobFlags::SWELLING),
+            (GoalKind::RestrictSun, _) => cx.me().flags.contains(MobFlags::IN_SUN),
             (GoalKind::Panic { .. } | GoalKind::FleeSun { .. }, _) => cx.path_running(),
             (GoalKind::Breed { .. }, GoalState::Breed(state)) => breed::can_continue(cx, state),
             (GoalKind::Tempt { items, .. }, GoalState::Tempt(state)) => {
@@ -483,7 +490,7 @@ impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
         self.cx.wake.changed = true;
         self.with_state(goal, |cx, row, state| {
             match (&row.goal, state) {
-                (GoalKind::Panic { speed } | GoalKind::FleeSun { speed }, _) => {
+                (GoalKind::Panic { speed, .. } | GoalKind::FleeSun { speed }, _) => {
                     if let Some(destination) = cx.destination.take() {
                         cx.request_path(destination, *speed);
                     }

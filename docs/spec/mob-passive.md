@@ -100,7 +100,7 @@ cat, in this order:
 | 6 | follow owner (CGOAL-OWNER-004) | `move`, `look` | `m = 1.0`; `a = 10`; `b = 5` |
 | 7 | lie on a bed | `move` | hook |
 | 8 | avoid entity (CGOAL-AVOID-001) | `move` | the players; `D = 16`; `m1 = 0.8`; `m2 = 1.33`; only a wild cat |
-| 8 | breed (GOAL-BRD-001) | `move`, `look` | `m = 0.8` |
+| 8 | breed (GOAL-BRD-001) | `move`, `look` | `m = 0.8`; the mates are tame cats |
 | 9 | stroll (GOAL-STR-001) | `move` | `m = 0.8` |
 | 10 | leap at target (CGOAL-LEAP-001) | `jump`, `move` | `y0 = 0.3` |
 | 11 | melee attack (CGOAL-MELEE-001) | `move`, `look` | `m = 1.0`; stops when the target is not seen |

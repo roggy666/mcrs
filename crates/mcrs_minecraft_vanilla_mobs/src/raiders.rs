@@ -27,7 +27,7 @@ const LOOK: ControlFlags = ControlFlags::LOOK;
 const JUMP: ControlFlags = ControlFlags::JUMP;
 const TARGET: ControlFlags = ControlFlags::TARGET;
 
-pub static RAIDERS: KindSet = KindSet::of(&[
+pub const RAIDERS: KindSet = KindSet::of(&[
     kind(EntityType::Pillager),
     kind(EntityType::Vindicator),
     kind(EntityType::Evoker),

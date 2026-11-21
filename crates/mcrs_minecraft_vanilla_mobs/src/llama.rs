@@ -10,12 +10,13 @@ use mcrs_minecraft_goals::GoalTable;
 use mcrs_minecraft_goals::IDLE_RESET_RANGE;
 use mcrs_minecraft_goals::Kinds;
 use mcrs_minecraft_goals::Mates;
+use mcrs_minecraft_goals::Panicker;
 use mcrs_minecraft_goals::STROLL_IDLE_LIMIT;
 use mcrs_minecraft_goals::Sight;
+use mcrs_minecraft_goals::StrollSearch;
 use mcrs_minecraft_goals::TameRule;
 use mcrs_minecraft_goals::TargetFilter;
 use mcrs_minecraft_goals::TargetSet;
-use mcrs_minecraft_goals::Water;
 
 use crate::LLAMA_KIND;
 use crate::LLAMA_TEMPT_ITEMS;
@@ -48,14 +49,21 @@ pub static LLAMA: GoalTable = GoalTable {
                 range: 20.0,
             },
         ),
-        GoalRow::new(3, MOVE, GoalKind::Panic { speed: 1.2 }),
+        GoalRow::new(
+            3,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(
             4,
             MOVE_LOOK,
             GoalKind::Breed {
                 speed: 1.0,
                 kinds: Kinds::Set(LLAMA_KIND),
-                mates: Mates::TameAdultsAtFullHealth,
+                mates: Mates::TameAdults,
             },
         ),
         GoalRow::new(
@@ -79,7 +87,7 @@ pub static LLAMA: GoalTable = GoalTable {
             MOVE,
             GoalKind::Stroll {
                 speed: 0.7,
-                water: Water::Avoid,
+                search: StrollSearch::Default,
             },
         ),
         GoalRow::new(8, LOOK, GoalKind::LookAtPlayer { range: 6.0 }),

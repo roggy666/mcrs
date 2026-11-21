@@ -13,18 +13,19 @@ use mcrs_minecraft_goals::GoalTable;
 use mcrs_minecraft_goals::IDLE_RESET_RANGE;
 use mcrs_minecraft_goals::Kinds;
 use mcrs_minecraft_goals::Mates;
+use mcrs_minecraft_goals::Panicker;
 use mcrs_minecraft_goals::STROLL_IDLE_LIMIT;
 use mcrs_minecraft_goals::Sight;
+use mcrs_minecraft_goals::StrollSearch;
 use mcrs_minecraft_goals::TameRule;
 use mcrs_minecraft_goals::TargetFilter;
 use mcrs_minecraft_goals::TargetSet;
-use mcrs_minecraft_goals::Water;
 
 use crate::BEE_FOOD;
 use crate::CAT_FOOD;
 use crate::HORSE_TEMPT_ITEMS;
 use crate::LLAMA_KIND;
-use crate::MONSTERS_NOT_CREEPER;
+use crate::MONSTERS;
 use crate::OCELOT_FOOD;
 use crate::PANDA_FOOD;
 use crate::RABBIT_FOOD;
@@ -105,7 +106,7 @@ const fn follow(speed: f32, kinds: Kinds) -> GoalKind {
 const fn stroll(speed: f32) -> GoalKind {
     GoalKind::Stroll {
         speed,
-        water: Water::Avoid,
+        search: StrollSearch::Default,
     }
 }
 
@@ -156,7 +157,14 @@ const fn players(filter: TargetFilter) -> GoalKind {
 pub static CAT_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(1, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.5 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.5,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(1, JUMP_MOVE, GoalKind::Sit),
         GoalRow::new(3, MOVE_LOOK, tempt(CAT_FOOD, 0.6)),
         GoalRow::new(
@@ -166,6 +174,17 @@ pub static CAT_TABLE: GoalTable = GoalTable {
                 speed: 1.0,
                 start: 10.0,
                 stop: 5.0,
+            },
+        ),
+        GoalRow::new(
+            8,
+            MOVE,
+            GoalKind::Avoid {
+                set: TargetSet::Players,
+                distance: 16.0,
+                walk: 0.8,
+                sprint: 1.33,
+                extra: AvoidExtra::WildOnly,
             },
         ),
         GoalRow::new(8, MOVE_LOOK, breed(0.8, Kinds::Own, Mates::TameInLove)),
@@ -197,6 +216,17 @@ pub static OCELOT_TABLE: GoalTable = GoalTable {
         GoalRow::new(4, MOVE_LOOK, melee(1.0, Pursuit::Seen)),
         GoalRow::new(5, MOVE_LOOK, breed(0.8, Kinds::Own, Mates::InLove)),
         GoalRow::new(6, MOVE, stroll(0.8)),
+        GoalRow::new(
+            7,
+            MOVE,
+            GoalKind::Avoid {
+                set: TargetSet::Players,
+                distance: 16.0,
+                walk: 0.8,
+                sprint: 1.33,
+                extra: AvoidExtra::None,
+            },
+        ),
         GoalRow::new(9, LOOK, look(10.0)),
     ],
     targets: &[
@@ -217,11 +247,29 @@ pub static OCELOT_TABLE: GoalTable = GoalTable {
 pub static RABBIT_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(1, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 2.2 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 2.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(2, MOVE_LOOK, breed(0.8, Kinds::Own, Mates::InLove)),
         GoalRow::new(3, MOVE_LOOK, tempt(RABBIT_FOOD, 1.0)),
+        GoalRow::new(
+            4,
+            MOVE,
+            GoalKind::Avoid {
+                set: TargetSet::Players,
+                distance: 8.0,
+                walk: 2.2,
+                sprint: 2.2,
+                extra: AvoidExtra::None,
+            },
+        ),
         GoalRow::new(4, MOVE, avoid(WOLF_KIND, 10.0, 2.2, 2.2)),
-        GoalRow::new(4, MOVE, avoid(MONSTERS_NOT_CREEPER, 4.0, 2.2, 2.2)),
+        GoalRow::new(4, MOVE, avoid(MONSTERS, 4.0, 2.2, 2.2)),
         GoalRow::new(6, MOVE, stroll(0.6)),
         GoalRow::new(11, LOOK, look(10.0)),
     ],
@@ -233,7 +281,14 @@ pub static POLAR_BEAR_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
         GoalRow::new(1, MOVE_LOOK, melee(1.25, Pursuit::Unseen)),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 2.0 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 2.0,
+                who: Panicker::Baby,
+            },
+        ),
         GoalRow::new(4, NONE, follow(1.25, Kinds::Own)),
         GoalRow::new(5, MOVE, stroll(1.0)),
         GoalRow::new(6, LOOK, look(6.0)),
@@ -262,7 +317,14 @@ pub static POLAR_BEAR_TABLE: GoalTable = GoalTable {
 pub static PANDA_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(2, MOVE, GoalKind::Panic { speed: 2.0 }),
+        GoalRow::new(
+            2,
+            MOVE,
+            GoalKind::Panic {
+                speed: 2.0,
+                who: Panicker::Baby,
+            },
+        ),
         GoalRow::new(2, MOVE_LOOK, melee(1.0, Pursuit::Seen)),
         GoalRow::new(3, MOVE_LOOK, breed(1.0, Kinds::Own, Mates::InLove)),
         GoalRow::new(5, MOVE_LOOK, tempt(PANDA_FOOD, 1.0)),
@@ -285,11 +347,18 @@ pub static PANDA_TABLE: GoalTable = GoalTable {
 pub static HORSE_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.2 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(
             2,
             MOVE_LOOK,
-            breed(1.0, Kinds::Set(HORSE_KIND), Mates::TameAdultsAtFullHealth),
+            breed(1.0, Kinds::Set(HORSE_KIND), Mates::TameAdults),
         ),
         GoalRow::new(4, MOVE_LOOK, tempt(HORSE_TEMPT_ITEMS, 1.25)),
         GoalRow::new(6, NONE, follow(1.0, Kinds::Set(HORSE_KIND))),
@@ -304,7 +373,14 @@ pub static HORSE_TABLE: GoalTable = GoalTable {
 pub static UNDEAD_HORSE_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.2 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(6, NONE, follow(1.0, Kinds::Set(HORSE_KIND))),
         GoalRow::new(7, MOVE, stroll(0.7)),
         GoalRow::new(8, LOOK, look(6.0)),
@@ -327,11 +403,18 @@ pub static TRADER_LLAMA_TABLE: GoalTable = GoalTable {
                 range: 20.0,
             },
         ),
-        GoalRow::new(3, MOVE, GoalKind::Panic { speed: 1.2 }),
+        GoalRow::new(
+            3,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(
             4,
             MOVE_LOOK,
-            breed(1.0, Kinds::Set(LLAMA_KIND), Mates::TameAdultsAtFullHealth),
+            breed(1.0, Kinds::Set(LLAMA_KIND), Mates::TameAdults),
         ),
         GoalRow::new(5, MOVE_LOOK, tempt(crate::LLAMA_TEMPT_ITEMS, 1.25)),
         GoalRow::new(6, NONE, follow(1.0, Kinds::Set(LLAMA_KIND))),
@@ -367,10 +450,24 @@ pub static TRADER_LLAMA_TABLE: GoalTable = GoalTable {
 pub static WANDERING_TRADER_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 0.5 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 0.5,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(1, MOVE, avoid(TRADER_THREATS, 8.0, 0.5, 0.5)),
         GoalRow::new(1, MOVE, avoid(ZOMBIE_VILLAGER, 8.0, 0.5, 0.5)),
-        GoalRow::new(2, MOVE, stroll(0.35)),
+        GoalRow::new(
+            2,
+            MOVE,
+            GoalKind::Stroll {
+                speed: 0.35,
+                search: StrollSearch::Land,
+            },
+        ),
         GoalRow::new(2, LOOK, look(8.0)),
     ],
     targets: &[],
@@ -380,7 +477,14 @@ pub static WANDERING_TRADER_TABLE: GoalTable = GoalTable {
 pub static FOX_TABLE: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(0, JUMP, GoalKind::Float),
-        GoalRow::new(0, MOVE, GoalKind::Panic { speed: 2.2 }),
+        GoalRow::new(
+            0,
+            MOVE,
+            GoalKind::Panic {
+                speed: 2.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(0, MOVE_LOOK, breed(1.0, Kinds::Own, Mates::InLove)),
         GoalRow::new(4, MOVE_LOOK, melee(1.2, Pursuit::Unseen)),
         GoalRow::new(5, NONE, follow(1.25, Kinds::Own)),
@@ -400,7 +504,14 @@ pub static FOX_TABLE: GoalTable = GoalTable {
 
 pub static TURTLE_TABLE: GoalTable = GoalTable {
     goals: &[
-        GoalRow::new(0, MOVE, GoalKind::Panic { speed: 1.2 }),
+        GoalRow::new(
+            0,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.2,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(1, MOVE_LOOK, breed(1.0, Kinds::Own, Mates::InLove)),
         GoalRow::new(2, MOVE_LOOK, tempt(TURTLE_FOOD, 1.1)),
         GoalRow::new(8, MOVE, stroll(1.0)),
@@ -412,7 +523,14 @@ pub static TURTLE_TABLE: GoalTable = GoalTable {
 
 pub static STRIDER_TABLE: GoalTable = GoalTable {
     goals: &[
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.65 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.65,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(2, MOVE_LOOK, breed(1.0, Kinds::Own, Mates::InLove)),
         GoalRow::new(3, MOVE_LOOK, tempt(STRIDER_TEMPT_ITEMS, 1.4)),
         GoalRow::new(5, NONE, follow(1.0, Kinds::Own)),
@@ -426,7 +544,14 @@ pub static STRIDER_TABLE: GoalTable = GoalTable {
 
 pub static PARROT_TABLE: GoalTable = GoalTable {
     goals: &[
-        GoalRow::new(0, MOVE, GoalKind::Panic { speed: 1.25 }),
+        GoalRow::new(
+            0,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.25,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(1, JUMP_MOVE, GoalKind::Sit),
         GoalRow::new(
             2,

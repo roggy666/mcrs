@@ -11,11 +11,12 @@ use mcrs_minecraft_goals::GoalTable;
 use mcrs_minecraft_goals::IDLE_RESET_RANGE;
 use mcrs_minecraft_goals::STROLL_IDLE_LIMIT;
 use mcrs_minecraft_goals::Sight;
+use mcrs_minecraft_goals::StrollSearch;
 use mcrs_minecraft_goals::TameRule;
 use mcrs_minecraft_goals::TargetFilter;
 use mcrs_minecraft_goals::TargetSet;
-use mcrs_minecraft_goals::Water;
 
+use crate::RAIDERS;
 use crate::WOLF_KIND;
 use crate::kind;
 
@@ -36,6 +37,8 @@ pub const CAT: KindSet = KindSet::of(&[kind(EntityType::Cat)]);
 pub const PIGLIN_KIND: KindSet =
     KindSet::of(&[kind(EntityType::Piglin), kind(EntityType::PiglinBrute)]);
 pub const ZOMBIFIED_PIGLIN: KindSet = KindSet::of(&[kind(EntityType::ZombifiedPiglin)]);
+pub const MONSTERS: KindSet = MONSTERS_NOT_CREEPER.with(kind(EntityType::Creeper));
+
 pub const MONSTERS_NOT_CREEPER: KindSet = KindSet::of(&[
     kind(EntityType::Zombie),
     kind(EntityType::Husk),
@@ -99,7 +102,7 @@ pub(crate) const fn melee(speed: f32, pursuit: Pursuit) -> GoalKind {
 pub(crate) const fn stroll(speed: f32) -> GoalKind {
     GoalKind::Stroll {
         speed,
-        water: Water::Avoid,
+        search: StrollSearch::Default,
     }
 }
 
@@ -185,6 +188,7 @@ pub static ZOMBIFIED_PIGLIN_TABLE: GoalTable = GoalTable {
 
 pub static SKELETON: GoalTable = GoalTable {
     goals: &[
+        GoalRow::new(2, NONE, GoalKind::RestrictSun),
         GoalRow::new(3, MOVE, GoalKind::FleeSun { speed: 1.0 }),
         GoalRow::new(3, MOVE, avoid(WOLF_KIND)),
         GoalRow::new(
@@ -344,7 +348,7 @@ pub static WITCH: GoalTable = GoalTable {
         GoalRow::new(3, MOVE_LOOK, GoalKind::LookAround),
     ],
     targets: &[
-        GoalRow::new(1, TARGET, hurt_by(Alert::None, KindSet::NONE)),
+        GoalRow::new(1, TARGET, hurt_by(Alert::None, RAIDERS)),
         GoalRow::new(2, TARGET, players(TargetFilter::None)),
     ],
     rules: SHORT_RANGE_RULES,
@@ -382,7 +386,7 @@ pub static IRON_GOLEM_TABLE: GoalTable = GoalTable {
             TARGET,
             GoalKind::NearestTarget {
                 set: TargetSet::Kinds(MONSTERS_NOT_CREEPER),
-                interval: 10,
+                interval: 5,
                 sight: Sight::MustSee,
                 filter: TargetFilter::None,
                 follow_scale: 1.0,
@@ -406,7 +410,14 @@ pub static SNOW_GOLEM: GoalTable = GoalTable {
                 range: 10.0,
             },
         ),
-        GoalRow::new(2, MOVE, stroll(1.0)),
+        GoalRow::new(
+            2,
+            MOVE,
+            GoalKind::Stroll {
+                speed: 1.0,
+                search: StrollSearch::Land,
+            },
+        ),
         GoalRow::new(3, LOOK, GoalKind::LookAtPlayer { range: 6.0 }),
         GoalRow::new(4, MOVE_LOOK, GoalKind::LookAround),
     ],

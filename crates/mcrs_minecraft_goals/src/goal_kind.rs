@@ -39,11 +39,13 @@ pub struct GoalTable {
 pub enum GoalKind {
     Float,
     Swell,
+    RestrictSun,
     FleeSun {
         speed: f32,
     },
     Panic {
         speed: f32,
+        who: Panicker,
     },
     Breed {
         speed: f32,
@@ -61,7 +63,7 @@ pub enum GoalKind {
     EatGrass,
     Stroll {
         speed: f32,
-        water: Water,
+        search: StrollSearch,
     },
     LookAtPlayer {
         range: f32,
@@ -127,18 +129,25 @@ pub enum Kinds {
 pub enum Mates {
     InLove,
     TameInLove,
-    TameAdultsAtFullHealth,
+    TameAdults,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum Water {
-    Avoid,
+pub enum StrollSearch {
+    Default,
+    Land,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum Panicker {
     Any,
+    Baby,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum AvoidExtra {
     None,
+    WildOnly,
     LlamaStrength,
 }
 

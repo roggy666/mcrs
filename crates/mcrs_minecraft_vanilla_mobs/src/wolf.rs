@@ -12,12 +12,13 @@ use mcrs_minecraft_goals::GoalTable;
 use mcrs_minecraft_goals::IDLE_RESET_RANGE;
 use mcrs_minecraft_goals::Kinds;
 use mcrs_minecraft_goals::Mates;
+use mcrs_minecraft_goals::Panicker;
 use mcrs_minecraft_goals::STROLL_IDLE_LIMIT;
 use mcrs_minecraft_goals::Sight;
+use mcrs_minecraft_goals::StrollSearch;
 use mcrs_minecraft_goals::TameRule;
 use mcrs_minecraft_goals::TargetFilter;
 use mcrs_minecraft_goals::TargetSet;
-use mcrs_minecraft_goals::Water;
 
 use crate::WOLF_INTERESTING;
 use crate::kind;
@@ -65,7 +66,14 @@ const fn hunt(set: KindSet, filter: TargetFilter, tame: TameRule, sight: Sight) 
 pub static WOLF: GoalTable = GoalTable {
     goals: &[
         GoalRow::new(1, JUMP, GoalKind::Float),
-        GoalRow::new(1, MOVE, GoalKind::Panic { speed: 1.5 }),
+        GoalRow::new(
+            1,
+            MOVE,
+            GoalKind::Panic {
+                speed: 1.5,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(2, JUMP_MOVE, GoalKind::Sit),
         GoalRow::new(
             3,
@@ -111,7 +119,7 @@ pub static WOLF: GoalTable = GoalTable {
             MOVE,
             GoalKind::Stroll {
                 speed: 1.0,
-                water: Water::Avoid,
+                search: StrollSearch::Default,
             },
         ),
         GoalRow::new(

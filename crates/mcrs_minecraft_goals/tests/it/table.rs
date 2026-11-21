@@ -36,20 +36,28 @@ use mcrs_minecraft_goals::FlatGround;
 use mcrs_minecraft_goals::GoalKind;
 use mcrs_minecraft_goals::GoalRow;
 use mcrs_minecraft_goals::GoalTable;
+use mcrs_minecraft_goals::Panicker;
+use mcrs_minecraft_goals::StrollSearch;
 use mcrs_minecraft_goals::TableBrain;
-use mcrs_minecraft_goals::Water;
 
 const ANIMAL: MobKind = MobKind(7);
 
 static TABLE: GoalTable = GoalTable {
     goals: &[
-        GoalRow::new(1, ControlFlags::MOVE, GoalKind::Panic { speed: 1.25 }),
+        GoalRow::new(
+            1,
+            ControlFlags::MOVE,
+            GoalKind::Panic {
+                speed: 1.25,
+                who: Panicker::Any,
+            },
+        ),
         GoalRow::new(
             6,
             ControlFlags::MOVE,
             GoalKind::Stroll {
                 speed: 1.0,
-                water: Water::Avoid,
+                search: StrollSearch::Default,
             },
         ),
         GoalRow::new(7, ControlFlags::LOOK, GoalKind::LookAtPlayer { range: 6.0 }),
@@ -236,4 +244,69 @@ fn a_hurt_by_goal_with_a_kind_set_alert_proposes_the_alert_to_that_set() {
             receivers: Receivers::Kinds(&ALLIES),
         })
     );
+}
+
+static BABY_PANIC: GoalTable = GoalTable {
+    goals: &[GoalRow::new(
+        1,
+        ControlFlags::MOVE,
+        GoalKind::Panic {
+            speed: 2.0,
+            who: Panicker::Baby,
+        },
+    )],
+    targets: &[],
+    rules: BrainRules {
+        player_range: 6.0,
+        idle_limit: 100,
+        idle_reset_range: 32.0,
+    },
+};
+
+fn panic_path_of(age: i32) -> Option<f32> {
+    let ground = FlatGround {
+        side: 64,
+        pond: None,
+    };
+    let kinds = kinds();
+    let items = ItemTables::default();
+    let players = PlayerTable::default();
+    let neighbours = Neighbours::empty(TileKey::new(1, 0, 1));
+    let mut scratch = TurnScratch::default();
+    (0..32u128).find_map(|key| {
+        let mut view = view(
+            key,
+            Some(DamageRecord {
+                tick: 19,
+                cause: DamageCause::Panic,
+            }),
+        );
+        view.age = age;
+        let turn = Turn {
+            tick: 20,
+            seed: WorldSeed(41),
+            max_lag: 0,
+            cadence: Cadence::new(1, 0),
+            view: &view,
+            players: &[],
+            table: &players,
+            neighbours: &neighbours,
+            items: &items,
+            kinds: &kinds,
+            world: &ground,
+        };
+        let mut brain = TableBrain::new(&BABY_PANIC);
+        let mut intents = Intents::default();
+        brain.evaluate(&turn, &mut scratch, &mut intents);
+        match intents.path {
+            Some(PathIntent::Walk { speed_modifier, .. }) => Some(speed_modifier),
+            _ => None,
+        }
+    })
+}
+
+#[test]
+fn a_panic_goal_for_babies_runs_for_a_hurt_baby_and_never_for_an_adult() {
+    assert_eq!(panic_path_of(-1000), Some(2.0));
+    assert_eq!(panic_path_of(0), None);
 }

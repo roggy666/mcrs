@@ -38,7 +38,7 @@ fn can_mate<W: GoalWorld + ?Sized>(
                 && !candidate.flags.contains(CandidateFlags::SITTING)
                 && candidate.in_love()
         }
-        Mates::TameAdultsAtFullHealth => {
+        Mates::TameAdults => {
             me.flags.contains(MobFlags::TAME)
                 && !me.is_baby()
                 && !me.flags.contains(MobFlags::PASSENGER)
