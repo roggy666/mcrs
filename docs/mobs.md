@@ -173,7 +173,10 @@ branch changes the resolver of a request, not the goals.
 
 ## 9. Open points
 
-- The hit on a player waits for the damage pipeline of `docs/damage.md`.
+- The hit on a player waits for the damage pipeline of `docs/damage.md`: a system of its
+  `Collect` set turns each `MobHit` message into a `DamageRequest`. The knockback of a melee hit
+  (an impulse for a mob, a velocity write for a player) waits for the same pipeline; `hurt_mob`
+  writes the hit record and the hurt-by record only.
 - The path search is the next branch (section 6).
 - The save of the anger state, the tame state and the owner goes through the persisted registry
   (#159); no rule states the save of a mob yet.
