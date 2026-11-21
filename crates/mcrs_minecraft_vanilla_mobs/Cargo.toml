@@ -1,0 +1,37 @@
+[package]
+name = "mcrs_minecraft_vanilla_mobs"
+description = "The vanilla mob types as data for the AI stage: the goal table, the type data and the item sets of each type, and the brain that a type gets"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+test = false
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+mcrs_minecraft_brain.workspace = true
+mcrs_minecraft_entity.workspace = true
+mcrs_minecraft_entity_key.workspace = true
+mcrs_minecraft_goal_world.workspace = true
+mcrs_minecraft_goals.workspace = true
+mcrs_minecraft_item_key.workspace = true
+mcrs_minecraft_resource.workspace = true
+mcrs_voxel.workspace = true
+glam = { workspace = true, features = ["std"] }
+libm.workspace = true
+
+[dev-dependencies]
+criterion = { workspace = true }
+mcrs_minecraft_goals = { workspace = true, features = ["testing"] }
+mcrs_minecraft_vanilla_mobs = { workspace = true, features = ["testing"] }
+rayon.workspace = true
+
+[features]
+testing = ["mcrs_minecraft_goals/testing"]
+
+[[bench]]
+name = "pig_stage"
+harness = false

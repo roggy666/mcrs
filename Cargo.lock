@@ -5680,16 +5680,13 @@ dependencies = [
 name = "mcrs_minecraft_goals"
 version = "0.5.8"
 dependencies = [
- "criterion",
  "glam",
  "libm",
  "mcrs_minecraft_brain",
- "mcrs_minecraft_entity",
  "mcrs_minecraft_entity_key",
  "mcrs_minecraft_goal_world",
  "mcrs_minecraft_goals",
  "mcrs_voxel",
- "rayon",
 ]
 
 [[package]]
@@ -7316,6 +7313,25 @@ dependencies = [
  "rayon",
  "rustc-hash 2.1.1",
  "tracing",
+]
+
+[[package]]
+name = "mcrs_minecraft_vanilla_mobs"
+version = "0.5.8"
+dependencies = [
+ "criterion",
+ "glam",
+ "libm",
+ "mcrs_minecraft_brain",
+ "mcrs_minecraft_entity",
+ "mcrs_minecraft_entity_key",
+ "mcrs_minecraft_goal_world",
+ "mcrs_minecraft_goals",
+ "mcrs_minecraft_item_key",
+ "mcrs_minecraft_resource",
+ "mcrs_minecraft_vanilla_mobs",
+ "mcrs_voxel",
+ "rayon",
 ]
 
 [[package]]

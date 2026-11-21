@@ -40,6 +40,7 @@ const NO_STD_PACKAGES: [&str; 19] = [
     "mcrs_minecraft_fog",
     "mcrs_minecraft_goal_world",
     "mcrs_minecraft_goals",
+    "mcrs_minecraft_vanilla_mobs",
     "mcrs_minecraft_inventory_click",
     "mcrs_minecraft_inventory_player",
     "mcrs_minecraft_inventory_transaction",
@@ -50,7 +51,7 @@ const NO_STD_PACKAGES: [&str; 19] = [
     "mcrs_voxel",
 ];
 
-const NO_BEVY_PACKAGES: [&str; 142] = [
+const NO_BEVY_PACKAGES: [&str; 143] = [
     "mcrs_command",
     "mcrs_engine_cell",
     "mcrs_engine_link",
@@ -83,6 +84,7 @@ const NO_BEVY_PACKAGES: [&str; 142] = [
     "mcrs_minecraft_client_widget",
     "mcrs_minecraft_goal_world",
     "mcrs_minecraft_goals",
+    "mcrs_minecraft_vanilla_mobs",
     "mcrs_minecraft_mob_control",
     "mcrs_minecraft_server_bench",
     "mcrs_mob_bench",
