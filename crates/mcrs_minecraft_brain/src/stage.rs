@@ -2,6 +2,8 @@ use alloc::collections::BTreeMap;
 use alloc::vec::Vec;
 use core::mem;
 
+use hashbrown::HashMap;
+
 use crate::Cadence;
 use crate::Decision;
 use crate::Intents;
@@ -29,7 +31,7 @@ use mcrs_minecraft_entity_key::TileKey;
 pub struct Stage<B> {
     config: StageConfig,
     tiles: BTreeMap<TileKey, TileBrains<B>>,
-    locations: BTreeMap<EntityId, Location>,
+    locations: HashMap<EntityId, Location>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -60,7 +62,7 @@ impl<B> Stage<B> {
         Self {
             config,
             tiles: BTreeMap::new(),
-            locations: BTreeMap::new(),
+            locations: HashMap::new(),
         }
     }
 

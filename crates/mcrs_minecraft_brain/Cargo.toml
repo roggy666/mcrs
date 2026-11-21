@@ -14,4 +14,5 @@ workspace = true
 [dependencies]
 mcrs_minecraft_entity_key.workspace = true
 glam = { workspace = true, features = ["nostd-libm"] }
+hashbrown.workspace = true
 libm.workspace = true

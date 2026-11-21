@@ -270,16 +270,21 @@ impl<W: GoalWorld + ?Sized> Cx<'_, '_, '_, W> {
         accept: impl Fn(&Self, &Candidate) -> bool,
     ) -> Option<Candidate> {
         let mut candidates = core::mem::take(&mut self.scratch.candidates);
-        let mut ranked: alloc::vec::Vec<(f64, Candidate)> = candidates
-            .iter()
-            .map(|candidate| (distance(self, candidate), *candidate))
-            .collect();
+        let mut ranked = core::mem::take(&mut self.scratch.ranked);
+        ranked.clear();
+        ranked.extend(
+            candidates
+                .iter()
+                .map(|candidate| (distance(self, candidate), *candidate)),
+        );
         ranked.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.1.key.cmp(&b.1.key)));
         let found = ranked
-            .into_iter()
+            .iter()
             .find(|(_, candidate)| accept(self, candidate))
-            .map(|(_, candidate)| candidate);
+            .map(|(_, candidate)| *candidate);
+        ranked.clear();
         candidates.clear();
+        self.scratch.ranked = ranked;
         self.scratch.candidates = candidates;
         found
     }

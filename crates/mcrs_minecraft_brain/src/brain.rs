@@ -55,10 +55,12 @@ impl<W: ?Sized> Turn<'_, W> {
 #[derive(Debug, Default)]
 pub struct TurnScratch {
     pub candidates: Vec<Candidate>,
+    pub ranked: Vec<(f64, Candidate)>,
 }
 
 impl TurnScratch {
     pub fn clear(&mut self) {
         self.candidates.clear();
+        self.ranked.clear();
     }
 }

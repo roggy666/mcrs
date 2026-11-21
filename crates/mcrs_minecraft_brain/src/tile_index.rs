@@ -5,6 +5,7 @@ use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::TILE_WIDTH;
 use mcrs_minecraft_entity_key::TileKey;
 
+use crate::KindSet;
 use crate::MobView;
 
 pub const COLUMN_WIDTH: i32 = 16;
@@ -16,6 +17,7 @@ pub struct TileIndex {
     order: Vec<u32>,
     starts: [u32; COLUMNS + 1],
     by_id: Vec<(EntityId, u32)>,
+    kinds: KindSet,
 }
 
 impl TileIndex {
@@ -42,11 +44,20 @@ impl TileIndex {
             .filter_map(|(index, view)| Some((view.mob, u32::try_from(index).ok()?)))
             .collect();
         by_id.sort_unstable();
+        let kinds = views
+            .iter()
+            .fold(KindSet::NONE, |kinds, view| kinds.with(view.kind));
         Self {
             order,
             starts,
             by_id,
+            kinds,
         }
+    }
+
+    #[must_use]
+    pub const fn kinds(&self) -> &KindSet {
+        &self.kinds
     }
 
     pub fn column(&self, column: usize) -> impl Iterator<Item = u32> + '_ {

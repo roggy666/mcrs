@@ -66,7 +66,7 @@ impl<'a> Neighbours<'a> {
                 || min.x >= origin_x + width
                 || max.z < origin_z
                 || min.z >= origin_z + width;
-            if outside {
+            if outside || !held.index.kinds().intersects(kinds) {
                 continue;
             }
             for column in TileIndex::columns_in(held.tile, min, max) {
@@ -101,7 +101,7 @@ impl<'a> Neighbours<'a> {
         self.tiles
             .iter()
             .flatten()
-            .any(|held| held.views.iter().any(|view| kinds.contains(view.kind)))
+            .any(|held| held.index.kinds().intersects(kinds))
     }
 }
 
