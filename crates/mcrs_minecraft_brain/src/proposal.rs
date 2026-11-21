@@ -1,10 +1,26 @@
 use mcrs_minecraft_entity_key::EntityId;
 
+use crate::KindSet;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Receivers {
+    SameKind,
+    Kinds(&'static KindSet),
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Proposal {
-    Breed { partner: EntityId },
-    Alert { target: EntityId, reach: f32 },
-    CaravanJoin { anchor: EntityId },
+    Breed {
+        partner: EntityId,
+    },
+    Alert {
+        target: EntityId,
+        reach: f32,
+        receivers: Receivers,
+    },
+    CaravanJoin {
+        anchor: EntityId,
+    },
     CaravanLeave,
 }
 

@@ -123,7 +123,7 @@ const fn melee(speed: f32, pursuit: Pursuit) -> GoalKind {
 
 const fn avoid(set: KindSet, distance: f32, walk: f32, sprint: f32) -> GoalKind {
     GoalKind::Avoid {
-        kinds: set,
+        set: TargetSet::Kinds(set),
         distance,
         walk,
         sprint,

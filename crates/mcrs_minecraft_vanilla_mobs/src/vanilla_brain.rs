@@ -10,16 +10,20 @@ use crate::CHICKEN;
 use crate::COW;
 use crate::CREEPER;
 use crate::ENDERMAN;
+use crate::EVOKER;
 use crate::FOX_TABLE;
 use crate::HORSE_TABLE;
+use crate::ILLUSIONER;
 use crate::IRON_GOLEM_TABLE;
 use crate::LLAMA;
 use crate::OCELOT_TABLE;
 use crate::PANDA_TABLE;
 use crate::PARROT_TABLE;
 use crate::PIG;
+use crate::PILLAGER;
 use crate::POLAR_BEAR_TABLE;
 use crate::RABBIT_TABLE;
+use crate::RAVAGER;
 use crate::SHEEP;
 use crate::SILVERFISH;
 use crate::SKELETON;
@@ -30,6 +34,7 @@ use crate::STRIDER_TABLE;
 use crate::TRADER_LLAMA_TABLE;
 use crate::TURTLE_TABLE;
 use crate::UNDEAD_HORSE_TABLE;
+use crate::VINDICATOR;
 use crate::WANDERING_TRADER_TABLE;
 use crate::WITCH;
 use crate::WITHER_SKELETON;
@@ -67,6 +72,11 @@ pub fn table_of(entity_type: EntityType) -> Option<&'static GoalTable> {
         EntityType::Blaze => Some(&BLAZE),
         EntityType::IronGolem => Some(&IRON_GOLEM_TABLE),
         EntityType::SnowGolem => Some(&SNOW_GOLEM),
+        EntityType::Pillager => Some(&PILLAGER),
+        EntityType::Vindicator => Some(&VINDICATOR),
+        EntityType::Evoker => Some(&EVOKER),
+        EntityType::Illusioner => Some(&ILLUSIONER),
+        EntityType::Ravager => Some(&RAVAGER),
         EntityType::Cat => Some(&CAT_TABLE),
         EntityType::Ocelot => Some(&OCELOT_TABLE),
         EntityType::Rabbit => Some(&RABBIT_TABLE),
@@ -83,6 +93,7 @@ pub fn table_of(entity_type: EntityType) -> Option<&'static GoalTable> {
         EntityType::Slime
         | EntityType::MagmaCube
         | EntityType::Giant
+        | EntityType::Vex
         | EntityType::Bat
         | EntityType::Squid
         | EntityType::GlowSquid

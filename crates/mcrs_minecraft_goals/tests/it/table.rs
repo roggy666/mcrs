@@ -12,6 +12,7 @@ use mcrs_minecraft_brain::Intents;
 use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::KindData;
 use mcrs_minecraft_brain::KindFlags;
+use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::KindTable;
 use mcrs_minecraft_brain::MobBrain;
 use mcrs_minecraft_brain::MobFlags;
@@ -19,7 +20,10 @@ use mcrs_minecraft_brain::MobKind;
 use mcrs_minecraft_brain::MobView;
 use mcrs_minecraft_brain::Neighbours;
 use mcrs_minecraft_brain::PathIntent;
+use mcrs_minecraft_brain::PlayerRow;
 use mcrs_minecraft_brain::PlayerTable;
+use mcrs_minecraft_brain::Proposal;
+use mcrs_minecraft_brain::Receivers;
 use mcrs_minecraft_brain::Ticket;
 use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_brain::TurnScratch;
@@ -27,6 +31,7 @@ use mcrs_minecraft_brain::WorldSeed;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::TileKey;
+use mcrs_minecraft_goals::Alert;
 use mcrs_minecraft_goals::FlatGround;
 use mcrs_minecraft_goals::GoalKind;
 use mcrs_minecraft_goals::GoalRow;
@@ -166,5 +171,69 @@ fn an_animal_with_no_hit_does_not_panic_and_sleeps_until_a_gate_is_due() {
     assert!(
         wake > 21,
         "a mob with only gated goals sleeps until the first wait is due: {wake}"
+    );
+}
+
+static ALLIES: KindSet = KindSet::of(&[MobKind(7), MobKind(9)]);
+
+static ALERTING: GoalTable = GoalTable {
+    goals: &[],
+    targets: &[GoalRow::new(
+        1,
+        ControlFlags::TARGET,
+        GoalKind::HurtBy {
+            alert: Alert::Kinds(&ALLIES),
+            ignored: KindSet::NONE,
+        },
+    )],
+    rules: BrainRules {
+        player_range: 16.0,
+        idle_limit: 100,
+        idle_reset_range: 32.0,
+    },
+};
+
+#[test]
+fn a_hurt_by_goal_with_a_kind_set_alert_proposes_the_alert_to_that_set() {
+    let ground = FlatGround {
+        side: 64,
+        pond: None,
+    };
+    let kinds = kinds();
+    let items = ItemTables::default();
+    let attacker = EntityId(77);
+    let players = PlayerTable::new([PlayerRow::standing(
+        attacker,
+        EntityUuid::from_u128(77 << 64),
+        DVec3::new(36.5, 0.0, 32.5),
+        1.62,
+    )]);
+    let neighbours = Neighbours::empty(TileKey::new(1, 0, 1));
+    let mut scratch = TurnScratch::default();
+    let mut view = view(3, None);
+    view.hurt_by = HurtBy::by(attacker, 19);
+    let turn = Turn {
+        tick: 20,
+        seed: WorldSeed(41),
+        max_lag: 0,
+        cadence: Cadence::new(1, 0),
+        view: &view,
+        players: players.rows(),
+        table: &players,
+        neighbours: &neighbours,
+        items: &items,
+        kinds: &kinds,
+        world: &ground,
+    };
+    let mut brain = TableBrain::new(&ALERTING);
+    let mut intents = Intents::default();
+    brain.evaluate(&turn, &mut scratch, &mut intents);
+    assert_eq!(
+        intents.proposal,
+        Some(Proposal::Alert {
+            target: attacker,
+            reach: 16.0,
+            receivers: Receivers::Kinds(&ALLIES),
+        })
     );
 }

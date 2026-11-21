@@ -23,7 +23,7 @@ const MOVE: ControlFlags = ControlFlags::MOVE;
 const LOOK: ControlFlags = ControlFlags::LOOK;
 const JUMP: ControlFlags = ControlFlags::JUMP;
 const TARGET: ControlFlags = ControlFlags::TARGET;
-const MOVE_LOOK: ControlFlags = ControlFlags::MOVE.union(ControlFlags::LOOK);
+pub(crate) const MOVE_LOOK: ControlFlags = ControlFlags::MOVE.union(ControlFlags::LOOK);
 const JUMP_MOVE: ControlFlags = ControlFlags::JUMP.union(ControlFlags::MOVE);
 const NONE: ControlFlags = ControlFlags::NONE;
 
@@ -76,19 +76,19 @@ pub const MONSTERS_NOT_CREEPER: KindSet = KindSet::of(&[
     kind(EntityType::Giant),
 ]);
 
-const MONSTER_RULES: BrainRules = BrainRules {
+pub(crate) const MONSTER_RULES: BrainRules = BrainRules {
     player_range: 35.0,
     idle_limit: STROLL_IDLE_LIMIT,
     idle_reset_range: IDLE_RESET_RANGE,
 };
 
-const SHORT_RANGE_RULES: BrainRules = BrainRules {
+pub(crate) const SHORT_RANGE_RULES: BrainRules = BrainRules {
     player_range: 16.0,
     idle_limit: STROLL_IDLE_LIMIT,
     idle_reset_range: IDLE_RESET_RANGE,
 };
 
-const fn melee(speed: f32, pursuit: Pursuit) -> GoalKind {
+pub(crate) const fn melee(speed: f32, pursuit: Pursuit) -> GoalKind {
     GoalKind::Melee {
         speed,
         pursuit,
@@ -96,16 +96,16 @@ const fn melee(speed: f32, pursuit: Pursuit) -> GoalKind {
     }
 }
 
-const fn stroll(speed: f32) -> GoalKind {
+pub(crate) const fn stroll(speed: f32) -> GoalKind {
     GoalKind::Stroll {
         speed,
         water: Water::Avoid,
     }
 }
 
-const LOOK_AT_PLAYER: GoalKind = GoalKind::LookAtPlayer { range: 8.0 };
+pub(crate) const LOOK_AT_PLAYER: GoalKind = GoalKind::LookAtPlayer { range: 8.0 };
 
-const fn players(filter: TargetFilter) -> GoalKind {
+pub(crate) const fn players(filter: TargetFilter) -> GoalKind {
     GoalKind::NearestTarget {
         set: TargetSet::Players,
         interval: 10,
@@ -116,7 +116,7 @@ const fn players(filter: TargetFilter) -> GoalKind {
     }
 }
 
-const fn kinds(set: KindSet, sight: Sight, filter: TargetFilter) -> GoalKind {
+pub(crate) const fn kinds(set: KindSet, sight: Sight, filter: TargetFilter) -> GoalKind {
     GoalKind::NearestTarget {
         set: TargetSet::Kinds(set),
         interval: 10,
@@ -127,13 +127,13 @@ const fn kinds(set: KindSet, sight: Sight, filter: TargetFilter) -> GoalKind {
     }
 }
 
-const fn hurt_by(alert: Alert, ignored: KindSet) -> GoalKind {
+pub(crate) const fn hurt_by(alert: Alert, ignored: KindSet) -> GoalKind {
     GoalKind::HurtBy { alert, ignored }
 }
 
-const fn avoid(set: KindSet) -> GoalKind {
+pub(crate) const fn avoid(set: KindSet) -> GoalKind {
     GoalKind::Avoid {
-        kinds: set,
+        set: TargetSet::Kinds(set),
         distance: 6.0,
         walk: 1.0,
         sprint: 1.2,

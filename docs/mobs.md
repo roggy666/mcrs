@@ -38,7 +38,7 @@ ticket and the progress of its last path request (`Applied`).
 |-------|-------|------|---------|
 | `mcrs_minecraft_brain` (exists) | 3, rules, `no_std` | none | the stage, the replica with `TileIndex`, `MobView`, `PlayerRow`, `Neighbours`, `ItemTables`, `Intents` with the new intents, `Proposal`, `TurnScratch`, the selector |
 | `mcrs_minecraft_goals` (exists) | 3, rules, `no_std` | none | the generic goals of GOAL and CGOAL as values with a start, a continue, a tick and a stop; the queries; the random position searches; `TableBrain`, the brain that runs a goal table |
-| `mcrs_minecraft_vanilla_mobs` (new) | 5, no Bevy, `no_std` | none | the goal table and the type data of each vanilla mob type; `VanillaBrain`; the per-type reflex rules (anger, swell, caravan); the item tags that the tables read |
+| `mcrs_minecraft_vanilla_mobs` (new) | 5, no Bevy | none | the goal table and the type data of each vanilla mob type; `VanillaBrain`; the per-type reflex rules (anger, swell, caravan); the item tags that the tables read |
 | `mcrs_minecraft_mob_control` (exists) | 3, rules | none | the reflexes of the guidance, now with the melee reflex, the ranged reflex, the swell reflex and the target slot |
 | `mcrs_minecraft_engine_brain` (exists) | 4 | required | the host: observe, apply, steer, the hit queue, the grants, the player table, the facts |
 | `mcrs_minecraft_server` (exists) | 7 | required | `VanillaMobBrainPlugin` with the brain table of `mcrs_minecraft_vanilla_mobs` |
@@ -162,9 +162,11 @@ branch changes the resolver of a request, not the goals.
    move of the farm animals out of `mcrs_minecraft_goals`; `VanillaBrain`.
 4. `mcrs_minecraft_mob_control` and `mcrs_minecraft_engine_brain`: the target slot, the melee and
    ranged reflexes, the hit queue, the grants, the player hands, the type data of each mob.
-5. A specification and a table for each other family: the zombie kind, the skeleton kind, the
-   creeper, the spider kind, the slime kind, the enderman, the witch, the illagers, the other
-   animals. Each family is one commit with its specification.
+5. A specification and a table for each other family: `docs/spec/mob-monsters.md` for the
+   monsters with goals, `docs/spec/mob-passive.md` for the other passive and neutral mobs with
+   goals and `docs/spec/mob-raiders.md` for the raiders. A behaviour that needs a part of the engine that no specification states yet (a
+   projectile, an explosion, a swim or fly navigation, the village data) is a hook: the row is
+   absent from the table of the server until that specification exists.
 6. The brain kernel of `docs/spec/mob-brain.md` for the villager, the piglin, the goat, the
    axolotl, the frog, the allay, the sniffer, the camel, the armadillo and the warden: a later
    branch.

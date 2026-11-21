@@ -339,3 +339,51 @@ fn a_rabbit_runs_from_a_wolf_faster_than_the_wolf_follows() {
     assert!(gap > 5.0, "the gap to the wolf grew from 5 blocks: {gap}");
     assert!(yard.mobs[rabbit].target.is_none());
 }
+
+#[test]
+fn a_vindicator_charges_the_player_and_a_pillager_draws_its_crossbow() {
+    let mut yard = Yard::new();
+    let vindicator = yard.add(EntityType::Vindicator, DVec3::new(40.5, 0.0, 40.5), 12.0);
+    let pillager = yard.add(EntityType::Pillager, DVec3::new(40.5, 0.0, 44.5), 32.0);
+    let player = yard.add_player(DVec3::new(47.5, 0.0, 42.5));
+    let mut charging = false;
+    let mut drawing = false;
+    for _ in 1..=200 {
+        yard.step();
+        charging |= yard.mobs[vindicator].melee;
+        drawing |= yard.mobs[pillager].ranged;
+    }
+    assert!(yard.mobs[vindicator].target.is(player));
+    assert!(yard.mobs[pillager].target.is(player));
+    assert!(
+        charging,
+        "the melee goal of the vindicator starts on the player"
+    );
+    assert!(
+        drawing,
+        "the ranged goal of the pillager starts on the player"
+    );
+    assert!(
+        !yard.mobs[pillager].melee,
+        "the pillager table has no melee goal"
+    );
+}
+
+#[test]
+fn an_evoker_backs_away_from_a_player_within_eight_blocks() {
+    let mut yard = Yard::new();
+    let start = DVec3::new(40.5, 0.0, 40.5);
+    let evoker = yard.add(EntityType::Evoker, start, 12.0);
+    let at = DVec3::new(45.5, 0.0, 40.5);
+    let player = yard.add_player(at);
+    for _ in 1..=100 {
+        yard.step();
+    }
+    let gap = yard.mobs[evoker].position.distance(at);
+    assert!(gap > 8.0, "the evoker keeps more than 8 blocks: {gap}");
+    assert!(yard.mobs[evoker].target.is(player));
+    assert!(
+        !yard.mobs[evoker].melee,
+        "the evoker table has no melee goal"
+    );
+}

@@ -1,6 +1,7 @@
+use glam::DVec3;
 use mcrs_minecraft_brain::EntityRef;
-use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::MobFlags;
+use mcrs_minecraft_brain::PlayerRow;
 use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_voxel::BlockPos;
 
@@ -9,6 +10,7 @@ use crate::AVOID_STRENGTH;
 use crate::AvoidExtra;
 use crate::AvoidState;
 use crate::SearchRange;
+use crate::TargetSet;
 use crate::query::Combat;
 use crate::query::Cx;
 use crate::query::Ray;
@@ -23,7 +25,7 @@ const STRENGTH_DRAWS: u32 = 5;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct AvoidParams {
-    pub(crate) kinds: KindSet,
+    pub(crate) set: TargetSet,
     pub(crate) distance: f32,
     pub(crate) walk: f32,
     pub(crate) sprint: f32,
@@ -38,13 +40,20 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     if params.extra == AvoidExtra::LlamaStrength && cx.me().flags.contains(MobFlags::TAME) {
         return false;
     }
-    if !cx.turn.neighbours.has_kind(&params.kinds) {
+    let probe = match params.set {
+        TargetSet::Players => cx.turn.players.iter().any(PlayerRow::is_qualified),
+        TargetSet::Kinds(kinds) => cx.turn.neighbours.has_kind(&kinds),
+    };
+    if !probe {
         return false;
     }
     cx.busy();
     let distance = f64::from(params.distance);
     let (min, max) = cx.grown_box(distance, BOX_HEIGHT);
-    cx.collect_mobs(min, max, &params.kinds);
+    match params.set {
+        TargetSet::Players => cx.collect_players(),
+        TargetSet::Kinds(kinds) => cx.collect_mobs(min, max, &kinds),
+    }
     let combat = Combat {
         range: distance,
         ray: Ray::Check,
@@ -52,7 +61,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     };
     let Some(entity) = cx.nearest_sorted(
         |cx, candidate| cx.feet_distance_squared(candidate),
-        |cx, candidate| cx.combat_test(candidate, combat),
+        |cx, candidate| in_box(candidate.position, min, max) && cx.combat_test(candidate, combat),
     ) else {
         return false;
     };
@@ -121,4 +130,13 @@ pub(crate) fn can_continue<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) ->
 
 pub(crate) fn stop(state: &mut AvoidState) {
     state.entity = EntityRef::NONE;
+}
+
+fn in_box(point: DVec3, min: DVec3, max: DVec3) -> bool {
+    point.x >= min.x
+        && point.x <= max.x
+        && point.y >= min.y
+        && point.y <= max.y
+        && point.z >= min.z
+        && point.z <= max.z
 }

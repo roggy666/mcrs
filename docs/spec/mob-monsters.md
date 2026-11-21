@@ -77,7 +77,8 @@ Out of scope:
 | The teleport, the stare and the block carry of an enderman | a later specification; hooks here |
 | The jump motion and the split of a slime | a later specification; hooks here |
 | The monsters with a brain: the piglin, the piglin brute, the hoglin, the zoglin, the warden, the breeze, the creaking | `mob-brain.md` |
-| The raiders as members of a raid, the vex, the ravager, the guardians, the phantom, the ghast, the wither, the ender dragon | a later specification |
+| The raiders, the vex and the ravager | `mob-raiders.md` |
+| The guardians, the phantom, the ghast, the wither, the ender dragon | a later specification |
 
 ## 1. Type data
 

@@ -1,6 +1,7 @@
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::Proposal;
+use mcrs_minecraft_brain::Receivers;
 use mcrs_minecraft_goal_world::GoalWorld;
 
 use crate::Alert;
@@ -54,10 +55,16 @@ pub(crate) fn start<W: GoalWorld + ?Sized>(
     state.goal_target = EntityRef::of(attacker);
     state.kept_tick = tick;
     state.unseen = 0;
-    if alert == Alert::SameKind {
+    let receivers = match alert {
+        Alert::None => None,
+        Alert::SameKind => Some(Receivers::SameKind),
+        Alert::Kinds(kinds) => Some(Receivers::Kinds(kinds)),
+    };
+    if let Some(receivers) = receivers {
         cx.intents.proposal = Some(Proposal::Alert {
             target: attacker,
             reach: cx.me().follow_range,
+            receivers,
         });
     }
 }

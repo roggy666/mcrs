@@ -6,6 +6,7 @@ mod monsters;
 mod passive;
 #[cfg(feature = "testing")]
 mod pen;
+mod raiders;
 mod vanilla_brain;
 mod wolf;
 
@@ -17,5 +18,6 @@ pub use monsters::*;
 pub use passive::*;
 #[cfg(feature = "testing")]
 pub use pen::*;
+pub use raiders::*;
 pub use vanilla_brain::*;
 pub use wolf::*;

@@ -298,13 +298,13 @@ fn nearest_params(goal: &GoalKind) -> Option<NearestParams> {
 fn avoid_params(goal: &GoalKind) -> Option<AvoidParams> {
     match *goal {
         GoalKind::Avoid {
-            kinds,
+            set,
             distance,
             walk,
             sprint,
             extra,
         } => Some(AvoidParams {
-            kinds,
+            set,
             distance,
             walk,
             sprint,

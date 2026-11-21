@@ -76,7 +76,7 @@ pub enum GoalKind {
         vertical: f32,
     },
     Avoid {
-        kinds: KindSet,
+        set: TargetSet,
         distance: f32,
         walk: f32,
         sprint: f32,
@@ -172,4 +172,5 @@ pub enum TameRule {
 pub enum Alert {
     None,
     SameKind,
+    Kinds(&'static KindSet),
 }

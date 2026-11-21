@@ -71,7 +71,7 @@ pub static WOLF: GoalTable = GoalTable {
             3,
             MOVE,
             GoalKind::Avoid {
-                kinds: LLAMA_KIND,
+                set: TargetSet::Kinds(LLAMA_KIND),
                 distance: 24.0,
                 walk: 1.5,
                 sprint: 1.5,
