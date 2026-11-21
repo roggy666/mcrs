@@ -23,6 +23,8 @@ impl CellFlags {
     pub const LEGACY_SOLID: Self = Self(1 << 1);
     pub const WATER: Self = Self(1 << 2);
     pub const NO_COLLISION: Self = Self(1 << 3);
+    pub const GRASS_BELOW: Self = Self(1 << 4);
+    pub const EDIBLE: Self = Self(1 << 5);
 
     #[must_use]
     pub const fn union(self, other: Self) -> Self {

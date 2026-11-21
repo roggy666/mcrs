@@ -3,7 +3,8 @@ use crate::GoalSpec;
 use crate::Interrupt;
 
 pub trait Goals {
-    fn specs(&self) -> &[GoalSpec];
+    fn count(&self) -> usize;
+    fn spec(&self, goal: usize) -> Option<GoalSpec>;
     fn can_start(&mut self, goal: usize) -> bool;
     fn can_continue(&mut self, goal: usize) -> bool;
     fn start(&mut self, goal: usize);
@@ -21,13 +22,13 @@ impl Selector {
     pub const CAPACITY: usize = 32;
 
     pub fn evaluate<G: Goals>(&mut self, goals: &mut G, disabled: ControlFlags) {
-        let count = goals.specs().len().min(Self::CAPACITY);
+        let count = goals.count().min(Self::CAPACITY);
         self.release_stopped();
         for goal in 0..count {
             if !self.is_running(goal) {
                 continue;
             }
-            let Some(spec) = goals.specs().get(goal).copied() else {
+            let Some(spec) = goals.spec(goal) else {
                 continue;
             };
             if spec.flags.intersects(disabled) || !goals.can_continue(goal) {
@@ -35,10 +36,10 @@ impl Selector {
             }
         }
         for goal in 0..count {
-            if self.is_running(goal) || !self.is_examined(goals.specs(), goal, disabled) {
+            if self.is_running(goal) || !self.is_examined(goals, goal, disabled) {
                 continue;
             }
-            let Some(spec) = goals.specs().get(goal).copied() else {
+            let Some(spec) = goals.spec(goal) else {
                 continue;
             };
             if !goals.can_start(goal) {
@@ -73,8 +74,8 @@ impl Selector {
     }
 
     #[must_use]
-    pub fn is_examined(&self, specs: &[GoalSpec], goal: usize, disabled: ControlFlags) -> bool {
-        let Some(spec) = specs.get(goal) else {
+    pub fn is_examined<G: Goals>(&self, goals: &G, goal: usize, disabled: ControlFlags) -> bool {
+        let Some(spec) = goals.spec(goal) else {
             return false;
         };
         if self.is_running(goal) || spec.flags.intersects(disabled) {
@@ -82,7 +83,7 @@ impl Selector {
         }
         spec.flags.slots().all(|slot| match self.holder(slot) {
             None => true,
-            Some(holder) => specs.get(holder).is_some_and(|holder_spec| {
+            Some(holder) => goals.spec(holder).is_some_and(|holder_spec| {
                 holder_spec.interrupt == Interrupt::Permitted
                     && holder_spec.priority > spec.priority
             }),

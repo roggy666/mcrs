@@ -24,7 +24,6 @@ pub struct MobView {
     pub hurt_by: HurtBy,
     pub target: EntityRef,
     pub owner: EntityRef,
-    pub disabled: ControlFlags,
     pub path_ticket: Ticket,
 }
 
@@ -72,7 +71,7 @@ impl MobView {
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub struct MobFlags(u16);
+pub struct MobFlags(u32);
 
 impl MobFlags {
     pub const NONE: Self = Self(0);
@@ -92,6 +91,31 @@ impl MobFlags {
     pub const INVULNERABLE: Self = Self(1 << 13);
     pub const HAS_PASSENGER: Self = Self(1 << 14);
     pub const PATH_RUNNING: Self = Self(1 << 15);
+    pub const SWELLING: Self = Self(1 << 16);
+    pub const AFLOAT: Self = Self(1 << 17);
+    pub const IN_SUN: Self = Self(1 << 18);
+    pub const MOVE_DISABLED: Self = Self(1 << 19);
+    pub const LOOK_DISABLED: Self = Self(1 << 20);
+    pub const JUMP_DISABLED: Self = Self(1 << 21);
+    pub const EATING: Self = Self(1 << 22);
+    pub const SPIT: Self = Self(1 << 23);
+    pub const IN_CARAVAN: Self = Self(1 << 24);
+    pub const HAS_TAIL: Self = Self(1 << 25);
+
+    #[must_use]
+    pub const fn disabled(self) -> ControlFlags {
+        let mut disabled = ControlFlags::NONE;
+        if self.contains(Self::MOVE_DISABLED) {
+            disabled = disabled.union(ControlFlags::MOVE);
+        }
+        if self.contains(Self::LOOK_DISABLED) {
+            disabled = disabled.union(ControlFlags::LOOK);
+        }
+        if self.contains(Self::JUMP_DISABLED) {
+            disabled = disabled.union(ControlFlags::JUMP);
+        }
+        disabled
+    }
 
     #[must_use]
     pub const fn union(self, other: Self) -> Self {

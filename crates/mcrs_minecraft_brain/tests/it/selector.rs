@@ -31,8 +31,11 @@ impl Script {
 }
 
 impl Goals for Script {
-    fn specs(&self) -> &[GoalSpec] {
-        &self.specs
+    fn count(&self) -> usize {
+        self.specs.len()
+    }
+    fn spec(&self, goal: usize) -> Option<GoalSpec> {
+        self.specs.get(goal).copied()
     }
     fn can_start(&mut self, goal: usize) -> bool {
         self.startable.get(goal).copied().unwrap_or(false)
