@@ -142,7 +142,7 @@ pub static ILLUSIONER: GoalTable = GoalTable {
         GoalRow::new(3, TARGET, VILLAGERS),
         GoalRow::new(3, TARGET, GOLEMS),
     ],
-    rules: SHORT_RANGE_RULES,
+    rules: MONSTER_RULES,
 };
 
 pub static RAVAGER: GoalTable = GoalTable {

@@ -143,7 +143,10 @@ mob with this goal does not enter the sun while a path of equal length in the sh
 **MON-SUN-003** (`design`, semantic, confidence: medium, fidelity: exact under the condition
 below). A server without the day cycle and the sky light on the server side uses "not in the sun"
 for each mob (GOAL-FLT-003 states the same form for the fluids). Then the flee-sun goal never starts
-and the restrict-sun goal never starts. The rule is exact at night and under a roof.
+and the restrict-sun goal never starts. The rule is exact at night and under a roof. The start
+condition of the restrict-sun goal on this server is "the mob is in the sun", not "the sun is up":
+a skeleton under a roof by day does not start it. The difference is not observable while the path
+malus of MON-SUN-002 is a hook; U4 keeps it.
 
 ## 3. The zombie kind
 
@@ -544,3 +547,9 @@ empty goal list and an empty target list. It stands still.
   absent from the goal lists of the server until that specification exists.
 - **U3**: the type set "each monster" of the golems needs the entity type tag of the monsters; the
   server reads the mob category `monster` of the spawn data of each type.
+- **U4**: the restrict-sun goal starts on "the mob is in the sun" (MON-SUN-003); when the path
+  malus exists, the start condition must become "the sun is up in a dimension with a sky", a
+  value of the dimension that the snapshot does not hold yet.
+- **U5**: the melee part of the blaze (MON-BLZ-003) runs on the server as the melee goal that
+  stops when the target is not seen; the fireball goal of the reference continues while the
+  target is alive. The choice is the conservative reading until the fireballs exist.

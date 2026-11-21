@@ -115,9 +115,10 @@ of each raider are hooks of `raids.md`: the open-door goal, the walk to the raid
 hold of the ground after a raid, the celebration, and the pick-up of a banner. Their priorities are
 in the lists below for the order; the rows are absent on the server.
 
-**RAID-SHR-004** (`design`, semantic, confidence: high, fidelity: exact). The vex has no goal that
-the server runs: its charge and its flight are hooks, and a vex stands still until its
-specification exists (PAS-SWIM-003 states the same form for the flyers). A vex that a server
+**RAID-SHR-004** (`design`, semantic, confidence: high, fidelity: exact). The vex has no goal and
+no target goal that the server runs: its charge and its flight are hooks, and a vex stands still
+and selects no target until its specification exists (PAS-SWIM-003 states the same form for the
+flyers). A vex that a server
 command summons stands where it is and does not fall through a block, by the physics of a flyer.
 
 ## 3. The pillager
@@ -232,7 +233,8 @@ the server, envelope for the spells). The goal list of the illusioner, in this o
 | 10 | look around (GOAL-LKR-001) | `move`, `look` | |
 
 The bow attack is the ranged goal with the arrow of `projectiles.md` as its attack action; the
-form is that of the skeleton (MON-SKL-003).
+form is that of the skeleton (MON-SKL-003), with one difference: the interval of the illusioner is
+the fixed value 20, it does not read the difficulty (MON U1 does not apply).
 
 **RAID-ILL-002** (`documentation`, semantic, confidence: medium, fidelity: exact). The target list
 of the illusioner is the list of the evoker (RAID-EVO-002).
@@ -274,7 +276,8 @@ of the vex: float at 0, the charge attack at 4 (hook), the move toward the owner
 position at 8 and 9 (hook), look at a player at 10 (range 3), look around at 10. Its target list:
 the hurt-by target at 1 (no alert), the target of its owner at 2 (hook), the nearest player at 3.
 The vex flies and lives for a limited time after a summon; both are hooks. On the server a vex
-stands still (RAID-SHR-004): its goal list is empty.
+stands still (RAID-SHR-004): its goal list and its target list are empty, so the rows above are
+the order for the later specification, not rows of the server.
 
 ## 9. Intentional deviations
 
@@ -295,3 +298,6 @@ stands still (RAID-SHR-004): its goal list is empty.
   of the brain; no specification states that input.
 - **U3**: the sight rule of the raid prey row (RAID-SHR-002, "does not need to see") has the
   confidence medium; a parity test of a raider behind a wall decides it.
+- **U4**: the player range of the brain rules of each raider is at least its follow range, so the
+  player table of a turn holds each player that a target row can select; the illusioner, with the
+  follow range 18, uses the range of the monsters (35).

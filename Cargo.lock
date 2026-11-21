@@ -4304,6 +4304,7 @@ name = "mcrs_minecraft_brain"
 version = "0.5.8"
 dependencies = [
  "glam",
+ "hashbrown 0.16.1",
  "libm",
  "mcrs_minecraft_entity_key",
 ]
