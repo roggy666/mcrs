@@ -1,0 +1,65 @@
+{
+ "experiment": "E-G5b",
+ "version": "26.4-snapshot-7",
+ "input": [
+  "setblock 0 -60 400 dark_oak_sapling",
+  "setblock 0 -60 401 dark_oak_sapling",
+  "setblock 1 -60 400 dark_oak_sapling",
+  "setblock 1 -60 401 dark_oak_sapling",
+  "setblock 5 -60 440 dark_oak_sapling",
+  "setblock 5 -60 441 dark_oak_sapling",
+  "setblock 6 -60 440 dark_oak_sapling",
+  "setblock 6 -60 441 dark_oak_sapling",
+  "setblock -7 -60 480 dark_oak_sapling",
+  "setblock -7 -60 481 dark_oak_sapling",
+  "setblock -6 -60 480 dark_oak_sapling",
+  "setblock -6 -60 481 dark_oak_sapling",
+  "setblock 0 -60 520 pale_oak_sapling",
+  "setblock 0 -60 521 pale_oak_sapling",
+  "setblock 1 -60 520 pale_oak_sapling",
+  "setblock 1 -60 521 pale_oak_sapling"
+ ],
+ "random_tick_speed": 1000,
+ "ticks": 1507,
+ "observations": {
+  "dark_oak_a": {
+   "at_square": [
+    "dark_oak_log",
+    "dark_oak_log",
+    "dark_oak_log",
+    "dark_oak_log"
+   ],
+   "logs": 40
+  },
+  "dark_oak_b": {
+   "at_square": [
+    "dark_oak_log",
+    "dark_oak_log",
+    "dark_oak_log",
+    "dark_oak_log"
+   ],
+   "logs": 38
+  },
+  "dark_oak_c": {
+   "at_square": [
+    "dark_oak_log",
+    "dark_oak_log",
+    "dark_oak_log",
+    "dark_oak_log"
+   ],
+   "logs": 40
+  },
+  "pale_oak_control": {
+   "at_square": [
+    "pale_oak_log",
+    "pale_oak_log",
+    "pale_oak_log",
+    "pale_oak_log"
+   ],
+   "logs": 38
+  },
+  "place_feature_dark_oak": "Placed \"minecraft:dark_oak\" at 0, -60, 560",
+  "place_feature_pale_oak_bonemeal": "Placed \"minecraft:pale_oak_bonemeal\" at 0, -60, 600",
+  "dark_oak_logs_at_placed": 40
+ }
+}

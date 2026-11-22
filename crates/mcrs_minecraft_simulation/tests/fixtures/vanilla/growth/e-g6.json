@@ -1,0 +1,42 @@
+{
+ "experiment": "E-G6",
+ "version": "26.4-snapshot-7",
+ "input": [
+  "setblock 0 -61 1200 dirt",
+  "setblock 6 -61 1200 coarse_dirt",
+  "setblock 12 -61 1200 rooted_dirt",
+  "setblock 18 -60 1200 stone",
+  "setblock 24 -60 1200 glass",
+  "setblock 29 -60 1200 glass",
+  "setblock 31 -60 1200 glass",
+  "setblock 30 -60 1199 glass",
+  "setblock 30 -60 1201 glass",
+  "setblock 30 -60 1200 water",
+  "setblock 36 -60 1200 snow[layers=1]",
+  "setblock 42 -60 1200 snow[layers=2]",
+  "setblock -6 -60 1200 stone_slab[type=bottom]",
+  "setblock -12 -60 1200 stone_slab[type=top]",
+  "setblock -18 -60 1200 oak_leaves[persistent=true]",
+  "fill -30 -61 1210 -28 -61 1212 mycelium",
+  "setblock -29 -61 1211 dirt",
+  "setblock -36 -61 1200 mycelium",
+  "setblock -36 -60 1200 stone"
+ ],
+ "random_tick_speed": 300,
+ "ticks": 2016,
+ "observations": {
+  "dirt_next_to_grass": "grass_block",
+  "coarse_dirt_next_to_grass": "coarse_dirt",
+  "rooted_dirt_next_to_grass": "rooted_dirt",
+  "grass_under_stone": "dirt",
+  "grass_under_glass": "grass_block",
+  "grass_under_water_source": "dirt",
+  "grass_under_snow_1": "grass_block",
+  "grass_under_snow_2": "dirt",
+  "grass_under_bottom_slab": "dirt",
+  "grass_under_top_slab": "grass_block",
+  "grass_under_leaves": "grass_block",
+  "dirt_in_mycelium_ring": "mycelium",
+  "mycelium_under_stone": "dirt"
+ }
+}

@@ -1,0 +1,167 @@
+{
+ "experiment": "E-G5",
+ "version": "26.4-snapshot-7",
+ "input": [
+  "setblock 0 -60 400 oak_sapling",
+  "setblock 0 -60 440 birch_sapling",
+  "setblock 0 -60 480 spruce_sapling",
+  "setblock 0 -60 520 jungle_sapling",
+  "setblock 0 -60 560 acacia_sapling",
+  "setblock 0 -60 600 cherry_sapling",
+  "setblock 0 -60 640 poplar_sapling",
+  "setblock 0 -60 680 dark_oak_sapling",
+  "setblock 0 -60 720 mangrove_propagule",
+  "setblock 0 -60 760 dark_oak_sapling",
+  "setblock 0 -60 761 dark_oak_sapling",
+  "setblock 1 -60 760 dark_oak_sapling",
+  "setblock 1 -60 761 dark_oak_sapling",
+  "setblock 0 -60 800 pale_oak_sapling",
+  "setblock 0 -60 801 pale_oak_sapling",
+  "setblock 1 -60 800 pale_oak_sapling",
+  "setblock 1 -60 801 pale_oak_sapling",
+  "setblock 0 -60 840 spruce_sapling",
+  "setblock 0 -60 841 spruce_sapling",
+  "setblock 1 -60 840 spruce_sapling",
+  "setblock 1 -60 841 spruce_sapling",
+  "setblock 0 -60 880 jungle_sapling",
+  "setblock 0 -60 881 jungle_sapling",
+  "setblock 1 -60 880 jungle_sapling",
+  "setblock 1 -60 881 jungle_sapling",
+  "setblock 0 -60 920 oak_sapling",
+  "fill -2 -57 918 2 -57 922 stone"
+ ],
+ "random_tick_speed": 1000,
+ "ticks": 405,
+ "box_relative_to_sapling": {
+  "dx": [
+   -12,
+   12
+  ],
+  "dy": [
+   -1,
+   40
+  ],
+  "dz": [
+   -12,
+   12
+  ]
+ },
+ "observations": {
+  "oak": {
+   "at_sapling": "oak_log",
+   "logs": 5,
+   "leaves_not_persistent": 55,
+   "leaves_persistent": 0
+  },
+  "birch": {
+   "at_sapling": "birch_log",
+   "logs": 5,
+   "leaves_not_persistent": 54,
+   "leaves_persistent": 0
+  },
+  "spruce": {
+   "at_sapling": "spruce_log",
+   "logs": 6,
+   "leaves_not_persistent": 99,
+   "leaves_persistent": 0
+  },
+  "jungle": {
+   "at_sapling": "jungle_log",
+   "logs": 5,
+   "leaves_not_persistent": 56,
+   "leaves_persistent": 0
+  },
+  "acacia": {
+   "at_sapling": "acacia_log",
+   "logs": 10,
+   "leaves_not_persistent": 84,
+   "leaves_persistent": 0
+  },
+  "cherry": {
+   "at_sapling": "cherry_log",
+   "logs": 24,
+   "leaves_not_persistent": 370,
+   "leaves_persistent": 0
+  },
+  "poplar": {
+   "at_sapling": "poplar_log",
+   "logs": 12,
+   "leaves_not_persistent": {
+    "red_poplar_leaves": 0,
+    "orange_poplar_leaves": 181,
+    "yellow_poplar_leaves": 0
+   },
+   "leaves_persistent": {
+    "red_poplar_leaves": 0,
+    "orange_poplar_leaves": 0,
+    "yellow_poplar_leaves": 0
+   }
+  },
+  "dark_oak_single": {
+   "at_sapling": "dark_oak_sapling",
+   "logs": 0,
+   "leaves_not_persistent": 0,
+   "leaves_persistent": 0
+  },
+  "mangrove": {
+   "at_sapling": "air",
+   "logs": 27,
+   "leaves_not_persistent": 467,
+   "leaves_persistent": 0
+  },
+  "dark_oak_square": {
+   "at_sapling": "dark_oak_sapling",
+   "logs": 0,
+   "leaves_not_persistent": 0,
+   "leaves_persistent": 0,
+   "square_logs_at_ground": [
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "pale_oak_square": {
+   "at_sapling": "pale_oak_log",
+   "logs": 43,
+   "leaves_not_persistent": 118,
+   "leaves_persistent": 0,
+   "square_logs_at_ground": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "spruce_square": {
+   "at_sapling": "spruce_log",
+   "logs": 81,
+   "leaves_not_persistent": 331,
+   "leaves_persistent": 0,
+   "square_logs_at_ground": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "jungle_square": {
+   "at_sapling": "jungle_log",
+   "logs": 79,
+   "leaves_not_persistent": 288,
+   "leaves_persistent": 0,
+   "square_logs_at_ground": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "oak_ceiling": {
+   "at_sapling": "oak_sapling",
+   "logs": 0,
+   "leaves_not_persistent": 0,
+   "leaves_persistent": 0
+  }
+ }
+}

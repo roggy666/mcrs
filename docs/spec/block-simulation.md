@@ -2939,6 +2939,7 @@ This section gives what some blocks do when the machinery of sections 1 to 9
 delivers a tick, an update or a side effect to them. Each rule of this section is
 from the reference. The shape functions of the blocks that
 need support from a neighbour are in `block-support.md`.
+The random ticks of the growth blocks (crops, saplings, grass, leaves, ice, farmland) and the bone meal responses are in `random-ticks.md`.
 
 ### 12.1 Fire and soul fire
 
