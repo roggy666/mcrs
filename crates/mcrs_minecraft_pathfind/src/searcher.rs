@@ -22,6 +22,7 @@ pub struct Searcher {
     pub(crate) mob_types: HashMap<(i32, i32, i32), PathType>,
     pub(crate) boxes: HashMap<[u64; 6], bool>,
     pub(crate) targets: Vec<Target>,
+    pub(crate) neighbours: Vec<u32>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -52,6 +53,7 @@ impl Searcher {
         self.mob_types.clear();
         self.boxes.clear();
         self.targets.clear();
+        self.neighbours.clear();
     }
 
     pub(crate) fn node_at(&mut self, pos: BlockPos) -> u32 {

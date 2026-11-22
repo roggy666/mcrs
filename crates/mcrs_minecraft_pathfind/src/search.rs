@@ -66,11 +66,9 @@ pub fn search<W: PathWorld + ?Sized>(
         node.h = h;
         node.f = h;
     }
-    let mut nodes = searcher.nodes.clone();
-    core::mem::swap(&mut nodes, &mut searcher.nodes);
     searcher.heap.insert(&mut searcher.nodes, start);
     let mut pops: u32 = 0;
-    let mut neighbours: Vec<u32> = Vec::new();
+    let mut neighbours = core::mem::take(&mut searcher.neighbours);
     while !searcher.heap.is_empty() {
         pops = pops.saturating_add(1);
         if pops >= budget {
@@ -129,6 +127,7 @@ pub fn search<W: PathWorld + ?Sized>(
             }
         }
     }
+    searcher.neighbours = neighbours;
     let path = choose(searcher, request.reach);
     SearchOutcome { path, pops }
 }
@@ -164,14 +163,9 @@ fn trail(searcher: &Searcher, end: u32) -> Vec<PathNode> {
 }
 
 fn choose(searcher: &Searcher, reach: i32) -> Option<FoundPath> {
-    let reached: Vec<&Target> = searcher
-        .targets
-        .iter()
-        .filter(|target| target.reached)
-        .collect();
-    if !reached.is_empty() {
+    if searcher.targets.iter().any(|target| target.reached) {
         let mut best: Option<(usize, FoundPath)> = None;
-        for target in reached {
+        for target in searcher.targets.iter().filter(|target| target.reached) {
             let Some(end) = target.best else {
                 continue;
             };
