@@ -328,21 +328,54 @@ The strider has an empty target list. Its walk on lava and its shivering are hoo
 `entity-physics.md`.
 
 **PAS-SWIM-001** (`documentation`, semantic, confidence: high, fidelity: exact). The goal lists of
-the swimmers and the flyers: the fish, the squids, the dolphin, the bat, the parrot and the bee. Each
-of these mobs uses a navigation in water or in the air that `pathfinding.md` does not state. Their
-goal lists are hooks of the specification of that navigation. Until it exists, each of these types
-has an empty goal list and an empty target list on the server, and stands still, except the
-parrot and the bee, which have these land goals:
+the swimmers: the fish, the squids and the dolphin. Each of these mobs uses a navigation in water
+that `pathfinding.md` does not state. Their goal lists are hooks of the specification of that
+navigation. Until it exists, each of these types has an empty goal list and an empty target list on
+the server, and stands still. The bat has no navigation and moves with a move control of its own
+(`pathfinding.md`, U8); it also stands still until that specification exists.
 
-| Type | Priority | Goal | Flags | Parameters |
-|------|----------|------|-------|------------|
-| `parrot` | 0 | panic (GOAL-PNC-002) | `move` | `m = 1.25` |
-| `parrot` | 1 | sit when ordered (CGOAL-OWNER-006) | `jump`, `move` | |
-| `parrot` | 2 | follow owner (CGOAL-OWNER-004) | `move`, `look` | `m = 1.0`; `a = 5`; `b = 1` |
-| `parrot` | 3 | look at a player (GOAL-LKP-001) | `look` | range 8 |
-| `bee` | 1 | breed (GOAL-BRD-001) | `move`, `look` | `m = 1.0` |
-| `bee` | 2 | tempt (GOAL-TMP-001) | `move`, `look` | `#bee_food`; `m = 1.25` |
-| `bee` | 5 | follow an adult (GOAL-FOL-001) | none | `m = 1.25` |
+**PAS-FLY-001** (`source_suggested`, semantic, confidence: medium, fidelity: exact). The goal list
+of the parrot, in this order. Its navigation is the flying navigation of `pathfinding.md`, section
+12, with the data of PATH-FLY-001. The reading of the reference of 2026-11-22 corrected the
+priorities of the earlier hook table.
+
+| Priority | Goal | Flags | Parameters |
+|----------|------|-------|------------|
+| 0 | tamable panic (GOAL-PNC-002, CGOAL-OWNER) | `move` | `m = 1.25` |
+| 0 | float (GOAL-FLT-001) | `jump` | |
+| 1 | look at a player (GOAL-LKP-001) | `look` | range 8 |
+| 2 | sit when ordered (CGOAL-OWNER-006) | `jump`, `move` | |
+| 2 | follow owner (CGOAL-OWNER-004) | `move`, `look` | `m = 1.0`; `a = 5`; `b = 1` |
+| 2 | flying stroll (GOAL-FLY-001) | `move` | `m = 1.0` |
+| 3 | land on the shoulder of the owner | `move`, `look` | hook |
+| 3 | follow a mob | `move`, `look` | hook: `m = 1.0`; start 3; range 7 |
+
+The parrot has an empty target list.
+
+**PAS-FLY-002** (`source_suggested`, semantic, confidence: medium, fidelity: exact). The goal list
+of the bee, in this order. Its navigation is the flying navigation with the data of PATH-FLY-001.
+The hive, the flowers, the pollination, the sting and the anger are hooks of the specification of
+the bee.
+
+| Priority | Goal | Flags | Parameters |
+|----------|------|-------|------------|
+| 0 | bee attack | `move`, `look` | hook: `m = 1.4` |
+| 1 | enter the hive | `move` | hook |
+| 2 | breed (GOAL-BRD-001) | `move`, `look` | `m = 1.0` |
+| 3 | tempt (GOAL-TMP-001) | `move`, `look` | `#bee_food`; `m = 1.25` |
+| 3 | validate the hive | none | hook |
+| 3 | validate the flower | none | hook |
+| 4 | pollinate | `move` | hook |
+| 5 | follow an adult (GOAL-FOL-001) | none | `m = 1.25` |
+| 5 | locate a hive | none | hook |
+| 5 | go to the hive | `move` | hook |
+| 6 | go to the known flower | `move` | hook |
+| 7 | grow a crop | none | hook |
+| 8 | wander (GOAL-FLY-002) | `move` | |
+| 9 | float (GOAL-FLT-001) | `jump` | |
+
+The target list of the bee: 1, hurt by (CGOAL-HURT, alerts the bees of its own kind; hook); 2,
+become angry at a player (hook); 3, reset the universal anger (hook).
 
 ## 11. Unresolved
 
@@ -350,4 +383,5 @@ parrot and the bee, which have these land goals:
   the goal list of the server until that specification exists.
 - **U2**: the trust of a fox, the gene of a panda, the variant of a rabbit and the tame state of a
   horse kind are server states that no specification states yet.
-- **U3**: the swimmers and the flyers wait for their navigation.
+- **U3**: the swimmers and the bat wait for their navigation; the parrot and the bee have the
+  flying navigation of `pathfinding.md`, section 12, whose rules wait for the experiments of 12.8.

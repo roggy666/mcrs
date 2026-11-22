@@ -74,6 +74,12 @@ document states what they compute.
 - **Temporary position**: the point `(x, floor(y + 0.5), z)` of a mob that a navigation on the
   ground uses for its checks (PATH-FOL-001).
 - **Navigating mob**: a mob whose navigation has a path that is not done.
+- **Flying navigation**: the navigation of a mob type of PATH-FLY-001. It searches in the air with
+  the fly node evaluator (section 12) and moves the mob with the flying move control.
+- **Accepted node**: in the fly node evaluator, the node at a position whose mob path type has a
+  malus of 0 or more (PATH-FLY-004).
+- **Hovering type**: a flying type that keeps its no-gravity flag while its move control waits
+  (PATH-FLY-001).
 
 ### 0.2 Provenance
 
@@ -104,6 +110,7 @@ Each rule has an ID with the prefix `PATH`. The second part names the section.
 | `PATH-RCP` | the recompute of a path |
 | `PATH-DET` | determinism and the place in the architecture |
 | `PATH-PRF` | cost and caches |
+| `PATH-FLY` | flight: the fly node evaluator, the flying navigation and the flying move control |
 | `PATH-DEV` | intentional deviations |
 
 ### 0.4 Scope
@@ -289,8 +296,9 @@ The defaults of the flags are false, true, false and false. A goal or a mob type
 zombie with the door break ability has `can_open_doors` true. A zombified piglin has the defaults.
 
 The swim, fly and amphibious evaluators replace PATH-NOD-001 to PATH-NOD-009 and keep the search of
-section 4. An amphibious evaluator also changes the floor level and the `WATER` rules of
-PATH-NOD-005. A later specification states them.
+section 4. Section 12 states the fly evaluator. An amphibious evaluator also changes the floor level
+and the `WATER` rules of PATH-NOD-005. A later specification states the swim and the amphibious
+evaluators.
 
 ### 3.2 The start node
 
@@ -915,6 +923,219 @@ the same list of nodes, bit for bit in each f32 field.
 **PATH-INV-002** (`design`, semantic, confidence: high). Each node of a path is in the search region.
 Each step from one node to the next is a neighbour of PATH-NOD-004.
 
+## 12. Flight
+
+The rules of this section come from a fresh reading of the reference of `26.4-snapshot-7` on
+2026-11-22, with the one-time permission of the owner, in a scratch copy outside the repositories.
+They are `source_suggested` until the experiments of 12.8 run.
+
+### 12.1 Scope and inputs
+
+**PATH-FLY-001** (`source_suggested`, semantic, confidence: medium). A flying navigation belongs to
+the mob types of this table. It uses the block path type of 12.2, the start node of 12.3 and the
+neighbours of 12.4 in place of section 3, the changes of 12.5 to sections 5 and 6, and the flying
+move control of 12.6 in place of section 7. The search of section 4, the recompute of section 8,
+the determinism rules of section 9 and the caches of section 10 apply unchanged.
+
+| Type | `can_float` | `can_open_doors` | Malus rows of PATH-MAL-001 | `flying_speed` | Largest pitch turn | Hovering type |
+|------|-------------|------------------|----------------------------|----------------|--------------------|---------------|
+| `parrot` | true | false | `FIRE_IN_NEIGHBOR` -1, `FIRE` -1, `AVOID_IN_AIR` -1 | 0.4F | 10 | no |
+| `bee` | false | false | `FIRE` -1, `WATER` -1, `WATER_BORDER` 16, `AVOID_IN_AIR` -1, `FENCE` -1 | 0.6F | 20 | yes |
+| `allay` | true | false | none | 0.1F | 20 | yes |
+
+`can_pass_doors` and `can_walk_over_fences` keep the defaults of PATH-NOD-010. The `movement_speed`
+of the three types comes from the attribute base table (`attributes.md`): 0.2F for the parrot, 0.3F
+for the bee and 0.1F for the allay. E-FLY-2 confirms the hovering of the bee: summoned in the air it
+keeps its height between two wanders, and never descends while it waits. The parrot and
+the bee are omnidirectional air movers and the allay is a flier (PHY-ORD-005). The goals of the
+allay are a brain (`mob-brain.md`); this section gives only its navigation. The bat, the vex, the
+phantom and the ghast have no navigation: each moves with a move control of its own, which a later
+specification states.
+
+### 12.2 The block path type for flight
+
+**PATH-FLY-002** (`source_suggested`, semantic, confidence: medium). The fly node evaluator reads
+the block path type at `(x, y, z)` in this way, in place of PATH-TYP-003 steps 2 and 3:
+
+1. Let `t` be the state path type at `(x, y, z)`. If `t` is not `OPEN`, or `y` is the lowest `y` of
+   the dimension, go to step 3 with `t`.
+2. Else let `b` be the state path type at `(x, y - 1, z)`. The value comes from `b`:
+
+   | `b` | Value |
+   |-----|-------|
+   | `FIRE`, `LAVA` | `FIRE` |
+   | `DAMAGING` | `DAMAGING` |
+   | `AVOID_IN_AIR` | `AVOID_IN_AIR` |
+   | `FENCE` | `FENCE`; but `OPEN` when `(x, y - 1, z)` is the mob block position |
+   | `WALKABLE`, `OPEN`, `WATER` | `OPEN` |
+   | each other path type | `WALKABLE` |
+
+3. If the value is `WALKABLE` or `OPEN`, the result is the neighbour check of PATH-TYP-003 step 3,
+   with the value as the result when no visited position matches. Else the result is the value.
+
+Thus the air over water is `OPEN` with the water border check, and the air over a solid block is
+`WALKABLE`. The mob path type of PATH-TYP-004 applies unchanged over this block path type, also in
+its rail rule. The cache of PATH-PRF-002 holds the block path types of one search, so a search of a
+flying mob and a search of a mob on the ground never share them.
+
+### 12.3 The start node
+
+**PATH-FLY-003** (`source_suggested`, semantic, confidence: medium). A position can start when the
+malus of its mob path type is 0 or more; `OPEN` can start, unlike PATH-NOD-001. The start node of
+a flying mob comes from these steps:
+
+1. If the mob can float and is in water: let `sy` be the `y` of the mob block position. While the
+   block at `(bx, sy, bz)` is `water`, add 1 to `sy`. Else `sy = floor(y + 0.5)`.
+2. Let `s = (bx, sy, bz)`, with `bx` and `bz` from the mob block position.
+3. If `s` cannot start, try the candidates below in order. The first candidate that can start is
+   the start position. When no candidate can start, the start position is `s`.
+   - When the box size of the mob, the mean of its three extents, is 1.0 or more: the four positions
+     `(floor(min.x), by, floor(min.z))`, `(floor(min.x), by, floor(max.z))`, `(floor(max.x), by,
+     floor(min.z))`, `(floor(max.x), by, floor(max.z))`, where `by` is the `y` of the mob block
+     position.
+   - Else: 10 random positions in the box of the mob grown on each side by `max(0, 1.1F - e)`, where
+     `e` is the extent of the box on that axis, widened. Let `(x0, y0, z0)` be the floor of the low
+     corner and `(x1, y1, z1)` the floor of the high corner of the grown box. Each position is
+     `(x0 + r(x1 - x0 + 1), y0 + r(y1 - y0 + 1), z0 + r(z1 - z0 + 1))`, where `r(n)` is an integer
+     uniform in `[0, n)`; the three draws are in the order `x`, `y`, `z`, and the ten positions in
+     order. The parrot, the bee and the allay are small: their box sizes are about 0.63, 0.67 and
+     0.48.
+4. The start node has the mob path type of the start position and its malus.
+
+PATH-DEV-011 states the source of the random values of step 3.
+
+### 12.4 Neighbours
+
+**PATH-FLY-004** (`source_suggested`, semantic, confidence: medium). The accepted node `A(p)` of a
+position `p` is: let `k` be the mob path type at `p` and `m` its malus. If `m < 0`, there is no
+accepted node. Else the node at `p` gets the path type `k` and the malus `max(old malus, m)`; when
+`k` is `WALKABLE`, the malus then grows by 1. Each run of `A` for `p` adds that 1 again, so a
+`WALKABLE` node that several expansions reach pays 1 for each of them. This is the reference
+behaviour and this server keeps it. `has(n)` is true when `n` is a node with a malus of 0 or more;
+`open(n)` is true when `n` is a node without the closed mark.
+
+The neighbours of a node at `(x, y, z)` come from these 26 candidates, in this order. The
+evaluator runs `A` for each candidate in this order, also when the candidate is not taken. Let
+`S = (x, y, z + 1)`, `W = (x - 1, y, z)`, `E = (x + 1, y, z)`, `N = (x, y, z - 1)`, `U = (x, y + 1,
+z)` and `D = (x, y - 1, z)`; a sum of names is the position with both offsets.
+
+1. `S`, `W`, `E`, `N`, `U`, `D`: taken when open.
+2. `S+U`, `W+U`, `E+U`, `N+U`: taken when open, `has(side)` and `has(U)`, where `side` is the
+   horizontal part.
+3. `S+D`, `W+D`, `E+D`, `N+D`: taken when open, `has(side)` and `has(D)`.
+4. `N+E`, `S+E`, `N+W`, `S+W`: taken when open and `has` of both sides.
+5. `N+E+U`, `S+E+U`, `N+W+U`, `S+W+U`: taken when open and `has` of the six nodes `N+E` (the
+   horizontal diagonal), `N`, `E` (the two sides), `U`, `N+U` and `E+U`, with the names of the
+   candidate.
+6. `N+E+D`, `S+E+D`, `N+W+D`, `S+W+D`: as step 5, with `D` in place of `U`.
+
+A taken candidate always has a malus of 0 or more, because `A` made it. The search of PATH-SRC-003
+expands the taken candidates in this order. The jump size, the floor level, the fall limit and the
+probe of section 3 do not apply.
+
+### 12.5 Requests and the follower
+
+**PATH-FLY-005** (`source_suggested`, semantic, confidence: medium). For a flying navigation,
+sections 5 and 6 change in these points:
+
+- PATH-REQ-002 does not apply: a block target stays where the request puts it. A request for an
+  entity uses the block position of the entity. The search region is that of PATH-REQ-003.
+- The mob can update a path when it can float and is in a liquid, or when it is not a passenger
+  (PATH-REQ-001 step 2 and PATH-FOL-001 step 3).
+- The temporary position is the position of the mob, not `(x, floor(y + 0.5), z)`.
+- PATH-FOL-001 step 4 becomes: advance the next node when the block position of the mob equals the
+  block position of the point of the next node, on all three axes.
+- PATH-FOL-005: the wanted position is the point of the next node with its own `y`; the ground `y`
+  does not apply.
+- The corner rule of PATH-FOL-002 gets a direct-move test between its conditions 2 and 3: when a ray
+  from the position of the mob to the point of the next node raised by half the height of the mob
+  hits no collision shape of a block for the mob and no fluid, the rule passes. Else conditions 3
+  and 4 decide.
+- The stable destination of the random position searches (GOAL-POS-008): for the parrot and the
+  allay, the top face of the collision shape for the mob of the block below passes the full test
+  (SUP-FACE-001 with the shape `collision`); for the bee, the block below is not air.
+
+PATH-FOL-002 (the close test, with the position), PATH-FOL-003 and PATH-FOL-004 apply unchanged.
+
+### 12.6 The flying move control
+
+**PATH-FLY-006** (`source_suggested_black_box_confirmed`, semantic, confidence: medium). The flying move control has
+the operations `wait` and `move_to` only; it never jumps and never strafes. In each tick, after the
+follower (step 6 of AIT-VAN-001), it does the step of its operation:
+
+- `move_to`:
+  1. Set the operation to `wait`. Set the no-gravity flag of the mob.
+  2. Let `(dx, dy, dz)` be the wanted position minus the position, in f64. If `dx² + dy² + dz²` is
+     less than `2.5000003E-7F`, widened, set the vertical input and the forward input to 0. Stop.
+  3. Turn the yaw as PATH-MOV-002 step 3, by at most 90 degrees.
+  4. Let `s = f32(k × v)`, where `k` is the speed modifier and `v` is the value of `movement_speed`
+     when the on-ground flag is true, else the value of `flying_speed`, in f64. Set the mob speed to
+     `s`; this sets the forward input to `s`.
+  5. Let `h = sqrt(dx² + dz²)`. If `|dy|` or `|h|` is more than `1.0E-5F`, widened: turn the pitch
+     toward `f32(-(atan2(dy, h) × 180.0F / f32(π)))` by at most the largest pitch turn of the type,
+     with the wrap of PATH-MOV-002 step 3; set the vertical input to `s` when `dy > 0`, else to
+     `-s`.
+- `wait`: when the type is not a hovering type, clear the no-gravity flag. Set the vertical input
+  and the forward input to 0.
+
+The look control runs after the move control and sets the pitch to 0 first (GOAL-CTL-004, step 1),
+so the pitch of step 5 is never visible; an implementation can skip the pitch turn. The sideways
+input keeps its decayed value (PATH-MOV-003). A parrot on the ground with the speed modifier 1 sets
+the speed 0.2 and in the air 0.4; a bee in the air sets 0.6.
+
+E-FLY-1 confirms steps 1, 4 and 5 for a parrot that descends toward a stroll point below it: in
+each tick its vertical velocity is `v' = (v - 0.4 × 0.02F) × 0.91F × 0.6` (the vertical input `-s`
+with `s = 0.4`, the air speed `0.02F`, the omnidirectional drag and the descent damping of
+PATH-FLY-009, with the gravity 0), which settles at `-0.00962` with a move of `-0.0176` in each tick;
+the fixture `efly1_parrot_fall.tsv` holds the ticks.
+
+**PATH-FLY-007** (`design`, semantic, confidence: medium). The guidance writes the flying move
+control into the row of `mcrs_minecraft_physics` as PATH-MOV-004 does for a walker, with these
+additions: `Steering::input.vertical` takes the vertical input of PATH-FLY-006, and the no-gravity
+flag of the entity state is written in the same reflex, before `tick_entity` of the row. The travel
+step then uses the gravity 0 while the flag is set (PHY-GRV-011 with `NoGravity`) and the air speed
+`0.02F` of PHY-GRV-010 in the air, so `flying_speed` shapes only the input vector; an input shorter
+than 1 is not normalised. The guidance of a flying mob never sets the jump input.
+
+### 12.7 Rules of the flying types
+
+**PATH-FLY-008** (`source_suggested`, semantic, confidence: medium). The parrot, the bee, the allay
+and the bat do no fall check: the fall action of PHY-FALL-001 step 4 does not run for them, so a
+landing gives no fall damage (they are also in `fall_damage_immune`, DMG-FALL-002 step 1), no fall
+sound and no fall action of the block, and does not reset the fall distance.
+
+**PATH-FLY-009** (`source_suggested_black_box_confirmed`, semantic, confidence: high). After the
+travel step of each tick, a parrot whose on-ground flag is false and whose vertical velocity is less
+than 0 multiplies its vertical velocity by `0.6`, in f64. The parrot is flying when its on-ground
+flag is false; the bee likewise. These flags select the speed of PATH-FLY-006 step 4 only.
+
+E-FLY-1 confirms the factor: a parrot summoned 1 block over the floor with its move control at
+`wait` falls with the vertical velocities `-0.0437`, `-0.0675`, `-0.0806`, `-0.0877`, …, which are
+`(v - 0.08) × 0.91F × 0.6` from `v = 0`, and lands after 12 ticks (`efly1_parrot_stroll_0.tsv`).
+
+### 12.8 Experiments
+
+These experiments ran on 2026-11-22 on the dedicated server of `26.4-snapshot-7` (flat world,
+peaceful, no players, a stone platform at `y = 10`), driven over the console: in each tick the
+driver queried the game time, `Pos`, `Motion` and `OnGround` of the summoned mob. The fixtures are in
+`crates/mcrs_minecraft_goals/tests/fixtures/vanilla/flight/`, one row per game tick.
+
+- **E-FLY-1**: summon a parrot at `y = 21`, 10 blocks over the floor, with no tree; then three
+  parrots at `y = 12`, one at a time, for 160 ticks each. Observed: the parrot at `y = 21` starts a
+  flying stroll at once and descends toward its point with the velocities of PATH-FLY-006 and the
+  damping of PATH-FLY-009 (`efly1_parrot_fall.tsv`); the parrots at `y = 12` fall with the gravity
+  `0.08`, the drag `0.91F` and the damping `0.6`, land in 12 ticks, and sit on the floor with the
+  on-ground velocity `-0.0728` (`efly1_parrot_stroll_*.tsv`); one of them rises to `y = 12.8` in a
+  short stroll. The horizontal speed 0.4 of the stroll in the air is still to measure with a longer
+  flight (U8).
+- **E-FLY-2**: summon a bee at `y = 16`. Observed: the bee keeps `y = 16.0` with the velocity 0 in
+  the ticks between its wanders, flies down to `y ≈ 12.6` and keeps that height again
+  (`efly2_bee_hover.tsv`); it never descends while it waits, as a hovering type.
+- **E-FLY-3**: a parrot beside a small oak tree of logs and leaves. The two runs were too short for
+  a stroll to start (the stroll gate is 1 in 60 for at most 100 ticks after the spawn); to repeat
+  with ten parrots at once (U8).
+- **E-FLY-4**: a bee over a pool of water with land beyond. Not run yet (U8).
+
 ## 13. Intentional deviations
 
 The motion of a mob is visible, so this server keeps each deterministic accident of the reference
@@ -1038,6 +1259,33 @@ only where the reference depends on an order that is not part of the world, or o
 - **Test:** a differential test does not change blocks near a path in the 20 ticks before the path
   ends.
 
+### PATH-DEV-011: The start candidates of a small flying mob come from the issue tick
+
+- **Rule:** PATH-FLY-003, step 3.
+- **Reference:** the reference draws the ten candidate positions from the random source of the mob
+  while the search runs.
+- **Reason:** a search of this server uses no random value (PATH-DET-001). The brain draws the ten
+  positions with its keyed random at the issue tick, in the order of PATH-FLY-003, and the request
+  carries them; the search uses them in that order.
+- **Visible to the client:** no. The distribution of the start node is the same; only the stream
+  that gives the draws differs, as GOAL-DEV-004 states for the goals.
+- **Bug reference:** none.
+- **Test:** a flying search from a position that cannot start takes the first candidate that can
+  start, in the order of the request; two searches with the same request give the same path.
+
+### PATH-DEV-012: The tree position uses the tag `leaves`
+
+- **Rule:** GOAL-FLY-001 (`mob-goals.md`).
+- **Reference:** the tree test of the parrot accepts a leaves block by its block class, and a log by
+  the tag `logs`.
+- **Reason:** this server has no block classes; the tag `leaves` holds the leaves blocks of the
+  game data of `26.4-snapshot-7`.
+- **Visible to the client:** only with a data pack that puts a non-leaves block into `leaves` or
+  takes a leaves block out of it.
+- **Bug reference:** none.
+- **Test:** a parrot beside a tree of `oak_leaves` and `oak_log` lands on it; a parrot beside a tree
+  of a block outside both tags does not.
+
 ### Known vanilla quirks
 
 This server keeps these behaviours of the reference. A test must not report them as defects.
@@ -1063,6 +1311,10 @@ This server keeps these behaviours of the reference. A test must not report them
   tick, which the stage runs before the world writes of the tick (the blocks at the start of the
   tick). This equals the block copy of PHY-CMP-009 while the stage runs inside the tick. When the
   stage runs beside the tick with `max_lag`, the search needs that copy (PATH-DEV-010).
+- **U8**: E-FLY-3 (the tree position of the parrot) and E-FLY-4 (the water border of the bee) of
+  12.8 are still to run, and E-FLY-1 has not measured the horizontal speed of a stroll in the air.
+  The move controls of the bat, the vex, the phantom and the ghast, which have no navigation, are a
+  later specification.
 - **U5**: no rule states the sun rule of a ground navigation. A mob that avoids the sun, and that is
   not under the open sky, cuts its path before the first node under the open sky. The reference
   applies this rule at each request, as it does the cauldron rule (PATH-DEV-007). A goal sets the

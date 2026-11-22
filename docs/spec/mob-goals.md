@@ -158,6 +158,7 @@ Each rule has an ID with the prefix `GOAL`. The second part names the section.
 | `GOAL-TMP` | tempt |
 | `GOAL-FOL` | follow an adult |
 | `GOAL-STR` | random stroll that avoids water |
+| `GOAL-FLY` | the flying stroll of the parrot and the wander of the bee |
 | `GOAL-LKP` | look at a player |
 | `GOAL-LKR` | random look around |
 | `GOAL-EAT` | eat grass |
@@ -618,6 +619,53 @@ is above `grass_block`. Only a candidate on top of a fence or a wall can have th
 value 0.5. The search also needs the solid render property and the solid value of each state
 of the world (SUP-SOLID-001). For the benchmark these are `air`, `bedrock`, `dirt`,
 `grass_block` and the block of the pen.
+
+**GOAL-POS-007** (`source_suggested`, semantic, confidence: medium, fidelity: distribution). The
+directional draw `R(h0, h, v, f, d, a)` gives an offset toward a horizontal direction `d = (dx,
+dz)`. It does these steps:
+
+1. Let `c = atan2(dz, dx) - f32(π / 2)`, in f64. Draw `u`, an f32 uniform in `[0, 1)`. Let `θ = c +
+   f32(2.0F × u - 1.0F) × a`, where `a` is the largest angle from `d`, in radians.
+2. Draw `w`, an f64 uniform in `[0, 1)`. Let `r = lerp(sqrt(w), h0, h) × f32(√2)`.
+3. Let `ox = -r × sin(θ)` and `oz = r × cos(θ)`. If `|ox| > h` or `|oz| > h`, the draw gives no
+   offset.
+4. Draw `b`, an integer uniform in `[-v, v]`. The offset is the block position of `(ox, b + f, oz)`.
+
+The draws are in this order and independent. The flying searches below use `h0 = 0` and `a = π / 2`
+as an f32. `d` is the view vector of the mob at the start of the tick, from its yaw and its pitch,
+unless the rule names another direction.
+
+**GOAL-POS-008** (`source_suggested`, semantic, confidence: medium, fidelity: distribution). The
+hover search `H(h, v, d, kmin, kmax)` makes 10 tries. Each try does these steps:
+
+1. Take the offset of `R(0, h, v, 0, d, π / 2)`. With no offset, the try fails.
+2. Move the offset toward the home as GOAL-POS-002 step 2 does, with the same conditions. The
+   candidate is the block position of the feet point plus the offset.
+3. Reject the candidate when its `y` is outside the build height, when it fails the home test
+   (GOAL-POS-001), or when it is not a stable destination of the navigation of the mob
+   (PATH-FLY-005).
+4. If the block at the candidate is solid (SUP-SOLID-001): move the candidate up while its block is
+   solid and its `y` is not more than the highest `y`. Let `y0` be its `y` then. Draw `k`, an
+   integer uniform in `[kmin, kmax]`. While `y - y0 < k` and `y` is not more than the highest `y`,
+   move up by 1; when the new block is solid, move back down by 1 and stop. A candidate whose block
+   is not solid stays where it is, and the try draws no `k`.
+5. Reject the candidate when its block has water, or when the malus for this mob of its block path
+   type on the ground (PATH-TYP-003, not PATH-FLY-002) is not 0.
+
+The selection of the result is that of GOAL-POS-002.
+
+**GOAL-POS-009** (`source_suggested`, semantic, confidence: medium, fidelity: distribution). The
+air search `A(h, v, f, d)` makes 10 tries. Each try does these steps:
+
+1. Take the offset of `R(0, h, v, f, d, π / 2)`. With no offset, the try fails.
+2. The candidate is as in GOAL-POS-008 step 2.
+3. Reject the candidate when its `y` is outside the build height or when it fails the home test.
+4. While the block at the candidate is solid and its `y` is not more than the highest `y`, move up
+   by 1.
+5. Reject the candidate when the malus for this mob of its block path type on the ground is not 0.
+   Water does not reject it.
+
+The selection of the result is that of GOAL-POS-002.
 
 ## 4. The goals
 
@@ -1285,6 +1333,45 @@ these effects on each pig:
   server log.
 
 With an interval of 80 ticks, each pig stays in phase 1 of GOAL-WAKE-019.
+
+### 4.11 The flying stroll and the wander
+
+**GOAL-FLY-001** (`source_suggested`, semantic, confidence: medium, fidelity: distribution). The
+flying stroll of the parrot holds the flag `move` and has the speed modifier 1.0. Its start
+condition, its continue condition and its stop action are those of GOAL-STR-001. Its destination
+comes from these steps:
+
+1. If the mob is in water, let `p` be the result of `L(15, 15)`. Else `p` is none.
+2. Draw `u`, an f32 uniform in `[0, 1)`. If `u ≥ 0.001F`, `p` becomes the tree position, also when
+   step 1 gave a result and also when there is no tree position.
+3. If `p` is none: `p` is the result of `H(8, 7, d, 1, 3)`, and when that search has no result, the
+   result of `A(8, 4, -2, d)`. `d` is the view vector of the mob.
+
+The tree position is the first position `q` of the box from `(floor(x - 3), floor(y - 6), floor(z -
+3))` to `(floor(x + 3), floor(y + 6), floor(z + 3))`, visited with `x` first, then `y`, then `z`,
+each from the lowest, that is not the mob block position and where the block below `q` is in the tag
+`leaves` (PATH-DEV-012) or in the tag `logs`, the block at `q` is air and the block above `q` is
+air. The position is the bottom centre of `q`. When no position passes, there is no tree position.
+
+Thus a parrot in a biome with trees almost always flies to a tree, and a parrot with no tree within
+3 blocks hovers 1 to 3 blocks over the ground within 8 blocks.
+
+**GOAL-FLY-002** (`source_suggested`, semantic, confidence: medium, fidelity: distribution). The
+wander of the bee holds the flag `move`.
+
+- Start condition: the navigation has no path that is not done, and a random integer uniform in
+  `[0, 10)` is 0. The idle time does not matter.
+- Start action: let `d` be the direction from the feet point to the centre of the hive when the bee
+  has a valid hive and is farther from it than its wander threshold (a hook of the hive
+  specification); else the view vector of the bee. The destination is the result of `H(8, 7, d, 1,
+  3)`, and when that search has no result, the result of `A(8, 4, -2, d)`. With a destination,
+  request a path to its block position with the reach range 1 and the speed modifier 1.0
+  (GOAL-NAV-001). Without one, the goal starts and does nothing.
+- Continue condition: the navigation has a path that is not done.
+- Stop action: none.
+
+The wander is an evaluation goal; GOAL-WAKE-002 applies to it with the draw of the start condition
+as its gate. The navigation of the bee does not run while the bee pollinates (a hook).
 
 ## 5. The animals
 
