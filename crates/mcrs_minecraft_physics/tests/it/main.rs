@@ -3,6 +3,7 @@ mod entity;
 mod invariants;
 mod kernel;
 mod player;
+mod projectile;
 mod push;
 mod recorded_player;
 mod select_pose;

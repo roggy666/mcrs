@@ -4,6 +4,14 @@ use crate::StuckIgnore;
 use mcrs_minecraft_pose::Dimensions;
 
 const LIFETIME: u32 = 6000;
+const ARROW_LIFETIME: u32 = 24_000;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ProjectileRow {
+    pub air_drag: f32,
+    pub water_drag: f32,
+    pub gravity_first: bool,
+}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MotionRow {
@@ -16,6 +24,7 @@ pub struct MotionRow {
     pub block_bounce_factor: f32,
     pub step_height: f64,
     pub lifetime: Option<u32>,
+    pub projectile: Option<ProjectileRow>,
 }
 
 impl MotionRow {
@@ -31,6 +40,7 @@ impl MotionRow {
             block_bounce_factor: 1.0,
             step_height: 0.6,
             lifetime: None,
+            projectile: None,
         }
     }
 
@@ -46,6 +56,7 @@ impl MotionRow {
             block_bounce_factor: 0.8,
             step_height: 0.0,
             lifetime: None,
+            projectile: None,
         }
     }
 
@@ -108,6 +119,40 @@ impl MotionRow {
             ..Self::other(
                 Category::ExperienceOrb,
                 Dimensions::scalable(0.5, 0.5),
+                0.03,
+            )
+        }
+    }
+
+    #[must_use]
+    pub fn arrow() -> Self {
+        Self {
+            lifetime: Some(ARROW_LIFETIME),
+            projectile: Some(ProjectileRow {
+                air_drag: 0.99,
+                water_drag: 0.6,
+                gravity_first: false,
+            }),
+            ..Self::other(
+                Category::Projectile,
+                Dimensions::scalable(0.5, 0.5).with_eye_height(0.13),
+                0.05,
+            )
+        }
+    }
+
+    #[must_use]
+    pub fn snowball() -> Self {
+        Self {
+            lifetime: Some(LIFETIME),
+            projectile: Some(ProjectileRow {
+                air_drag: 0.99,
+                water_drag: 0.8,
+                gravity_first: true,
+            }),
+            ..Self::other(
+                Category::Projectile,
+                Dimensions::scalable(0.25, 0.25).with_eye_height(0.2125),
                 0.03,
             )
         }

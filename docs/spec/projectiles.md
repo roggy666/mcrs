@@ -620,9 +620,56 @@ An unknown value of `pickup` is read as 0. The save also keeps the fields `Motio
     use and the release packet. A boundary at the tick of the packet can differ by one tick.
    
 
+
+## 12. Launch by a mob
+
+A mob with a ranged attack action (`mob-combat-goals.md`, CGOAL-RANGED-002, step 4) launches a
+projectile through the rules of this section. The rules carry the provenance `documentation`
+(the public documentation of the game) or `design` (a decision for this server).
+
+**PRJ-MOB-001** (`documentation`, semantic, confidence: medium). The attack action of a `skeleton`,
+a `stray`, a `bogged`, a `parched` and a `pillager` launches an arrow. The attack action of a
+`snow_golem` launches a snowball. The other types with a ranged goal launch nothing until their
+projectile type exists (section 0.4).
+
+**PRJ-MOB-002** (`documentation`, semantic, confidence: medium). The projectile starts at the
+position of PRJ-LCH-006 of the mob. The aim point of an arrow is the position of the target plus
+one third of its height. The aim point of a snowball is the eye position of the target minus 1.1.
+Let `d` be the vector from the start to the aim point, and `h` the horizontal length of `d`. The
+launch direction is `d` with `0.2 × h` added to its `y` component. The launch applies PRJ-LCH-003
+with the speed 1.6, the inaccuracy 6 for an arrow and 12 for a snowball, and no motion of the
+shooter. The random values come from the keyed stream of the shooter and the tick.
+
+**PRJ-MOB-003** (`design`, semantic, confidence: medium). A mob arrow is not critical, has the
+base damage 2.0, and has the pickup status `disallowed` (PRJ-PCK-002, case 3). The owner of the
+projectile is the mob: the `data` field of the spawn bundle (PRJ-NET-001) carries its network id,
+and the damage source names the mob as the causing entity (PRJ-ENT-001).
+
+**PRJ-MOB-004** (`design`, semantic, confidence: medium). The server does the hit test of
+section 3 after the motion pass of the tick, over the segment that the motion pass gave the
+projectile. The candidates come from the body index of the tiles that the segment crosses,
+made larger by the margin and 1 block. A hit on a player applies once the player entity carries
+its vitals. The knockback of PRJ-ENT-007 and the sounds of PRJ-NET-008 wait for their
+pipelines; the rotation of a projectile in flight is the rotation of its launch.
+
+Experiments: **E12** a skeleton with a target in sight shoots an arrow that leaves its position
+with the speed 1.6 (test `prj_mob_001_a_skeleton_shoots_an_arrow_at_its_target`); **E13** an
+arrow launched at a pig lowers its health by the amount of PRJ-ENT-002 and goes away (test
+`prj_ent_002_an_arrow_hits_a_pig_for_the_amount_of_its_speed`); **E14** an arrow launched at a
+stone wall stops before the wall and stays (test
+`prj_blk_001_an_arrow_stops_in_a_wall_and_stays`).
+
 ## 13. Intentional deviations
 
-None. The owner has not decided to keep a defect of the reference for this domain.
+### PRJ-DEV-001: Water and bubble columns do not act on a projectile
+
+- **Rule**: PRJ-FLT-001 step 3, PRJ-FLT-003, PRJ-FLT-004.
+- **Reference**: the water drag, the bubble column push and the fire clearing of a projectile.
+- **Reason**: the motion pass has no water state for a lifeless entity yet; the server uses the
+  air drag in water. The owner accepts this until the fluid rules of lifeless entities exist.
+- **Visible to the client**: yes, an arrow in water flies as in air.
+- **Bug reference**: none.
+- **Test**: none; a differential test reports the difference.
 
 ## 14. Relation to other documents
 

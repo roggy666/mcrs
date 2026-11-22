@@ -66,6 +66,7 @@ mcrs_minecraft_vanilla_falling_block.workspace = true
 mcrs_minecraft_inventory_server.workspace = true
 mcrs_minecraft_vanilla_inventory.workspace = true
 mcrs_minecraft_vanilla_item_entity.workspace = true
+mcrs_minecraft_vanilla_projectile.workspace = true
 mcrs_minecraft_vanilla_light.workspace = true
 mcrs_minecraft_vanilla_swing.workspace = true
 mcrs_minecraft_vanilla_redstone.workspace = true
@@ -83,6 +84,7 @@ bevy_asset = { workspace = true, features = ["multi_threaded"] }
 
 [dev-dependencies]
 anyhow.workspace = true
+mcrs_minecraft_damage = { workspace = true, features = ["bevy"] }
 libc.workspace = true
 tracing-subscriber.workspace = true
 mcrs_minecraft_container_click.workspace = true

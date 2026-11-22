@@ -31,6 +31,7 @@ use crate::move_body::offset_block;
 use crate::open_air;
 use crate::query;
 use crate::rest::same_bits;
+use crate::sight_ray::segment_clip;
 use crate::support::MOVEMENT_OFFSET;
 use crate::tolerance::CLIP;
 use crate::tolerance::COLLISION;
@@ -71,6 +72,7 @@ pub fn tick_entity<W: CollisionWorld, B: BodyView>(
         Category::Item | Category::FallingBlock | Category::PrimedTnt | Category::ExperienceOrb => {
             tick_other(view, side, row, entity, actions, scratch)
         }
+        Category::Projectile => tick_projectile(view, row, entity, wake),
     };
     if cycle {
         let quiet = actions.len() == first_action
@@ -392,7 +394,78 @@ fn drag_and_ground_rule<W: CollisionWorld, B: BodyView>(
             }
         }
         Category::FallingBlock => body.velocity *= drag,
-        Category::Walker | Category::Omnidirectional => {}
+        Category::Walker | Category::Omnidirectional | Category::Projectile => {}
+    }
+}
+
+const BLOCK_HIT_BACK_OFF: f32 = 0.05;
+
+fn tick_projectile<W: CollisionWorld, B: BodyView>(
+    view: View<'_, W, B>,
+    row: &MotionRow,
+    entity: &mut EntityState,
+    wake: bool,
+) -> TickOutcome {
+    let Some(rule) = row.projectile else {
+        return TickOutcome::default();
+    };
+    let table = &view.tables.collision;
+    let gravity = if entity.no_gravity { 0.0 } else { row.gravity };
+    let drag = f64::from(rule.air_drag);
+    let body = &mut entity.body;
+    let start = body.position;
+    let mut outcome = TickOutcome::default();
+    if segment_clip(view.world, table, start, start).is_some() {
+        body.velocity = DVec3::ZERO;
+        outcome.stuck_in_block = true;
+        entity.last_path = MovePath { start, end: start };
+        return outcome;
+    }
+    if body.velocity == DVec3::ZERO && !wake {
+        entity.last_path = MovePath { start, end: start };
+        return outcome;
+    }
+    if rule.gravity_first {
+        body.velocity.y -= gravity;
+        body.velocity *= drag;
+    }
+    let velocity = body.velocity;
+    let end = start + velocity;
+    match segment_clip(view.world, table, start, end) {
+        Some(entry) => {
+            let hit = start + velocity * entry;
+            let back_off = f64::from(BLOCK_HIT_BACK_OFF);
+            body.position = hit
+                - DVec3::new(
+                    back_off * sign_of(velocity.x),
+                    back_off * sign_of(velocity.y),
+                    back_off * sign_of(velocity.z),
+                );
+            body.velocity = DVec3::ZERO;
+            outcome.landed = true;
+        }
+        None => {
+            body.position = end;
+            if !rule.gravity_first {
+                body.velocity *= drag;
+                body.velocity.y -= gravity;
+            }
+        }
+    }
+    entity.last_path = MovePath {
+        start,
+        end: body.position,
+    };
+    outcome
+}
+
+fn sign_of(value: f64) -> f64 {
+    if value > 0.0 {
+        1.0
+    } else if value < 0.0 {
+        -1.0
+    } else {
+        0.0
     }
 }
 

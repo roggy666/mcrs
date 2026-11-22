@@ -24,6 +24,7 @@ use mcrs_minecraft_engine_world::world::sub_app::AddDimensionPlugins;
 use mcrs_minecraft_entity::damage_type_tag_keys::PANIC_CAUSES;
 use mcrs_minecraft_vanilla_attributes::{CreativeRangePlugin, SprintAttributePlugin};
 use mcrs_minecraft_vanilla_block_place::{BlockPlacePlugin, SpawnEggPlugin};
+use mcrs_minecraft_vanilla_projectile::ProjectilePlugin;
 use mcrs_minecraft_vanilla_inventory::InventoryPersistencePlugin;
 use mcrs_minecraft_vanilla_light::LightingPlugin;
 
@@ -89,6 +90,7 @@ impl PluginGroup for MinecraftServerPlugins {
             .add(VanillaFallingBlockPlugin)
             .add(VanillaBlocksPlugin::default())
             .add(VanillaMobBrainPlugin)
+            .add(VanillaProjectilePlugin)
             .add(VanillaItemPlugin)
             .add(VanillaBlockPlacePlugin)
             .add(VanillaSwingPlugin)
@@ -161,6 +163,14 @@ impl Plugin for VanillaItemPlugin {
     fn build(&self, app: &mut App) {
         app.add_persistence_plugin(ItemPersistencePlugin)
             .add_persistence_plugin(InventoryPersistencePlugin);
+    }
+}
+
+pub struct VanillaProjectilePlugin;
+
+impl Plugin for VanillaProjectilePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_dimension_plugin(ProjectilePlugin);
     }
 }
 

@@ -17,6 +17,16 @@ pub fn sight_clear<W: CollisionWorld>(
     from: DVec3,
     to: DVec3,
 ) -> bool {
+    segment_clip(world, table, from, to).is_none()
+}
+
+#[must_use]
+pub fn segment_clip<W: CollisionWorld>(
+    world: &W,
+    table: &CollisionTable,
+    from: DVec3,
+    to: DVec3,
+) -> Option<f64> {
     let start = from;
     let delta = to - start;
     let mut cell = start.floor().as_ivec3();
@@ -53,11 +63,17 @@ pub fn sight_clear<W: CollisionWorld>(
             }
         };
         let relative = start - cell.as_dvec3();
-        if table
-            .shape_without_context(class)
-            .is_some_and(|shape| shape.any_box(|min, max| segment_hits(relative, delta, min, max)))
-        {
-            return false;
+        let mut nearest: Option<f64> = None;
+        if let Some(shape) = table.shape_without_context(class) {
+            shape.any_box(|min, max| {
+                if let Some(entry) = segment_entry(relative, delta, min, max) {
+                    nearest = Some(nearest.map_or(entry, |near: f64| near.min(entry)));
+                }
+                false
+            });
+        }
+        if nearest.is_some() {
+            return nearest;
         }
         if cell == last {
             break;
@@ -73,7 +89,7 @@ pub fn sight_clear<W: CollisionWorld>(
             next.z += inverse.z;
         }
     }
-    true
+    None
 }
 
 fn sign(value: f64) -> i32 {
@@ -86,7 +102,12 @@ fn sign(value: f64) -> i32 {
     }
 }
 
-fn segment_hits(start: DVec3, delta: DVec3, min: DVec3, max: DVec3) -> bool {
+#[must_use]
+pub fn segment_meets(start: DVec3, delta: DVec3, min: DVec3, max: DVec3) -> Option<f64> {
+    segment_entry(start, delta, min, max)
+}
+
+fn segment_entry(start: DVec3, delta: DVec3, min: DVec3, max: DVec3) -> Option<f64> {
     let mut near = 0.0_f64;
     let mut far = 1.0_f64;
     for ((start, delta), (min, max)) in start
@@ -97,7 +118,7 @@ fn segment_hits(start: DVec3, delta: DVec3, min: DVec3, max: DVec3) -> bool {
     {
         if delta == 0.0 {
             if start < min || start > max {
-                return false;
+                return None;
             }
             continue;
         }
@@ -106,8 +127,8 @@ fn segment_hits(start: DVec3, delta: DVec3, min: DVec3, max: DVec3) -> bool {
         near = near.max(low.min(high));
         far = far.min(low.max(high));
         if near > far {
-            return false;
+            return None;
         }
     }
-    true
+    Some(near)
 }

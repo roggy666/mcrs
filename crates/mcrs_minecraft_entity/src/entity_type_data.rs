@@ -940,6 +940,30 @@ impl EntityTypeData {
         ..MOB_DEFAULTS
     };
 
+    pub const ARROW: Self = Self {
+        entity_type: EntityType::Arrow,
+        width: 0.5,
+        height: 0.5,
+        eye_height: 0.13,
+        tracking_range: 4,
+        update_interval: 20,
+        client_motion: ClientMotion::Simulated(PreciseSync::LostPrecision),
+        life: Life::Lifeless,
+        ..MOB_DEFAULTS
+    };
+
+    pub const SNOWBALL: Self = Self {
+        entity_type: EntityType::Snowball,
+        width: 0.25,
+        height: 0.25,
+        eye_height: 0.2125,
+        tracking_range: 4,
+        update_interval: 10,
+        client_motion: ClientMotion::Simulated(PreciseSync::LostPrecision),
+        life: Life::Lifeless,
+        ..MOB_DEFAULTS
+    };
+
     pub const ITEM: Self = Self {
         entity_type: EntityType::Item,
         width: 0.25,

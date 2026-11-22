@@ -6960,6 +6960,7 @@ dependencies = [
  "mcrs_minecraft_command_world",
  "mcrs_minecraft_container_click",
  "mcrs_minecraft_core",
+ "mcrs_minecraft_damage",
  "mcrs_minecraft_datapack",
  "mcrs_minecraft_dimension",
  "mcrs_minecraft_dimension_environment",
@@ -7025,6 +7026,7 @@ dependencies = [
  "mcrs_minecraft_vanilla_item_entity",
  "mcrs_minecraft_vanilla_light",
  "mcrs_minecraft_vanilla_mobs",
+ "mcrs_minecraft_vanilla_projectile",
  "mcrs_minecraft_vanilla_redstone",
  "mcrs_minecraft_vanilla_swing",
  "mcrs_minecraft_vanilla_worldgen",
@@ -7401,6 +7403,30 @@ dependencies = [
  "mcrs_minecraft_vanilla_mobs",
  "mcrs_voxel",
  "rayon",
+]
+
+[[package]]
+name = "mcrs_minecraft_vanilla_projectile"
+version = "0.5.8"
+dependencies = [
+ "bevy_app",
+ "bevy_ecs",
+ "glam",
+ "mcrs_minecraft_damage",
+ "mcrs_minecraft_engine",
+ "mcrs_minecraft_engine_brain",
+ "mcrs_minecraft_engine_damage",
+ "mcrs_minecraft_engine_entity_motion",
+ "mcrs_minecraft_engine_entity_motion_replication",
+ "mcrs_minecraft_engine_physics",
+ "mcrs_minecraft_engine_world",
+ "mcrs_minecraft_entity",
+ "mcrs_minecraft_entity_key",
+ "mcrs_minecraft_physics",
+ "mcrs_minecraft_registries",
+ "mcrs_minecraft_replication",
+ "mcrs_minecraft_resource",
+ "tracing",
 ]
 
 [[package]]

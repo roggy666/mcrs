@@ -6,6 +6,7 @@ pub enum Category {
     FallingBlock,
     PrimedTnt,
     ExperienceOrb,
+    Projectile,
 }
 
 impl Category {

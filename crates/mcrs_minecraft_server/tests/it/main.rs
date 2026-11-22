@@ -61,6 +61,7 @@ mod play_state_delivery;
 mod player_file;
 mod player_pose;
 mod probe_bans;
+mod projectile;
 mod proxy_forwarding;
 mod redstone;
 mod run_server_loop_exit;
