@@ -1,5 +1,5 @@
+use mcrs_minecraft_volume::PaletteBuffer;
 use mcrs_minecraft_volume::SectionBlocks;
-use mcrs_voxel::BlockStateId;
 use mcrs_voxel::LocalPos;
 use mcrs_voxel::SectionPos;
 
@@ -85,13 +85,42 @@ impl NavSection {
         if let Some(state) = section.uniform() {
             return Self::Uniform(table.of_state(state));
         }
-        let mut states = Box::new([BlockStateId::AIR; SectionPos::VOLUME]);
-        section.copy_to(&mut states);
-        let mut cells = Box::new([NavId::AIR; SectionPos::VOLUME]);
-        for (cell, state) in cells.iter_mut().zip(states.iter()) {
-            *cell = table.of_state(*state);
+        let mut buffer = PaletteBuffer::default();
+        let mut distinct: Vec<NavId> = Vec::with_capacity(PALETTE + 1);
+        for (state, _) in section.palette(&mut buffer).iter() {
+            let nav = table.of_state(state);
+            if !distinct.contains(&nav) {
+                distinct.push(nav);
+                if distinct.len() > PALETTE {
+                    break;
+                }
+            }
         }
-        Self::from_cells(cells)
+        match distinct.as_slice() {
+            [] => Self::Uniform(NavId::AIR),
+            [only] => Self::Uniform(*only),
+            few if few.len() <= PALETTE => {
+                let mut packed = Packed::of(NavId::AIR);
+                packed.len = 0;
+                for &nav in few {
+                    packed.push(nav);
+                }
+                section.for_each(|at, state| {
+                    let entry = packed.entry_of(table.of_state(state)).unwrap_or(0);
+                    packed.write(at.index(), entry);
+                });
+                Self::Packed(Box::new(packed))
+            }
+            _ => {
+                let mut wide = Box::new([NavId::AIR; SectionPos::VOLUME]);
+                section.for_each(|at, state| {
+                    if let Some(cell) = wide.get_mut(at.index()) {
+                        *cell = table.of_state(state);
+                    }
+                });
+                Self::Wide(wide)
+            }
+        }
     }
 
     #[must_use]
@@ -229,6 +258,16 @@ mod tests {
             section.get(LocalPos::new(5, 6, 7)),
             table.of_state(state(3))
         );
+    }
+
+    #[test]
+    fn states_of_one_row_collapse_to_a_uniform_section() {
+        use crate::NavRow;
+        let table = NavTable::from_rows((0..4u16).map(|number| (state(number), NavRow::AIR)));
+        let cells = pattern(4);
+        let section = NavSection::of(&cells, &table);
+        assert!(section.is_uniform(), "four states, one row");
+        assert_eq!(section.get(LocalPos::new(3, 3, 3)), NavId::AIR);
     }
 
     #[test]
