@@ -90,6 +90,8 @@ pub fn collision_table(definitions: &BlockDefinitions, tags: &Tags<Block>) -> Co
             flags |= BlockFlags::FLUID | BlockFlags::COARSE_NEAR;
             if fluid.fluid == Fluid::Water.id() {
                 flags |= BlockFlags::WATER;
+            } else if fluid.fluid == Fluid::Lava.id() {
+                flags |= BlockFlags::LAVA;
             }
         }
         if state.flags.contains(BlockStateFlags::IS_SOLID_RENDER) {

@@ -156,7 +156,7 @@ sun-sensitive types are the `zombie`, the `zombie_villager`, the `drowned`, the 
 not. In each tick in which a sun-sensitive mob is in the sun, it ignites for 8 seconds
 (`environment-damage.md`, ENV-FIR-003) with the chance `(b − 0.4) × 2 / 30` when `b > 0.5`, where
 `b` is the sun brightness of the dimension: `1 − d / 11` for the sky darkening `d` of MON-SUN-005.
-The draw comes from the keyed stream of the mob and the tick. The reference lets a helmet take the
+The draw comes from the keyed stream of the mob and the game tick. The reference lets a helmet take the
 burn instead of the mob; the mobs of this server wear no equipment, so the mob burns (hook: the
 equipment of mobs). The burn is the hit sequence of ENV-FIR-002: one `on_fire` hit of 1.0 in the
 tick after the ignition and every 20 ticks while it burns; a mob that stays in the sun re-ignites

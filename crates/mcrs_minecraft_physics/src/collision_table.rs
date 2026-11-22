@@ -47,9 +47,13 @@ impl StateCollision {
     #[must_use]
     pub fn acts_inside(&self) -> bool {
         self.inside != InsideEffect::None
-            || self
-                .flags
-                .intersects(BlockFlags::INSIDE_ACTION | BlockFlags::FALL_DAMAGE_RESETTING)
+            || self.flags.intersects(
+                BlockFlags::INSIDE_ACTION
+                    | BlockFlags::FALL_DAMAGE_RESETTING
+                    | BlockFlags::FLUID
+                    | BlockFlags::FIRE
+                    | BlockFlags::SOUL_FIRE,
+            )
     }
 
     #[must_use]

@@ -7,6 +7,7 @@ use crate::BlockFlags;
 use crate::Body;
 use crate::BodyView;
 use crate::CollisionWorld;
+use crate::Contact;
 use crate::InsideEffect;
 use crate::InsideShape;
 use crate::Living;
@@ -46,7 +47,7 @@ pub(crate) fn apply<W: CollisionWorld, B: BodyView>(
     body: &mut Body,
     living: Option<&mut Living>,
     actions: &mut Vec<BlockAction>,
-) {
+) -> Contact {
     let table = &view.tables.collision;
     let mover = context.mover;
     if body.flags.on_ground {
@@ -62,13 +63,14 @@ pub(crate) fn apply<W: CollisionWorld, B: BodyView>(
             body.velocity.z *= factor;
         }
     }
-    let touched_powder_snow = inside_blocks(view, context, body, actions);
+    let (touched_powder_snow, contact) = inside_blocks(view, context, body, actions);
     if let Some(living) = living {
         living.in_powder_snow = touched_powder_snow;
     }
     if context.updates_fall {
         fall_distance(view, context, body, actions);
     }
+    contact
 }
 
 fn inside_blocks<W: CollisionWorld, B: BodyView>(
@@ -76,7 +78,7 @@ fn inside_blocks<W: CollisionWorld, B: BodyView>(
     context: &EffectContext<'_>,
     body: &mut Body,
     actions: &mut Vec<BlockAction>,
-) -> bool {
+) -> (bool, Contact) {
     let table = &view.tables.collision;
     let mover = context.mover;
     let from = Aabb::of_body(context.path.start, mover.width, mover.height).deflate(CLIP);
@@ -85,10 +87,11 @@ fn inside_blocks<W: CollisionWorld, B: BodyView>(
     let low = from.min.min(to.min);
     let high = from.max.max(to.max);
     let mut touched_powder_snow = false;
+    let mut contact = Contact::empty();
     let [x0, y0, z0] = low.to_array().map(floor_block);
     let [x1, y1, z1] = high.to_array().map(floor_block);
     if !any_section(view.world, [x0, y0, z0], [x1, y1, z1], |masks| masks.inside) {
-        return false;
+        return (false, contact);
     }
     for z in z0..=z1 {
         for y in y0..=y1 {
@@ -120,11 +123,12 @@ fn inside_blocks<W: CollisionWorld, B: BodyView>(
                 if block.inside == InsideEffect::PowderSnow {
                     touched_powder_snow = true;
                 }
+                contact |= Contact::of_block(block.flags);
                 inside_effect(view, context, body, block.inside, at);
             }
         }
     }
-    touched_powder_snow
+    (touched_powder_snow, contact)
 }
 
 fn inside_boxes<'t, W: CollisionWorld, B: BodyView>(

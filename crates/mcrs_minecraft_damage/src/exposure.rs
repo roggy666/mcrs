@@ -7,6 +7,9 @@ pub struct Exposure {
     pub in_sun: bool,
     pub in_water: bool,
     pub in_rain: bool,
+    pub in_lava: bool,
+    pub in_fire: bool,
+    pub in_soul_fire: bool,
 }
 
 impl Exposure {

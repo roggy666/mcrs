@@ -435,7 +435,7 @@ impl Default for PlayerFileState {
         Self {
             motion: [0.0; 3],
             fall_distance: 0.0,
-            fire: 0,
+            fire: -20,
             air: 300,
             on_ground: false,
             invulnerable: false,

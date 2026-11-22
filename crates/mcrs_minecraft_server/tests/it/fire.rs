@@ -6,12 +6,14 @@ use mcrs_minecraft_command_engine::CommandPlugin;
 use mcrs_minecraft_command_vanilla::{VanillaCommands, VanillaCommandsPlugin};
 use mcrs_minecraft_damage::{Exposure, Fire, Vitals};
 use mcrs_minecraft_dimension_environment::dimension_type::DimensionTypeFile;
+use mcrs_minecraft_engine::coordinator::clock::WorldClockHostPlugin;
 use mcrs_minecraft_engine_world::block_update::BlockSetRequest;
+use mcrs_minecraft_engine_world::entity::physics::Transform;
 use mcrs_minecraft_engine_world::world::dimension::Dimension;
 use mcrs_minecraft_engine_world::world::dimension::DimensionTypeId;
 use mcrs_minecraft_engine_world::world::storage::column::ColumnIndex;
 use mcrs_minecraft_engine_world::world::storage::section::SectionIndex;
-use mcrs_minecraft_environment::{ClockTime, WorldClocks};
+use mcrs_minecraft_environment::{AdvanceTime, ClockTime, WorldClockPlugin, WorldClocks};
 use mcrs_minecraft_heightmap::MotionHeightmap;
 use mcrs_minecraft_protocol::Bounded;
 use mcrs_minecraft_protocol::uuid::Uuid;
@@ -43,6 +45,9 @@ fn start() -> (PlayServer, Entity) {
     app.add_plugins(VanillaEntityAttributesPlugin);
     app.add_plugins(VanillaMobBrainPlugin);
     app.add_plugins(VanillaFirePlugin);
+    app.insert_resource(AdvanceTime(false));
+    app.add_plugins(WorldClockPlugin);
+    app.add_plugins(WorldClockHostPlugin);
     let mut server = PlayServer::start(app, &[(OPERATOR, 2)], 0);
     load_stone_column(&mut server);
     light_the_sky(&mut server);
@@ -84,9 +89,13 @@ fn run(server: &mut PlayServer, operator: Entity, line: &str) {
 }
 
 fn set_stone(server: &mut PlayServer, pos: BlockPos) {
+    set_block(server, pos, "minecraft:stone");
+}
+
+fn set_block(server: &mut PlayServer, pos: BlockPos, name: &str) {
     let stone = crate::support::standalone_corpus()
         .0
-        .default_state("minecraft:stone")
+        .default_state(name)
         .unwrap();
     let world = server.world();
     let dimension = world
@@ -253,5 +262,64 @@ fn env_fir_002_an_ignited_zombie_takes_eight_hits_and_burns_out_under_a_roof() {
         health(&mut server, zombie),
         ZOMBIE_HEALTH - 8.0,
         "eight on_fire hits of 1.0 land"
+    );
+}
+
+#[test]
+fn env_fir_004_a_zombie_in_a_fire_block_ignites_and_takes_in_fire_hits() {
+    let (mut server, operator) = start();
+    roof_over(&mut server, BlockPos::new(4, 68, 4));
+    let zombie = summon(&mut server, operator, "zombie");
+    set_block(&mut server, BlockPos::new(4, 64, 4), "minecraft:fire");
+    server.ticks(operator, 3);
+    let fire = server.world().get::<Fire>(zombie).copied().unwrap();
+    assert!(
+        fire.burning(),
+        "the fire block ignites the zombie at once: {fire:?}"
+    );
+    assert!(
+        health(&mut server, zombie) < ZOMBIE_HEALTH,
+        "the in_fire hit lands"
+    );
+}
+
+#[test]
+fn env_fir_005_a_player_in_fire_ignites_after_its_grace() {
+    let (mut server, operator) = start();
+    let player = server.player(operator);
+    server
+        .world()
+        .get_mut::<mcrs_minecraft_game_mode::PlayerGameMode>(player)
+        .unwrap()
+        .0 = mcrs_minecraft_game_mode::GameMode::Survival;
+    let feet = server.world().get::<Transform>(player).unwrap().translation;
+    set_block(&mut server, BlockPos::from(feet), "minecraft:fire");
+    server.ticks(operator, 10);
+    let fire = server.world().get::<Fire>(player).copied().unwrap();
+    assert!(
+        !fire.burning() && fire.ticks > -Fire::PLAYER_GRACE,
+        "the grace counts up before the ignition: {fire:?}"
+    );
+    server.ticks(operator, 15);
+    let fire = server.world().get::<Fire>(player).copied().unwrap();
+    assert!(
+        fire.burning(),
+        "the player ignites in the 20th tick: {fire:?}"
+    );
+}
+
+#[test]
+fn env_fir_006_lava_ignites_a_zombie_for_fifteen_seconds_and_hits_for_four() {
+    let (mut server, operator) = start();
+    roof_over(&mut server, BlockPos::new(4, 68, 4));
+    let zombie = summon(&mut server, operator, "zombie");
+    let before = health(&mut server, zombie);
+    set_block(&mut server, BlockPos::new(4, 64, 4), "minecraft:lava");
+    server.ticks(operator, 3);
+    let fire = server.world().get::<Fire>(zombie).copied().unwrap();
+    assert!(fire.ticks >= 295, "lava ignites for 15 seconds: {fire:?}");
+    assert!(
+        health(&mut server, zombie) < before - 3.0,
+        "the lava hit of 4.0 lands, less the armour of the zombie"
     );
 }

@@ -16,14 +16,15 @@ use mcrs_minecraft_engine_world::entity::player::Player;
 use mcrs_minecraft_engine_world::tick::TickSet;
 use mcrs_minecraft_registries::CurrentRegistries;
 
-use crate::burn::FireDamageType;
-use crate::burn::bake_fire_damage_type;
+use crate::burn::FireDamageTypes;
+use crate::burn::bake_fire_damage_types;
 use crate::burn::burn;
 use crate::exposure::Daylight;
 use crate::exposure::sense_exposure;
 use crate::publish::BurningShown;
 use crate::publish::publish_burning;
 use crate::sun::mark_sun_sensitive;
+use crate::work::FireWork;
 
 #[derive(SystemSet, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct FireSet;
@@ -33,13 +34,16 @@ pub struct FirePlugin;
 
 impl Plugin for FirePlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<FireDamageType>();
+        app.init_resource::<FireDamageTypes>();
         app.init_resource::<Daylight>();
+        app.init_resource::<FireWork>();
         for result in [
             app.try_register_required_components::<Mob, Fire>(),
             app.try_register_required_components::<Mob, Exposure>(),
             app.try_register_required_components::<Mob, BurningShown>(),
-            app.try_register_required_components::<Player, Fire>(),
+            app.try_register_required_components_with::<Player, Fire>(|| {
+                Fire::of(-Fire::PLAYER_GRACE)
+            }),
             app.try_register_required_components::<Player, Exposure>(),
         ] {
             if let Err(error) = result {
@@ -49,7 +53,7 @@ impl Plugin for FirePlugin {
         app.add_observer(mark_sun_sensitive);
         app.add_systems(
             FixedUpdate,
-            bake_fire_damage_type
+            bake_fire_damage_types
                 .run_if(resource_exists_and_changed::<CurrentRegistries>)
                 .in_set(TickSet::DomainInput),
         );
@@ -58,6 +62,7 @@ impl Plugin for FirePlugin {
             FireSet
                 .in_set(MotionPass)
                 .after(MotionEffects)
+                .after(PoseSystems::Select)
                 .before(DamageSet::Collect),
         );
         app.add_systems(FixedUpdate, (sense_exposure, burn).chain().in_set(FireSet));

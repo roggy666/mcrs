@@ -40,6 +40,9 @@ impl NamedBlock {
                 named.flags |= BlockFlags::OWN_SPEED_FACTOR | BlockFlags::COARSE_BUBBLE_COLUMN;
             }
             "grass_block" => named.flags |= BlockFlags::GRASS_BLOCK,
+            "fire" => named.flags |= BlockFlags::FIRE,
+            "soul_fire" => named.flags |= BlockFlags::SOUL_FIRE,
+            "lava_cauldron" => named.flags |= BlockFlags::LAVA,
             "potent_sulfur" => named.flags |= BlockFlags::COARSE_POTENT_SULFUR,
             "moving_piston" => named.flags |= BlockFlags::MOVING_PISTON | BlockFlags::COARSE_PISTON,
             "piston" | "sticky_piston" | "piston_head" => named.flags |= BlockFlags::COARSE_PISTON,

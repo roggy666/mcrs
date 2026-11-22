@@ -229,7 +229,7 @@ impl BrainStateExt for BrainState {
             (state.body.flags.on_ground, MobFlags::ON_GROUND),
             (sensed.burning(), MobFlags::ON_FIRE),
             (sensed.exposure().in_sun, MobFlags::IN_SUN),
-            (sensed.exposure().in_water, MobFlags::IN_WATER),
+            (state.contact.in_water(), MobFlags::IN_WATER),
             (self.panic == Panic::Panicking, MobFlags::IN_PANIC),
             (
                 applied.progress == Progress::Running,

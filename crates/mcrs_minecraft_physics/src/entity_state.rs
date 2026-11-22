@@ -1,3 +1,4 @@
+use crate::Contact;
 use mcrs_minecraft_entity_key::EntityUuid;
 
 use crate::Body;
@@ -15,6 +16,7 @@ pub struct EntityState {
     pub phase: u8,
     pub rest: Rest,
     pub last_path: MovePath,
+    pub contact: Contact,
 }
 
 impl EntityState {
@@ -29,6 +31,7 @@ impl EntityState {
             phase: 0,
             rest: Rest::Awake,
             last_path: MovePath::at(body.position),
+            contact: Contact::empty(),
         }
     }
 }
