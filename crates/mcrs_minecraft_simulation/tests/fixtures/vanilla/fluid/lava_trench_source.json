@@ -1,0 +1,665 @@
+{
+ "experiment": "E-FL2",
+ "name": "lava_trench_source",
+ "dimension": "minecraft:overworld",
+ "box": [
+  39,
+  -60,
+  30,
+  43,
+  -60,
+  35
+ ],
+ "setup": [
+  "fill 39 -60 30 43 -60 32 minecraft:stone",
+  "fill 40 -60 31 42 -60 31 minecraft:air",
+  "fill 39 -60 33 43 -60 35 minecraft:stone",
+  "fill 40 -60 34 42 -60 34 minecraft:air",
+  "setblock 40 -60 31 minecraft:lava",
+  "setblock 42 -60 31 minecraft:lava",
+  "setblock 40 -60 34 minecraft:lava",
+  "setblock 42 -60 34 minecraft:lava"
+ ],
+ "events": [
+  {
+   "tick": 0,
+   "command": "fill 39 -60 30 43 -60 32 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 15 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 40 -60 31 42 -60 31 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 3 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 39 -60 33 43 -60 35 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 15 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 40 -60 34 42 -60 34 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 3 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 40 -60 31 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 40, -60, 31"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 42 -60 31 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 42, -60, 31"
+   ]
+  },
+  {
+   "tick": 90,
+   "command": "setblock 40 -60 34 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 40, -60, 34"
+   ]
+  },
+  {
+   "tick": 90,
+   "command": "setblock 42 -60 34 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 42, -60, 34"
+   ]
+  }
+ ],
+ "observations": [
+  {
+   "tick": 0,
+   "changes": [
+    [
+     39,
+     -60,
+     30,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     31,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     32,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     33,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     34,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     35,
+     "minecraft:stone"
+    ],
+    [
+     40,
+     -60,
+     30,
+     "minecraft:stone"
+    ],
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava"
+    ],
+    [
+     40,
+     -60,
+     32,
+     "minecraft:stone"
+    ],
+    [
+     40,
+     -60,
+     33,
+     "minecraft:stone"
+    ],
+    [
+     40,
+     -60,
+     35,
+     "minecraft:stone"
+    ],
+    [
+     41,
+     -60,
+     30,
+     "minecraft:stone"
+    ],
+    [
+     41,
+     -60,
+     32,
+     "minecraft:stone"
+    ],
+    [
+     41,
+     -60,
+     33,
+     "minecraft:stone"
+    ],
+    [
+     41,
+     -60,
+     35,
+     "minecraft:stone"
+    ],
+    [
+     42,
+     -60,
+     30,
+     "minecraft:stone"
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava"
+    ],
+    [
+     42,
+     -60,
+     32,
+     "minecraft:stone"
+    ],
+    [
+     42,
+     -60,
+     33,
+     "minecraft:stone"
+    ],
+    [
+     42,
+     -60,
+     35,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     30,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     31,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     32,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     33,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     34,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     35,
+     "minecraft:stone"
+    ]
+   ],
+   "label": "lava sources placed, lava_source_conversion default (false)",
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava",
+     30
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava",
+     30
+    ]
+   ]
+  },
+  {
+   "tick": 10,
+   "changes": [],
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava",
+     20
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava",
+     20
+    ]
+   ]
+  },
+  {
+   "tick": 20,
+   "changes": [],
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava",
+     10
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava",
+     10
+    ]
+   ]
+  },
+  {
+   "tick": 30,
+   "changes": [
+    [
+     41,
+     -60,
+     31,
+     "minecraft:lava[level=2]"
+    ]
+   ],
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava",
+     30
+    ],
+    [
+     41,
+     -60,
+     31,
+     "minecraft:lava",
+     30
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava",
+     30
+    ]
+   ]
+  },
+  {
+   "tick": 40,
+   "changes": [],
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava",
+     20
+    ],
+    [
+     41,
+     -60,
+     31,
+     "minecraft:lava",
+     20
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava",
+     20
+    ]
+   ]
+  },
+  {
+   "tick": 50,
+   "changes": [],
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     31,
+     "minecraft:lava",
+     10
+    ],
+    [
+     41,
+     -60,
+     31,
+     "minecraft:lava",
+     10
+    ],
+    [
+     42,
+     -60,
+     31,
+     "minecraft:lava",
+     10
+    ]
+   ]
+  },
+  {
+   "tick": 60,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 70,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 80,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 90,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 90,
+   "changes": [
+    [
+     40,
+     -60,
+     34,
+     "minecraft:lava"
+    ],
+    [
+     42,
+     -60,
+     34,
+     "minecraft:lava"
+    ]
+   ],
+   "label": "second lava trench, lava_source_conversion true",
+   "fluid_ticks": []
+  },
+  {
+   "tick": 100,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 110,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 120,
+   "changes": [
+    [
+     41,
+     -60,
+     34,
+     "minecraft:lava"
+    ]
+   ],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 130,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 140,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 150,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 160,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 170,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 180,
+   "changes": [],
+   "fluid_ticks": []
+  }
+ ],
+ "notes": [
+  "trench z=31: rule false; trench z=34: rule true (set before its sources were placed)"
+ ],
+ "final": [
+  [
+   39,
+   -60,
+   30,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   31,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   32,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   33,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   34,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   35,
+   "minecraft:stone"
+  ],
+  [
+   40,
+   -60,
+   30,
+   "minecraft:stone"
+  ],
+  [
+   40,
+   -60,
+   31,
+   "minecraft:lava"
+  ],
+  [
+   40,
+   -60,
+   32,
+   "minecraft:stone"
+  ],
+  [
+   40,
+   -60,
+   33,
+   "minecraft:stone"
+  ],
+  [
+   40,
+   -60,
+   34,
+   "minecraft:lava"
+  ],
+  [
+   40,
+   -60,
+   35,
+   "minecraft:stone"
+  ],
+  [
+   41,
+   -60,
+   30,
+   "minecraft:stone"
+  ],
+  [
+   41,
+   -60,
+   31,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   41,
+   -60,
+   32,
+   "minecraft:stone"
+  ],
+  [
+   41,
+   -60,
+   33,
+   "minecraft:stone"
+  ],
+  [
+   41,
+   -60,
+   34,
+   "minecraft:lava"
+  ],
+  [
+   41,
+   -60,
+   35,
+   "minecraft:stone"
+  ],
+  [
+   42,
+   -60,
+   30,
+   "minecraft:stone"
+  ],
+  [
+   42,
+   -60,
+   31,
+   "minecraft:lava"
+  ],
+  [
+   42,
+   -60,
+   32,
+   "minecraft:stone"
+  ],
+  [
+   42,
+   -60,
+   33,
+   "minecraft:stone"
+  ],
+  [
+   42,
+   -60,
+   34,
+   "minecraft:lava"
+  ],
+  [
+   42,
+   -60,
+   35,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   30,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   31,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   32,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   33,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   34,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   35,
+   "minecraft:stone"
+  ]
+ ]
+}

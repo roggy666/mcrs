@@ -1,0 +1,311 @@
+{
+ "experiment": "E-FL2",
+ "name": "water_trench_no_conversion",
+ "dimension": "minecraft:overworld",
+ "box": [
+  39,
+  -60,
+  27,
+  43,
+  -60,
+  29
+ ],
+ "setup": [
+  "fill 39 -60 27 43 -60 29 minecraft:stone",
+  "fill 40 -60 28 42 -60 28 minecraft:air",
+  "setblock 40 -60 28 minecraft:water",
+  "setblock 42 -60 28 minecraft:water"
+ ],
+ "events": [
+  {
+   "tick": 0,
+   "command": "fill 39 -60 27 43 -60 29 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 15 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 40 -60 28 42 -60 28 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 3 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 40 -60 28 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 40, -60, 28"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 42 -60 28 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 42, -60, 28"
+   ]
+  }
+ ],
+ "observations": [
+  {
+   "tick": 0,
+   "changes": [
+    [
+     39,
+     -60,
+     27,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     28,
+     "minecraft:stone"
+    ],
+    [
+     39,
+     -60,
+     29,
+     "minecraft:stone"
+    ],
+    [
+     40,
+     -60,
+     27,
+     "minecraft:stone"
+    ],
+    [
+     40,
+     -60,
+     28,
+     "minecraft:water"
+    ],
+    [
+     40,
+     -60,
+     29,
+     "minecraft:stone"
+    ],
+    [
+     41,
+     -60,
+     27,
+     "minecraft:stone"
+    ],
+    [
+     41,
+     -60,
+     29,
+     "minecraft:stone"
+    ],
+    [
+     42,
+     -60,
+     27,
+     "minecraft:stone"
+    ],
+    [
+     42,
+     -60,
+     28,
+     "minecraft:water"
+    ],
+    [
+     42,
+     -60,
+     29,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     27,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     28,
+     "minecraft:stone"
+    ],
+    [
+     43,
+     -60,
+     29,
+     "minecraft:stone"
+    ]
+   ],
+   "label": "sources placed, rule off",
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     28,
+     "minecraft:water",
+     5
+    ],
+    [
+     42,
+     -60,
+     28,
+     "minecraft:water",
+     5
+    ]
+   ]
+  },
+  {
+   "tick": 5,
+   "changes": [
+    [
+     41,
+     -60,
+     28,
+     "minecraft:water[level=1]"
+    ]
+   ],
+   "fluid_ticks": [
+    [
+     40,
+     -60,
+     28,
+     "minecraft:water",
+     5
+    ],
+    [
+     41,
+     -60,
+     28,
+     "minecraft:water",
+     5
+    ],
+    [
+     42,
+     -60,
+     28,
+     "minecraft:water",
+     5
+    ]
+   ]
+  },
+  {
+   "tick": 10,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 15,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 20,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 25,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 30,
+   "changes": [],
+   "fluid_ticks": []
+  }
+ ],
+ "notes": [
+  "water_source_conversion = false during this scene"
+ ],
+ "final": [
+  [
+   39,
+   -60,
+   27,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   28,
+   "minecraft:stone"
+  ],
+  [
+   39,
+   -60,
+   29,
+   "minecraft:stone"
+  ],
+  [
+   40,
+   -60,
+   27,
+   "minecraft:stone"
+  ],
+  [
+   40,
+   -60,
+   28,
+   "minecraft:water"
+  ],
+  [
+   40,
+   -60,
+   29,
+   "minecraft:stone"
+  ],
+  [
+   41,
+   -60,
+   27,
+   "minecraft:stone"
+  ],
+  [
+   41,
+   -60,
+   28,
+   "minecraft:water[level=1]"
+  ],
+  [
+   41,
+   -60,
+   29,
+   "minecraft:stone"
+  ],
+  [
+   42,
+   -60,
+   27,
+   "minecraft:stone"
+  ],
+  [
+   42,
+   -60,
+   28,
+   "minecraft:water"
+  ],
+  [
+   42,
+   -60,
+   29,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   27,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   28,
+   "minecraft:stone"
+  ],
+  [
+   43,
+   -60,
+   29,
+   "minecraft:stone"
+  ]
+ ]
+}
