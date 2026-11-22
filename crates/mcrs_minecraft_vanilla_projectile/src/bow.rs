@@ -250,8 +250,6 @@ fn arrow_stack(
     slots.occupied().find(|stack| holds_arrow(*stack))
 }
 
-/// The motion of a player that its projectile inherits (PRJ-LCH-004): the movement of the last
-/// movement packet, which the player index keeps, or zero for a player that the index lacks.
 fn shooter_motion(players: &PlayerIndex, player: EntityId) -> DVec3 {
     players.find(player).map_or(DVec3::ZERO, |row| {
         inherited_motion(

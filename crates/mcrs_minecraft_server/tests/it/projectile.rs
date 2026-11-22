@@ -238,7 +238,6 @@ fn start_with_items() -> (PlayServer, Entity, Entity) {
     (server, operator, player)
 }
 
-/// Accepts each teleport of the login so that the client moves of the test apply.
 fn accept_teleports(server: &mut PlayServer, operator: Entity, packets: &[PacketPayload]) {
     for packet in packets {
         let PacketPayload::PlayerPosition(teleport) = packet else {

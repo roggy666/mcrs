@@ -5,8 +5,6 @@ use crate::PlayerRow;
 use glam::DVec3;
 use mcrs_minecraft_entity_key::EntityId;
 
-/// The rows of the players of a dimension, sorted by key, with a map from the column of each
-/// position to its rows. A column is 16 by 16 blocks.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerTable {
     rows: Vec<PlayerRow>,
@@ -85,8 +83,6 @@ impl PlayerTable {
         })
     }
 
-    /// The rows whose position lies in the columns that the box `(min, max)` touches, in the
-    /// order of the columns and then of the keys. The box is in blocks; only `x` and `z` count.
     pub fn in_columns(&self, min: DVec3, max: DVec3) -> impl Iterator<Item = &PlayerRow> {
         let (min_x, min_z) = column_of(min.x, min.z);
         let (max_x, max_z) = column_of(max.x, max.z);
@@ -98,8 +94,6 @@ impl PlayerTable {
         })
     }
 
-    /// The rows whose body box meets the box `(min, max)`. The body of a player reaches at most
-    /// `reach` blocks out of its column; the search widens the columns by that much.
     pub fn bodies_in(
         &self,
         min: DVec3,
@@ -126,7 +120,6 @@ impl PlayerTable {
     }
 }
 
-/// The column of a position: the floor of `x / 16` and of `z / 16`.
 #[must_use]
 pub fn column_of(x: f64, z: f64) -> (i32, i32) {
     (

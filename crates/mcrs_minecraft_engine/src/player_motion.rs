@@ -2,11 +2,6 @@ use bevy_ecs::component::Component;
 use bevy_ecs::system::Query;
 use bevy_math::DVec3;
 
-/// The movement of the last movement packet of a player, in blocks per tick.
-///
-/// A movement packet records its position delta (zero for a packet without a position). A tick
-/// without a movement packet settles the delta to zero at its end. Thus a reader of the next tick
-/// sees the movement of the last client tick, or zero when the client sent nothing.
 #[derive(Component, Clone, Copy, Debug, Default, PartialEq)]
 pub struct PlayerMotion {
     delta: DVec3,
@@ -14,7 +9,6 @@ pub struct PlayerMotion {
 }
 
 impl PlayerMotion {
-    /// The movement of the last movement packet, or zero when the last tick had no packet.
     #[must_use]
     pub fn delta(&self) -> DVec3 {
         self.delta
@@ -33,7 +27,6 @@ impl PlayerMotion {
     }
 }
 
-/// Settles each motion at the end of the tick: a motion that no packet refreshed becomes zero.
 pub(crate) fn settle_player_motion(mut motions: Query<&mut PlayerMotion>) {
     for mut motion in &mut motions {
         if motion.fresh || motion.delta != DVec3::ZERO {

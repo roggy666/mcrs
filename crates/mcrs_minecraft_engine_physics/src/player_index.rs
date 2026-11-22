@@ -29,9 +29,6 @@ use mcrs_minecraft_player_index::PlayerFlags;
 use mcrs_minecraft_player_index::PlayerRow;
 use mcrs_minecraft_player_index::PlayerTable;
 
-/// The players of the dimension as the tick sees them: one row per player (physics-architecture
-/// section 5.7) built once in the domain input, before the client input of the tick. The brains,
-/// the projectiles, the redstone sensors and the spawner read it; none of them queries the players.
 #[derive(Resource, Clone, Debug, Default)]
 pub struct PlayerIndex {
     table: PlayerTable,
@@ -54,7 +51,6 @@ impl PlayerIndex {
         self.table.find(player)
     }
 
-    /// The entities of the players, sorted by their entity id.
     #[must_use]
     pub fn entities(&self) -> &[(EntityId, Entity)] {
         &self.entities

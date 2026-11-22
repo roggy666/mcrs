@@ -114,20 +114,7 @@ pub(crate) fn publish_plate_presence<B>(
     if !known.has_sensors() {
         return;
     }
-    for list in nearby.values_mut() {
-        list.clear();
-    }
-    nearby.retain(|_, list| list.capacity() > 0);
-    for row in players.rows() {
-        if row.flags.contains(PlayerFlags::SPECTATOR) {
-            continue;
-        }
-        let body = Aabb::new(row.min(), row.max());
-        nearby
-            .entry(column_of(row.position))
-            .or_default()
-            .push((body, Occupant::Living));
-    }
+    nearby.clear();
     for state in &items {
         let position = state.0.body.position;
         let body = Aabb::of_body(position, ITEM_WIDTH, ITEM_HEIGHT);
@@ -144,6 +131,14 @@ pub(crate) fn publish_plate_presence<B>(
         let reach = DVec3::new(BODY_REACH, BODY_REACH, BODY_REACH);
         for row in bodies.in_box(sensing.min - reach, sensing.max + reach) {
             if row.bounds().intersects(&sensing) {
+                count(&mut presence, Occupant::Living);
+            }
+        }
+        for row in players
+            .table()
+            .bodies_in(sensing.min, sensing.max, BODY_REACH)
+        {
+            if !row.flags.contains(PlayerFlags::SPECTATOR) {
                 count(&mut presence, Occupant::Living);
             }
         }
