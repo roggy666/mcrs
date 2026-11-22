@@ -63,7 +63,8 @@ impl Eq for TableBrain {}
 
 impl Hash for TableBrain {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        (core::ptr::from_ref(self.table) as usize).hash(state);
+        self.table.goals.len().hash(state);
+        self.table.targets.len().hash(state);
         self.targets.hash(state);
         self.goals.hash(state);
         self.state.hash(state);

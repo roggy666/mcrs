@@ -1,12 +1,21 @@
 use bevy_ecs::component::Component;
 use mcrs_minecraft_brain::BrainRules;
+use mcrs_minecraft_brain::EntityRef;
+use mcrs_minecraft_brain::HurtBy;
+use mcrs_minecraft_brain::Leap;
 use mcrs_minecraft_brain::Panic;
+use mcrs_minecraft_brain::PoseBits;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_mob_control::ControlInput;
 use mcrs_minecraft_mob_control::LookDefaults;
+use mcrs_minecraft_mob_control::MeleeReflex;
 use mcrs_minecraft_mob_control::MobControl;
+use mcrs_minecraft_mob_control::RangedReflex;
 use mcrs_minecraft_mob_control::Rotations;
 use mcrs_minecraft_physics::LastHit;
+
+pub const BABY_AGE: i32 = -24000;
+const BRED_AGE: i32 = 6000;
 
 #[derive(Component, Clone, Copy, Debug, PartialEq)]
 pub struct BrainState {
@@ -20,13 +29,31 @@ pub struct BrainState {
     pub strikes: u16,
     pub hit_tick: Option<u64>,
     pub panic: Panic,
-    pub age: Option<u32>,
+    pub seen_age: Option<u32>,
     pub stalled: bool,
+    pub target: EntityRef,
+    pub melee: Option<MeleeReflex>,
+    pub ranged: Option<RangedReflex>,
+    pub leap: Option<Leap>,
+    pub pose: PoseBits,
+    pub hurt_by: HurtBy,
+    pub age: i32,
+    pub love: u16,
+    pub owner: EntityRef,
+    pub follow_range: f32,
+    pub attack_damage: f32,
 }
 
 impl BrainState {
+    pub const DEFAULT_FOLLOW_RANGE: f32 = 16.0;
+    pub const DEFAULT_ATTACK_DAMAGE: f32 = 2.0;
+
     #[must_use]
-    pub fn new(kind: &'static EntityTypeData, rules: &'static BrainRules) -> Option<Self> {
+    pub fn new(
+        kind: &'static EntityTypeData,
+        rules: &'static BrainRules,
+        baby: bool,
+    ) -> Option<Self> {
         let mob = kind.mob()?;
         Some(Self {
             kind,
@@ -42,8 +69,29 @@ impl BrainState {
             strikes: 0,
             hit_tick: None,
             panic: Panic::Calm,
-            age: None,
+            seen_age: None,
             stalled: false,
+            target: EntityRef::NONE,
+            melee: None,
+            ranged: None,
+            leap: None,
+            pose: PoseBits::NONE,
+            hurt_by: HurtBy::NONE,
+            age: if baby { BABY_AGE } else { 0 },
+            love: 0,
+            owner: EntityRef::NONE,
+            follow_range: Self::DEFAULT_FOLLOW_RANGE,
+            attack_damage: Self::DEFAULT_ATTACK_DAMAGE,
         })
+    }
+
+    pub fn bred(&mut self) {
+        self.age = BRED_AGE;
+        self.love = 0;
+    }
+
+    #[must_use]
+    pub fn is_baby(&self) -> bool {
+        self.age < 0
     }
 }

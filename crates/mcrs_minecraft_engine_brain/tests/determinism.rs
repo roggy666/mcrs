@@ -30,24 +30,22 @@ use mcrs_minecraft_engine_world::session::Owner;
 use mcrs_minecraft_engine_world::session::PlayerSession;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_entity::damage_type_tag_keys::PANIC_CAUSES;
-use mcrs_minecraft_entity::entity_type_keys::EntityType;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
-use mcrs_minecraft_goals::PigBrain;
 use mcrs_minecraft_pose::Pose;
 use mcrs_minecraft_protocol_game::entity::MobLooks;
+use mcrs_minecraft_vanilla_mobs::VanillaBrain;
+use mcrs_minecraft_vanilla_mobs::item_tables;
+use mcrs_minecraft_vanilla_mobs::kind_table;
+use mcrs_minecraft_vanilla_mobs::vanilla_brain;
 
 const PIGS: u32 = 2000;
 const TICKS: u64 = 200;
 const SHORT_TICKS: u64 = 60;
 const HALF_TILES: i32 = 3;
 const CACTUS: u32 = 7;
-const SHORT_GOLDEN: u64 = 8_685_061_870_273_318_056;
-const LONG_GOLDEN: u64 = 14_709_177_575_086_716_212;
-
-fn pig_brain(kind: &'static EntityTypeData) -> Option<PigBrain> {
-    (kind.entity_type == EntityType::Pig).then(PigBrain::default)
-}
+const SHORT_GOLDEN: u64 = 13_365_712_349_125_699_181;
+const LONG_GOLDEN: u64 = 18_298_149_933_240_569_738;
 
 fn positions() -> Vec<DVec3> {
     let edge = f64::from(HALF_TILES * 32 - 2);
@@ -84,10 +82,13 @@ struct Run {
 impl Run {
     fn new(order: &[u32]) -> Self {
         let mut scene = TestScene::new(HALF_TILES, 0, 0, 1);
-        scene
-            .app
-            .add_plugins(MobBrainPlugin::new(pig_brain, PANIC_CAUSES));
-        let mut ai = MobAi::new(StageConfig::new(WorldSeed(42)), pig_brain);
+        scene.app.add_plugins(MobBrainPlugin::new(
+            vanilla_brain,
+            PANIC_CAUSES,
+            item_tables,
+            kind_table,
+        ));
+        let mut ai = MobAi::new(StageConfig::new(WorldSeed(42)), vanilla_brain, kind_table());
         ai.set_panic_causes(PanicCauses::new([CACTUS]));
         let world = scene.app.world_mut();
         world.insert_resource(ai);
@@ -121,6 +122,7 @@ impl Run {
                         looks: MobLooks::default(),
                         custom_name: None,
                         tags: Vec::new(),
+                        baby: false,
                     },
                 ))
                 .id();
@@ -200,8 +202,8 @@ impl Run {
         hasher.finish()
     }
 
-    fn ai(&self) -> &MobAi<PigBrain> {
-        self.scene.app.world().resource::<MobAi<PigBrain>>()
+    fn ai(&self) -> &MobAi<VanillaBrain> {
+        self.scene.app.world().resource::<MobAi<VanillaBrain>>()
     }
 
     fn positions(&mut self) -> Vec<DVec3> {

@@ -64,6 +64,25 @@ impl PlayerTable {
         self.rows.get(*index as usize)
     }
 
+    #[must_use]
+    pub fn any_within(
+        &self,
+        position: DVec3,
+        reach: f64,
+        accept: impl Fn(&PlayerRow) -> bool,
+    ) -> bool {
+        let (min_x, min_z) = column(position.x - reach, position.z - reach);
+        let (max_x, max_z) = column(position.x + reach, position.z + reach);
+        let limit = reach * reach;
+        (min_x..=max_x).any(|x| {
+            self.columns
+                .range((x, min_z)..=(x, max_z))
+                .flat_map(|(_, indices)| indices.iter())
+                .filter_map(|index| self.rows.get(*index as usize))
+                .any(|row| accept(row) && row.position.distance_squared(position) < limit)
+        })
+    }
+
     pub fn collect_in(&self, min: DVec3, max: DVec3, out: &mut Vec<PlayerRow>) {
         let start = out.len();
         let (min_x, min_z) = column(min.x, min.z);

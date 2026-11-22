@@ -10,23 +10,23 @@ The note builds on the AI stage of `docs/physics-architecture.md`, section 5: de
 stage beside the tick, reflexes in the hot tick, a versioned snapshot (the replica), late
 application of the decisions, proposals for the pair actions. It assumes the decision of #1067:
 mobs become ECS entities. Every part of this note that reads or writes a mob on the host goes
-through `MobView`, `Intents` and `Decision`, so the migration of the rows changes the host once and
-the brain crates not at all.
+through `MobView`, `Intents` and `Decision`, so the migration of the rows (#1077) changed the host
+once and the brain crates not at all.
 
 ## 1. Classification of the state
 
 | Value | Kind | Owner |
 |-------|------|-------|
 | the brain of a mob (`TableBrain`): the selectors of the goal list and the target list, the state of each goal | authoritative truth of the AI stage | `Stage<B>` in `mcrs_minecraft_brain`; one tile task writes the brains of its tile |
-| `MobView` of a mob | materialized derived state: the snapshot of the body, the records and the guidance state that a decision reads (AIT-LAG-001) | the tile task of the hot tick writes it once per tick; `Replica` keeps `max_lag + 1` versions |
-| the column index of a tile (`TileIndex`) | materialized derived state: column of 16 × 16 blocks → the views of the tile, for the box queries | the tile task of the hot tick builds it beside the views; it lives in the same `Replica` version |
+| `MobView` of a mob | materialized derived state: the snapshot of the body, the records and the guidance state that a decision reads (AIT-LAG-001) | the think pass of the hot tick writes it once per tick, one mob per row of the query, in parallel; the publish groups the views by tile; `Replica` keeps `max_lag + 1` versions |
+| the column index of a tile (`TileIndex`) | materialized derived state: column of 16 × 16 blocks → the views of the tile, for the box queries | the publish of the hot tick builds it from the views of the tile; it lives in the same `Replica` version |
 | `PlayerRow`: feet point, eye height, flags, visibility, vehicle, the items in both hands, dimensions | materialized derived state (AIT-CDN-002, GOAL-QRY-005) | one system before the AI stage, `O(players)` |
 | `ItemTables`: the members of each item tag that a goal reads | materialized from the data pack | one bake per registry change |
 | attack target, melee state, ranged state, swell state, sit state | guidance state of the own mob (AIT, section 0.1): the hot tick reads it, a decision writes it at its application | the host (`MobControl`) |
 | hurt-by record, last-hit record, damage record, idle time, anger end time | authoritative truth of the mob | the hot tick (reflexes); the brain sees them through `MobView` |
 | `Intents`, `Decision` | temporal facts: what a decision asks the host to apply | the brain writes, the host applies or drops (AIT-LAG-005) |
 | `Proposal` | temporal fact: a pair action that a grant checks at the merge point (AIT-CPL-002) | the brain proposes, one serial step grants |
-| `MeleeHit`, `MobHit` | temporal facts: a hit that a reflex decided | the tile task appends, one serial step applies in key order |
+| `MeleeHit`, `MobHit` | temporal facts: a hit that a reflex decided | the think pass appends, one serial step applies in key order |
 | `Fact` | temporal fact: an event of the hot tick that wakes a brain | the hot tick writes, the stage reads once |
 
 No goal state leaves the brain. No navigation state enters the brain: the brain knows only the
@@ -109,7 +109,8 @@ hurt-by record, the owner, the tame and sitting flags. `size_of::<MobView>()` st
 the hurt-by record of the player.
 
 The replica never holds interior mutability. The tile tasks of the stage read it in parallel; the
-hot tick publishes a new version per tile and the publish moves vectors that the tile task built.
+think pass of the hot tick collects the views per thread, and the publish sorts them by tile into
+a new version.
 
 ## 5. Intents and the hot tick
 
@@ -124,8 +125,8 @@ hot tick publishes a new version per tile and the publish moves vectors that the
 | `pose: aggressive / sitting / interested / swelling bits` | the entity data bits of the own mob |
 | `proposal: Breed { partner } / Alert { target } / CaravanJoin { anchor } / CaravanLeave` | a grant at the merge point (AIT-CPL-002) |
 
-A hit of the melee reflex is not a write of the row of the target from the tile task. The tile
-task appends a `MeleeHit { attacker, target, hit }` to its output. After the parallel phase, one
+A hit of the melee reflex is not a write of the components of the target from the think pass. The
+pass appends a `MeleeHit { attacker, target, hit }` to its output. After the parallel phase, one
 serial step sorts the hits by (order key of the target, order key of the attacker) and applies
 them through `hurt_mob`, which writes the hit record and the hurt-by record of the target. A hit on
 a player becomes the message `MobHit`; the engine has no damage path for a player yet (#103, #116),

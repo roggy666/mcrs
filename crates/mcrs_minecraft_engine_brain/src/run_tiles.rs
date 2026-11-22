@@ -2,6 +2,7 @@ use bevy_tasks::TaskPool;
 use mcrs_minecraft_brain::MobBrain;
 use mcrs_minecraft_brain::TickContext;
 use mcrs_minecraft_brain::TileWork;
+use mcrs_minecraft_brain::TurnScratch;
 use mcrs_minecraft_goal_world::GoalWorld;
 
 pub(crate) fn run_tiles<B, W>(
@@ -19,8 +20,9 @@ pub(crate) fn run_tiles<B, W>(
     pool.scope(|scope| {
         for chunk in work.chunks_mut(per_task) {
             scope.spawn(async move {
+                let mut scratch = TurnScratch::default();
                 for task in chunk {
-                    task.run(cx);
+                    task.run(cx, &mut scratch);
                 }
             });
         }

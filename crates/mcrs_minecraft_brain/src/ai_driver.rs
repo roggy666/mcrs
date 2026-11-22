@@ -61,6 +61,11 @@ impl<B> AiDriver<B> {
     }
 
     #[must_use]
+    pub const fn replica(&self) -> &Replica {
+        &self.replica
+    }
+
+    #[must_use]
     pub const fn waits(&self) -> u64 {
         self.waits
     }

@@ -18,6 +18,7 @@ For people: start at https://mc.rs/docs/ (to read the source of the site, see `d
 | `entity-render.md`, `entity-render-budget.md` | GPU entity rendering and its workload model | work on the renderer |
 | `registry-graph.md` | which registries a value refers to | add or move a registry |
 | `damage.md` | design of health, the hit pipeline, death and respawn; mobs as ECS entities (#1067) | touch health, damage, death or the player attack |
+| `mobs.md` | design of the vanilla mobs on goal tables: the AI stage extension, the generic goals, the brain of a type, the host side | touch the AI of a mob, add a mob type or a goal |
 | `item-design.md` | public API and crate map of the item and inventory rework: a stack as one entity, the read and write tools, the steps | touch items, inventories or containers |
 | `command-dimensions.md` | commands across dimensions | touch commands |
 | `bevy-asset-cycles.md` | how cyclic registries reference assets by id and join at freeze | load assets with cycles |
