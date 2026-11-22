@@ -4,8 +4,8 @@ Version: see `assets/minecraft/version.json`.
 
 This document states what a vanilla block does when the machinery of `block-simulation.md`
 delivers a random tick to it. It also states what a block does when a player or a dispenser
-uses bone meal on it. It covers the crops, the stems, sugar cane, cactus, bamboo, the saplings, the grass block
-and mycelium, the leaves, ice and snow, and farmland.
+uses bone meal on it. It covers the crops, the stems, sugar cane, cactus, bamboo, the saplings,
+the grass block and mycelium, the leaves, ice and snow, and farmland.
 
 `block-simulation.md` states which sections receive random ticks, how many picks a section gets
 and how a pick selects a position (SIM-RND-001 to SIM-RND-004). This document does not repeat
@@ -25,33 +25,34 @@ Out of scope:
   later document. Section 1 lists them, so that the table of randomly ticking states is
   complete.
 - The drops of a block that a handler destroys: `block-loot.md` states the tables.
+- The room that a tree feature needs, and the blocks that it places: these are the rules of
+  the feature, as the world generation runs it.
 
 ## 0. Conventions
 
 ### 0.1 Terms
 
 - **Position**, **block state**, **block type**, **set**, **neighbor update**, **shape update**,
-  **scheduled tick**, **placement side effect**, **removal side effect**, **randomly ticking**,
-  **section**, **dimension random**: as `block-simulation.md`, section 0.1, defines them.
+  **shape function**, **scheduled tick**, **placement side effect**, **removal side effect**,
+  **randomly ticking**, **section**, **dimension random**: as `block-simulation.md`,
+  section 0.1, defines them.
 - **Random tick**: one call of the random tick handler of the block state at a position P. It
   is step 3 of a pick (SIM-RND-002). A fluid random tick is step 4 of a pick.
-- **Randomly ticking state**: a block state or a fluid state with a row in Table 1 of
-  GRW-TBL-001 whose condition is true for that state.
 - **Random of the pick**: the random source that the handler draws from. In vanilla it is the
   dimension random (SIM-RNG-001). `r(n)` is a uniform integer draw in `[0, n)`, and `u` is a
   uniform draw in `[0, 1)`, both from the random of the pick. A draw occurs only where a rule
   names it.
 - **Block light at P**, **sky light at P**: the two stored light values at P, each 0 to 15. The
   sky light does not depend on the time of day.
+- **Sky darken**: `15 − v`, where `v` is the value of the environment attribute
+  `gameplay/sky_light_level` of the dimension (`environment-attributes.md`). It is 0 in full
+  daylight and 11 at midnight.
 - **Light at P**: the larger of the block light at P and the sky light at P.
-- **Sky darken**: an integer 0 to 11 that the dimension computes from the time of day and the
-  weather. It is 0 in full daylight and 11 at midnight. Rain and thunder increase it (U2).
 - **Ambient light at P**: the larger of the block light at P and the sky light at P minus the
-  sky darken. A negative value counts as 0.
-- **Open sky at P**: the sky light at P is 15.
-- **Age**, **stage**, **moisture**, **distance**, **persistent**, **layers**: the properties of
-  the block states of this document. The block definitions under `assets/mcrs/block_definition/`
-  give their values.
+  sky darken.
+- **Age**, **stage**, **moisture**, **distance**, **persistent**, **layers**, **leaves**,
+  `snowy`, `facing`, `hanging`: the properties of the block states of this document. The block
+  definitions under `assets/mcrs/block_definition/` give their values.
 - **Growth speed** of a crop or stem at P: the value `g` of GRW-CRP-002.
 - **Moist farmland**: a farmland state with `moisture` above 0. **Dry farmland**: `moisture` 0.
   Only `moisture` 7 has the wet texture on the client.
@@ -59,22 +60,26 @@ Out of scope:
 - **Tree feature**: a configured feature of the data pack under `data/minecraft/worldgen/feature/`
   with the type `minecraft:tree`, for example `minecraft:oak`.
 - **Bone meal response**: what a block does when bone meal is used on it. The block **accepts**
-  the bone meal when its response changes the world, and **rejects** it otherwise. Section 12
-  states the responses.
-- **Rain at a position**: the test of `block-simulation.md`, SIM-FIRE-004.
+  the bone meal when it is a target of section 12, and **rejects** it otherwise.
+- **Rain at a position**: the test of `block-simulation.md`, SIM-FIRE-004, for one position.
+- **Solid**: the property of a block state of `block-support.md`, SUP-SOLID-001.
 - **Remove P**: the "remove block" of SIM-SET-004 at P, without drops.
 - **Destroy P**: the destroy of SIM-SET-004 at P, with the drop flag set.
-- **Set P to S**: a set with flags 3 (SIM-SET-002), unless the rule names other flags.
-- **Full occluder**: a block state whose block definition sets `minecraft:light_dampening` to 15.
+- **Set P to S**: a set with flags 3 (SIM-SET-002), unless the rule names other flags. Flags 2
+  sync the clients and make no neighbor updates. Flags 260 make no neighbor updates and do not
+  reach the clients.
+- **Column of P** for sugar cane, cactus and bamboo: the blocks of the same block type in the
+  vertical line through P. Its **height** `h` counts P and the blocks below P, down to the
+  first block of another type.
 
 ### 0.2 Provenance
 
 - `black_box_confirmed`: shown by a game-produced artefact that is cited by path, or by an
-  experiment of section 16 that ran.
+  experiment of section 16.
 - `source_suggested_black_box_confirmed`: taken from the reference behaviour, and consistent
-  with a cited artefact or with an experiment that ran.
-- `source_suggested`: taken from the reference behaviour, with no artefact yet. Confidence is
-  at most medium, and an experiment of section 16 is attached.
+  with a cited artefact or with an experiment of section 16.
+- `source_suggested`: taken from the reference behaviour, with no artefact yet. Section 15
+  names the experiment that is still to run.
 - `documentation`: taken from public documentation of player-facing behaviour.
 - `derived`: it comes from other rules of this document or of `block-simulation.md`.
 - `design`: a choice of this project. The rule states the reason.
@@ -86,21 +91,25 @@ a provenance, or the rule names the item of section 15 that holds the open quest
 ### 0.3 Artefacts cited
 
 - The block definitions under `assets/mcrs/block_definition/`: the properties `age`, `stage`,
-  `moisture`, `distance`, `persistent`, `layers`, `leaves`, `snowy` and `facing`, the
-  component `minecraft:light_dampening`, and the component `minecraft:placement_filter` of the
-  stems, the saplings, the bamboo sapling and the snow layer.
+  `moisture`, `distance`, `persistent`, `layers`, `leaves`, `snowy`, `facing` and `hanging`,
+  the component `minecraft:light_dampening`, and the component `minecraft:placement_filter`
+  of the stems, the saplings, the bamboo sapling and the snow layer.
 - `assets/mcrs/registry_definition/game_rule.json`: `minecraft:random_tick_speed` (integer,
   default 3, minimum 0).
 - The data pack of the game, under `data/minecraft/tags/block/`: `supports_crops`,
-  `supports_stem_crops`, `supports_melon_stem`, `supports_pumpkin_stem`,
-  `supports_melon_stem_fruit`, `supports_pumpkin_stem_fruit`, `supports_stem_fruit`,
-  `supports_vegetation`, `substrate_overworld`, `supports_sugar_cane`,
-  `supports_sugar_cane_adjacently`, `supports_cactus`, `supports_bamboo`, `maintains_farmland`,
-  `prevents_nearby_leaf_decay`, `logs`, `snow`, `saplings`, `crops`, `leaves`, `dirt`,
-  `grass_blocks`, `flowers`.
+  `grows_crops`, `supports_melon_stem`, `supports_pumpkin_stem`, `supports_melon_stem_fruit`,
+  `supports_pumpkin_stem_fruit`, `supports_stem_fruit`, `supports_vegetation`,
+  `substrate_overworld`, `supports_sugar_cane`, `supports_sugar_cane_adjacently`,
+  `supports_cactus`, `supports_bamboo`, `maintains_farmland`, `prevents_nearby_leaf_decay`,
+  `logs`, `snow`, `saplings`, `leaves`, `flowers`, `cannot_support_snow_layer`,
+  `support_override_snow_layer`, `support_override_cactus_flower`; under
+  `data/minecraft/tags/fluid/`: `water`, `supports_sugar_cane_adjacently`; under
+  `data/minecraft/tags/worldgen/feature/`: `can_spawn_from_bone_meal`.
 - The data pack of the game, under `data/minecraft/worldgen/feature/`: the tree features of
-  Table 7 (GRW-SAP-003) and the features `minecraft:grass` and `minecraft:flower_default`; under
+  Table 7 (GRW-SAP-003) and the features of the tag `can_spawn_from_bone_meal`; under
   `data/minecraft/worldgen/placed_feature/`: `minecraft:grass_bonemeal`.
+- `environment-attributes.md`: the attributes `gameplay/sky_light_level` and
+  `gameplay/water_evaporates`.
 - The public documentation of the game: the pages of the Minecraft Wiki for each block of this
   document and for bone meal.
 
@@ -157,9 +166,8 @@ not in this document.
 | `cactus` | all | section 5 |
 | `bamboo_sapling` | all | section 6 |
 | `bamboo` | `stage` = 0 | section 6 |
-| each block of the tag `#minecraft:saplings`, except `azalea`, `flowering_azalea` and `mangrove_propagule` | all | section 7 |
-| `azalea`, `flowering_azalea` | all | section 7 (U8) |
-| `mangrove_propagule` | `hanging` = false, or `hanging` = true with `age` < 4 | section 7 for the planted propagule (U8); later for the hanging one |
+| each block of the tag `#minecraft:saplings`, except `azalea` and `flowering_azalea` | all | section 7 |
+| `azalea`, `flowering_azalea` | none: they react to bone meal only (GRW-BON-002) | — |
 | `grass_block`, `mycelium` | all | section 8 |
 | each block of the tag `#minecraft:leaves` | `distance` = 7 and `persistent` = false | section 9 |
 | `ice` | all | section 10 |
@@ -180,6 +188,8 @@ not in this document.
     fully grown gets no picks for them (SIM-RND-002, Behavior).
   - Leaves with `distance` 7 and `persistent` false tick randomly also when a log is next to
     them, until their scheduled tick corrects the distance (GRW-LEF-001).
+  - A mangrove propagule ticks randomly in each state. A propagule that hangs with `age` 4
+    receives the tick and does nothing (GRW-SAP-001).
   - A lava block is a randomly ticking block whose handler runs the fluid handler. The pick then
     runs the fluid handler again (SIM-RND-002, Edge cases).
 - **Conformance tests:** make a section with one `wheat[age=7]` and nothing else that ticks.
@@ -187,11 +197,11 @@ not in this document.
   does not advance (SIM-RND-002, Invariants). Failing twin: the generator advances, because the
   implementation treats each crop state as randomly ticking.
 
-Provenance: the block types and the fluid type are `source_suggested_black_box_confirmed`:
+Provenance: `source_suggested_black_box_confirmed` for the block types and the fluid type:
 `block-simulation.md`, SIM-MODEL-009, Table 1, lists the same block types, and the data pack
-gives the tags. The conditions of the rows of this document are `source_suggested`. The
-conditions of the "later" row are U1. The existence of the properties is
-`black_box_confirmed` by the block definitions. Kind: semantic. Confidence: medium.
+gives the tags. `source_suggested` for the conditions of the rows that name a section. The
+conditions of the "later" row are U1. The existence of the properties is `black_box_confirmed`
+by the block definitions. Kind: semantic. Confidence: high.
 
 ### GRW-TBL-002: The source of the table
 
@@ -218,81 +228,94 @@ torchflower crop. The crop that grows past `age` 1 of `torchflower_crop` is the 
 - **Inputs:** a shape update at a crop at P, or a placement of a crop at P.
 - **Behavior:** a crop can stay at P when both conditions are true:
   - The block at P + D is in the tag `#minecraft:supports_crops`.
-  - The light at P is 8 or more, or P has open sky.
+  - The light at P is 8 or more.
 
-  When a crop cannot stay, the server destroys P (`block-support.md`, SUP-RUN-001). The test
-  runs on a shape update from each direction and on a placement. A random tick does not run the
-  test.
+  When a crop cannot stay, its shape function gives air, and the server destroys P
+  (`block-support.md`, SUP-RUN-001). The test runs on a shape update from each direction and
+  on a placement. A random tick does not run the test.
 - **Edge cases:**
   - A crop in darkness stays until a shape update reaches it. A change of the light alone does
     not remove it.
-  - At night, the sky light at P is still 15 under the open sky. A crop under the open sky
-    never pops at night.
-  - A crop under glass has open sky, because glass does not reduce the sky light. A crop under
-    a leaf block does not have open sky (the leaf block has `minecraft:light_dampening` 1).
-- **Conformance tests:** experiment E-G2, steps 5 to 8.
+  - The sky light at P is 15 under the open sky, also at night. A crop under the open sky never
+    pops at night. A crop under glass is in the same case, because glass has
+    `minecraft:light_dampening` 0.
+- **Conformance tests:** experiment E-G2.
 
-Provenance: the base tag is `black_box_confirmed` by `data/minecraft/tags/block/supports_crops.json`
-(its only member is `minecraft:farmland`). The light rule is `documentation` (the wiki states
-"a light level of 8 or greater to plant"), and `source_suggested` for the open sky and for the
-moment of the test. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the base: the tag file
+`data/minecraft/tags/block/supports_crops.json` has the member `minecraft:farmland`.
+`source_suggested_black_box_confirmed` for the light 8 and for the moment of the test:
+experiment E-G2 (wheat at light 8 stays through a shape update; wheat at light 7 and in
+darkness stays until a shape update, then pops). The wiki agrees ("a light level of 8 or greater
+to plant"). Kind: semantic. Confidence: high.
 
 ### GRW-CRP-002: Growth speed
 
 - **Inputs:** a crop or a stem of block type B at P. F is the position P + D.
 - **Behavior:** the growth speed `g` is the sum of these terms:
   - 1.
-  - The block at F: 3 when it is moist farmland, 1 when it is dry farmland, 0 otherwise.
-  - Each of the eight positions around F: 0.75 when it holds moist farmland, 0.25 when it holds
-    dry farmland, 0 otherwise.
+  - The block at F: 3 when it is in the tag `#minecraft:grows_crops` with `moisture` above 0,
+    1 when it is in the tag with `moisture` 0 or without that property, 0 otherwise.
+  - Each of the eight positions around F: a quarter of the same value for the block there:
+    0.75, 0.25 or 0.
 
-  Then `g` is halved when at least one of these conditions is true:
-  - P + N and P + S both hold a block of type B.
-  - P + E and P + W both hold a block of type B.
-  - At least one of the four diagonal positions P + (±1, 0, ±1) holds a block of type B.
-- **Numeric semantics:** `g` is a 32-bit float. Its value before the half rule is 2 to 10 in
-  steps of 0.25 for a crop on farmland. A crop on another base has `g` from 1 to 7 (U3).
+  Then `g` is halved when one of these conditions is true:
+  - At least one of P + W and P + E holds a block of type B, and at least one of P + N and
+    P + S holds a block of type B.
+  - Otherwise, at least one of the four diagonal positions P + (±1, 0, ±1) holds a block of
+    type B.
+- **Numeric semantics:** `g` is a 32-bit float. For a crop on farmland its value before the
+  half rule is 2 to 10, in steps of 0.25. A crop on another base has `g` from 1 to 7 (U3).
 - **Edge cases:**
   - A different crop next to the crop does not halve `g`. Carrots next to wheat count as
     nothing.
-  - The farmland with `moisture` 1 to 6 counts as moist. The client shows the wet texture only
-    at `moisture` 7.
-- **Conformance tests:** experiment E-G1.
+  - The half rule reads only P + W, P + E, P + N, P + S and the four diagonals. Two crops of one
+    type in one row (P + W and P + E both wheat, nothing to the north or south) do not halve
+    `g`. One crop to the west and one to the north do.
+  - Farmland with `moisture` 1 to 6 counts as moist. The client shows the wet texture only at
+    `moisture` 7.
+- **Conformance tests:** kernel: compute `g` for the scenes of GRW-CRP-003, Numeric semantics,
+  and compare. Failing twin: a half rule that needs both P + W and P + E gives `g` = 2.5 for the
+  "west and north" scene instead of 1.25.
 
-Provenance: `documentation` for the terms 2 and 4, 0.25 and 0.75 and the half rule (the wiki page
-"Tutorial:Crop farming" states "a base speed level of 2 if dry or 4 if hydrated", "each
-surrounding dry farmland adds 0.25", "each surrounding hydrated farmland adds 0.75", and the
-half rule for the diagonal or both axes). The moisture threshold 0 is `source_suggested`.
-Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the tag: the file
+`data/minecraft/tags/block/grows_crops.json` has the member `minecraft:farmland`.
+`source_suggested` for the terms and the half rule; the wiki agrees on 2 and 4, 0.25 and 0.75
+and on the diagonal, and its words "in both the north-south and east-west directions" do not
+state the half rule exactly. Kind: semantic. Confidence: high. U15 names the distribution test.
 
 ### GRW-CRP-003: The random tick of a crop
 
 - **Inputs:** a random tick at a crop at P with age `a`.
 - **Behavior:** the tick does these steps in this order:
-  1. If the light at P is less than 9, the tick ends.
-  2. If the crop is `beetroots`, draw `r(3)`. If the result is not 0, the tick ends.
+  1. If the crop is `beetroots` or `torchflower_crop`, draw `r(3)`. If the result is 0, the
+     tick ends.
+  2. If the light at P is less than 9, the tick ends.
   3. Let `g` be the growth speed (GRW-CRP-002). Draw `r(floor(25 / g) + 1)`. If the result is
      not 0, the tick ends.
   4. Set P to the crop with age `a + 1`, with flags 2.
 - **Numeric semantics:** the chance of step 3 is `1 / (floor(25 / g) + 1)`. For a lone crop on
-  moist farmland with dry surroundings, `g` = 4 and the chance is 1/7. For a crop with moist
+  moist farmland with no farmland around, `g` = 4 and the chance is 1/7. For a crop with moist
   farmland below and around, `g` = 10 and the chance is 1/3. For a lone crop on dry farmland,
   `g` = 2 and the chance is 1/13. Two crops of one type diagonal to each other on dry
-  farmland have `g` = 1.125 and the chance 1/23.
+  farmland have `g` = 1.125 and the chance 1/23. Beetroots and the torchflower crop pass step 1
+  in 2 of 3 ticks.
 - **Edge cases:**
+  - Step 1 draws before the light test. The draw occurs also in darkness.
   - The light test reads the light at P, not at P + U. The sky light counts in full at night.
     As a result, a crop under the open sky grows at night.
   - The tick does not test the base and does not remove the crop (GRW-CRP-001).
   - A set with flags 2 makes no neighbor updates. The clients get the change. The shape updates
     of the set run (SIM-SET-002), so an observer that faces the crop pulses.
-  - The torchflower crop has `age` 0 and 1 only. Its step 4 at `age` 1 is GRW-CRP-004. Whether
-    the torchflower crop also skips ticks as step 2 does is U4.
-- **Conformance tests:** experiments E-G1 and E-G2.
+  - The torchflower crop has `age` 0 and 1 only. Its step 4 at `age` 1 is GRW-CRP-004.
+- **Conformance tests:** experiment E-G2. Kernel: a lone wheat on moist farmland in light 15
+  over 100 000 picks grows in 1/7 of them (binomial tolerance). Failing twin: 1/6, because the
+  division did not floor.
 
-Provenance: `documentation` for the light threshold 9, the chance formula and the beetroot skip
-(the wiki states "9 or greater to grow", "1/(floor(25 / speedLevel) + 1)" and for beetroots
-"each growth tick has a 1/3 chance of not advancing the growth stage"). The flags and the order
-of the steps are `source_suggested`. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the light threshold and the sky light at
+night: experiment E-G2 (growth at light 9, none at light 8, growth at midnight under the open
+sky). `source_suggested` for the chance formula and the skip (U15). The wiki agrees on the
+light 9, the chance formula and the skip of beetroots ("a 1/3 chance of not advancing"), and
+does not state the skip of the torchflower crop. Kind: semantic. Confidence: high.
 
 ### GRW-CRP-004: The last age of the torchflower crop
 
@@ -304,10 +327,9 @@ of the steps are `source_suggested`. Kind: semantic. Confidence: medium.
 - **Conformance tests:** use bone meal two times on a `torchflower_crop[age=0]`. Result: P holds
   `minecraft:torchflower`.
 
-Provenance: `documentation` (the wiki states that the torchflower crop grows "through three
-stages" and that "the final growth stage of the torchflower crop uses the same ID as the actual
-torchflower"); the block definition of `torchflower_crop` has `age` 0 and 1 only
-(`black_box_confirmed`). Kind: semantic. Confidence: high.
+Provenance: `source_suggested_black_box_confirmed`: the block definition of `torchflower_crop`
+has `age` 0 and 1 only. The wiki agrees ("the final growth stage of the torchflower crop uses
+the same ID as the actual torchflower"). Kind: semantic. Confidence: high.
 
 ---
 
@@ -336,19 +358,34 @@ of a stem has a `minecraft:placement_filter` on the tag `#minecraft:supports_mel
 - **Edge cases:**
   - A stem keeps `age` 7 for all time when no side is free. It does not tick less often.
   - The half rule of `g` counts other stems of the same block type, not fruits.
-  - The attached stem does not tick randomly. When its fruit is removed, its shape function
-    sets the stem with `age` 7 again. That shape function is not in this document (U5).
-  - Both tags resolve to `#minecraft:supports_vegetation`: `#minecraft:substrate_overworld`
+  - The attached stem does not tick randomly (GRW-STM-002).
+  - Both fruit tags resolve to `#minecraft:supports_vegetation`: `#minecraft:substrate_overworld`
     (dirt, mud, moss blocks and grass blocks) and `minecraft:farmland`.
-- **Conformance tests:** experiment E-G3.
+- **Conformance tests:** kernel: a `melon_stem[age=7]` on farmland with dirt at the four
+  horizontal neighbors, over 100 000 picks in light 15. Result: each direction gets 1/4 of the
+  fruits (binomial tolerance), and each fruit has an attached stem that faces it. U15 names the
+  black-box test.
 
-Provenance: `documentation` for the light threshold, the growth of the stem, the fruit on a
-free side and the list of bases (the wiki lists dirt, coarse dirt, rooted dirt, grass block,
-farmland, podzol, mycelium, moss block, pale moss block, mud and muddy mangrove roots, and this
-list is the resolved tag). The tags are `black_box_confirmed` by
-`data/minecraft/tags/block/supports_stem_fruit.json` and `supports_vegetation.json`. The uniform
-direction, the air test and the order of the two sets are `source_suggested`. Kind: semantic.
-Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the tags: the files
+`data/minecraft/tags/block/supports_stem_fruit.json` and `supports_vegetation.json`. The wiki
+agrees on the light 9, the fruit on a free side and the list of bases. `source_suggested` for
+the uniform direction, the air test and the order of the two sets. Kind: semantic.
+Confidence: high.
+
+### GRW-STM-002: The attached stem
+
+- **Inputs:** a shape update at an attached stem at P from the direction d.
+- **Behavior:** when d is the `facing` of the attached stem and the block at P + d is not the
+  fruit, the shape function gives the stem with `age` 7. The attached stem can stay when the
+  block at P + D is in the tag `#minecraft:supports_melon_stem` or
+  `#minecraft:supports_pumpkin_stem`, as the stem can.
+- **Edge cases:** a player who takes the fruit gets a stem with `age` 7 at once, in the chain
+  of the removal. The stem then grows a new fruit by GRW-STM-001.
+- **Conformance tests:** kernel: remove the fruit of an attached stem. Result: P holds the stem
+  with `age` 7 after the chain.
+
+Provenance: `source_suggested`. The wiki agrees ("When the melon is removed, the stem returns to
+its straight shape"). Kind: semantic. Confidence: high.
 
 ---
 
@@ -361,28 +398,55 @@ Sugar cane is `sugar_cane`, with the property `age` 0 to 15.
 - **Inputs:** a random tick at sugar cane at P with age `a`.
 - **Behavior:** the tick does these steps in this order:
   1. If the block at P + U is not air, the tick ends.
-  2. Let `n` be the number of sugar cane blocks in the vertical line from P downward, P
-     included. The count stops at the first block that is not sugar cane. If `n` is 3 or more,
-     the tick ends.
+  2. Let `h` be the height of the column of P. If `h` is 3 or more, the tick ends.
   3. If `a` is 15: set P + U to `sugar_cane[age=0]`, then set P to `sugar_cane[age=0]` with
-     flags 4. The tick ends.
-  4. Set P to `sugar_cane` with age `a + 1`, with flags 4.
+     flags 260. The tick ends.
+  4. Set P to `sugar_cane` with age `a + 1`, with flags 260.
 - **Numeric semantics:** the top block of a column grows one block after 16 of its random ticks.
   A column grows from 1 to 3 blocks after 32 random ticks of its top block.
 - **Edge cases:**
   - The light does not matter. Sugar cane grows in darkness.
-  - A set with flags 4 does not reach the clients and makes no neighbor updates. The client
+  - A set with flags 260 does not reach the clients and makes no neighbor updates. The client
     does not see the age. It sees the new block of step 3, which is a set with flags 3.
-  - The tick does not test the water next to the base. The survival of sugar cane runs on a
-    shape update (U5).
-  - When a player breaks the second block of a column, the base keeps its age. The new top is
-    the base, and its count restarts from its own age.
-- **Conformance tests:** experiment E-G4.
+  - The tick does not test the water next to the base (GRW-CAN-002).
+  - When a player breaks the second block of a column, the base keeps its age. The base is the
+    new top, and its count continues from its own age.
+- **Conformance tests:** kernel: sugar cane with `age` 15 on sand next to water, P + U air.
+  Result: after one tick, P + U holds `sugar_cane[age=0]` and P has `age` 0. A column of 3
+  with `age` 15 at the top does not grow. U15 names the black-box test.
 
-Provenance: `documentation` for the height 3, the 16 random ticks and the growth without light
-(the wiki states "a height of three blocks, adding a block of height when the top sugar cane
-block has received 16 random ticks" and "grows regardless of light level"). The flags and the
-count from P are `source_suggested`. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested`. The wiki agrees on the height 3, the 16 random ticks and the
+growth without light. Kind: semantic. Confidence: high.
+
+### GRW-CAN-002: Survival of sugar cane
+
+- **Inputs:** a shape update at sugar cane at P, or the scheduled tick of the sugar cane at P.
+- **Behavior:** sugar cane can stay at P when one of these conditions is true:
+  - The block at P + D is sugar cane.
+  - The block at P + D is in the tag `#minecraft:supports_sugar_cane`, and at least one
+    horizontal neighbor of P + D holds a fluid of the fluid tag
+    `#minecraft:supports_sugar_cane_adjacently` or a block of the block tag
+    `#minecraft:supports_sugar_cane_adjacently`.
+
+  On a shape update, when the sugar cane cannot stay, the server schedules a block tick at P
+  with the delay 1 (SIM-SCH-003). The shape function does not change the state. On the
+  scheduled tick, when the sugar cane cannot stay, the server destroys P.
+- **Edge cases:**
+  - The fluid tag resolves to `#minecraft:water`, and the block tag to `minecraft:frosted_ice`.
+    Flowing water counts. A waterlogged block counts, because its fluid is water.
+  - The water is read next to the base, not next to the sugar cane. A block between the base
+    and the water does not matter, because the test reads the fluid at the four positions only.
+  - The destroy comes one tick after the shape update. A column loses its blocks from the
+    bottom, one tick for each block, through the shape updates of each destroy.
+- **Conformance tests:** kernel: sugar cane on sand with water to the east of the sand. Set
+  the water to air. Result: a tick is pending at P; one tick later P is air and the drop is
+  spawned.
+
+Provenance: `source_suggested_black_box_confirmed` for the tags: the files
+`data/minecraft/tags/block/supports_sugar_cane.json`, `supports_sugar_cane_adjacently.json` and
+`data/minecraft/tags/fluid/supports_sugar_cane_adjacently.json`. `source_suggested` for the
+tick. The wiki agrees that sugar cane "uproots on the next block update". Kind: semantic.
+Confidence: high.
 
 ---
 
@@ -395,29 +459,53 @@ Cactus is `cactus`, with the property `age` 0 to 15. A cactus flower is `cactus_
 - **Inputs:** a random tick at a cactus at P with age `a`.
 - **Behavior:** the tick does these steps in this order:
   1. If the block at P + U is not air, the tick ends.
-  2. Let `n` be the number of cactus blocks in the vertical line from P downward, P included,
-     as in GRW-CAN-001 step 2.
-  3. If `a` is 8 (U6): if the four horizontal neighbors of P + U are air, draw `u`. If `u` is
-     less than 0.1 when `n` is 1 or 2, or less than 0.25 when `n` is 3 or more, set P + U to
-     `cactus_flower`, and the tick ends.
-  4. If `n` is 3 or more, the tick ends.
-  5. If `a` is 15: set P + U to `cactus[age=0]`, set P to `cactus[age=0]` with flags 4, and
-     make a neighbor update at P + U for the new cactus. The tick ends.
-  6. Set P to `cactus` with age `a + 1`, with flags 4.
+  2. Let `h` be the height of the column of P. If `h` is 3 or more and `a` is 15, the tick
+     ends.
+  3. If `a` is 8 and a cactus can stay at P + U (GRW-CAC-002): draw `u`. If `u` ≤ 0.1 when `h`
+     is 1 or 2, or `u` ≤ 0.25 when `h` is 3 or more, set P + U to `cactus_flower`.
+  4. Otherwise, if `a` is 15 and `h` is less than 3: set P + U to `cactus[age=0]`, set P to
+     `cactus[age=0]` with flags 260, and make a neighbor update at P + U for the new cactus.
+  5. If `a` is less than 15, set P to `cactus` with age `a + 1`, with flags 260.
+- **Numeric semantics:** the draw of step 3 is a 64-bit float in `[0, 1)`. A cactus of height 1
+  or 2 grows a flower with probability 0.1 at its ninth random tick, and a cactus of height 3
+  with probability 0.25.
 - **Edge cases:**
   - The light does not matter.
-  - The new cactus of step 5 runs its survival test at once through the neighbor update. When a
-    solid block is next to it, it breaks at once and drops its item. The growth still occurs.
-  - A cactus with a flower on top never grows past the flower, because P + U is not air.
-  - The break of a cactus next to a solid block is its shape function. It is not in this
-    document (U5).
-- **Conformance tests:** experiment E-G4.
+  - Step 5 runs also after step 3 placed a flower. The cactus then has `age` 9 and never
+    grows past the flower, because P + U is not air.
+  - At `age` 15 and height 3, the tick ends at step 2. The age stays 15.
+  - The new cactus of step 4 runs its survival test at once through the neighbor update. When a
+    solid block is next to it, it is destroyed one tick later (GRW-CAC-002). The growth still
+    occurs.
+  - The flower test of step 3 reads the survival predicate of a cactus at P + U: no solid
+    block and no lava at the four horizontal neighbors of P + U, and no liquid at P + 2U.
+- **Conformance tests:** kernel: `cactus[age=8]` with free sides, over 100 000 ticks. Result: a
+  flower in 0.1 of them. `cactus[age=15]` of height 3: no change. U15 names the black-box test.
 
-Provenance: `documentation` for the height 3, the 16 random ticks, the growth without light,
-the growth under a block that breaks at once, and the flower (the wiki states "exactly 9 random
-ticks", "10%" for 1 or 2 blocks and "25%" at 3 or more, and "no blocks in any cardinal direction
-adjacent to it"). The flags, the neighbor update and the exact age of the flower draw are
-`source_suggested` (U6). Kind: semantic. Confidence: medium.
+Provenance: `source_suggested`. The wiki agrees on the height 3, the 16 random ticks, the
+growth without light, the flower after "exactly 9 random ticks" with "10%" and "25%".
+Kind: semantic. Confidence: high.
+
+### GRW-CAC-002: Survival of a cactus
+
+- **Inputs:** a shape update at a cactus at P, or the scheduled tick of the cactus at P.
+- **Behavior:** a cactus can stay at P when all these conditions are true:
+  - No horizontal neighbor of P holds a solid block state or a fluid of the tag
+    `#minecraft:lava`.
+  - The block at P + D is cactus or is in the tag `#minecraft:supports_cactus`.
+  - The block at P + U does not hold a liquid.
+
+  On a shape update, when the cactus cannot stay, the server schedules a block tick at P with
+  the delay 1. On the scheduled tick, when the cactus cannot stay, the server destroys P.
+- **Edge cases:** the cactus flower on top of a cactus is not solid and not a liquid. It does
+  not break the cactus.
+- **Conformance tests:** kernel: put stone next to a cactus. Result: one tick later P is air and
+  the drop is spawned.
+
+Provenance: `source_suggested_black_box_confirmed` for the tag: the file
+`data/minecraft/tags/block/supports_cactus.json`. `source_suggested` for the predicate and the
+tick. The wiki agrees ("A cactus breaks itself ... if any block with the legacy solid property,
+or lava, occupies any of the 4 horizontally adjacent blocks"). Kind: semantic. Confidence: high.
 
 ---
 
@@ -435,15 +523,22 @@ tag `#minecraft:supports_bamboo`.
   1. Draw `r(3)`. If the result is not 0, the tick ends.
   2. If the block at P + U is not air, the tick ends.
   3. If the light at P + U is less than 9, the tick ends.
-  4. Set P + U to `bamboo[age=0,leaves=small,stage=0]`. Set P to
-     `bamboo[age=0,leaves=none,stage=0]` (U7).
-- **Edge cases:** the light test reads P + U, the position of the new block.
-- **Conformance tests:** experiment E-G4, steps for bamboo.
+  4. Set P + U to `bamboo[age=0,leaves=small,stage=0]`.
 
-Provenance: `documentation` for the chance 1/3 and the light threshold 9 at the top (the wiki
-states "a 1/3 chance of growing" and "the top of a bamboo plant requires a ... light level of 9
-or above to grow"). The states of step 4 are `source_suggested` (U7). Kind: semantic.
-Confidence: medium.
+  The shape update of this set reaches the sapling at P from `U`. Its shape function gives
+  `bamboo[age=0,leaves=none,stage=0]` when the block at P + U is bamboo. As a result, P holds
+  bamboo after the chain of the set.
+- **Edge cases:**
+  - The light test reads P + U, the position of the new block. It reads the light, not the
+    ambient light.
+  - A player who puts bamboo on a bamboo sapling gets the same result through the same shape
+    function.
+- **Conformance tests:** kernel: a bamboo sapling in light 15 with air above, over 100 000
+  ticks with the draw forced to 0. Result: P + U is `bamboo[leaves=small]` and P is
+  `bamboo[leaves=none]` after the first tick. U15 names the black-box test.
+
+Provenance: `source_suggested`. The wiki agrees on the chance 1/3 and on the light 9 at the top.
+Kind: semantic. Confidence: high.
 
 ### GRW-BAM-002: The random tick of bamboo
 
@@ -452,56 +547,57 @@ Confidence: medium.
   1. Draw `r(3)`. If the result is not 0, the tick ends.
   2. If the block at P + U is not air, the tick ends.
   3. If the light at P + U is less than 9, the tick ends.
-  4. Let `h` be the number of bamboo blocks in the vertical line from P downward, P included,
-     with a limit of 16. If `h` is 16, the tick ends.
+  4. Let `h` be the height of the column of P, with a limit of 16. If `h` is 16, the tick ends.
   5. Grow one block (GRW-BAM-003).
 - **Edge cases:** a bamboo with `stage` 1 does not tick randomly. It never grows again, also
-  when the blocks above it are removed. Bone meal on it is rejected (GRW-BON-005).
-- **Conformance tests:** experiment E-G4.
+  when the blocks above it are removed. Bone meal on its column is rejected (GRW-BON-004).
+- **Conformance tests:** kernel: a column of 16 bamboo. Result: no tick grows it. U15 names the
+  black-box test.
 
-Provenance: `documentation` for the chance, the light and the height 12 to 16 (the wiki states
-"Bamboo can grow up to 12–16 blocks tall"). The limit 16 of the count is `source_suggested`.
-Kind: semantic. Confidence: medium.
+Provenance: `source_suggested`. The wiki agrees on the chance, the light and the height 12 to
+16. Kind: semantic. Confidence: high.
 
 ### GRW-BAM-003: One block of bamboo growth
 
-- **Inputs:** a bamboo at P that grows, with `h` from GRW-BAM-002 step 4 or from a bone meal
-  response. B1 is the block at P + D, B2 is the block at P + 2D.
+- **Inputs:** a bamboo at P that grows, with the height `h` of its column. B1 is the block at
+  P + D, B2 is the block at P + 2D.
 - **Behavior:** these steps occur in this order:
-  1. Let `L` be `none`. If B1 is bamboo with `leaves` not `none`: let `L` be `large`, and if B2
-     is also bamboo with `leaves` not `none`, set P + D to B1 with `leaves` `small` and set
-     P + 2D to B2 with `leaves` `none`. If B1 is not bamboo with leaves, let `L` be `small`.
+  1. Let `L` be `small` when B1 is not bamboo, or is bamboo with `leaves` `none`. Otherwise
+     let `L` be `large`, and if B2 is bamboo, set P + D to B1 with `leaves` `small` and set
+     P + 2D to B2 with `leaves` `none`.
   2. Let `A` be 1 when the state at P has `age` 1 or B2 is bamboo, and 0 otherwise.
   3. Let `S` be 1 when `h` is 15, or when `h` is 11 or more and `u` < 0.25, and 0 otherwise.
-     The draw occurs only when `h` is 11 or more and is not 15.
+     The draw occurs only when `h` is 11 or more and is not 15. `u` is a 32-bit float.
   4. Set P + U to `bamboo` with `age` A, `leaves` L and `stage` S.
 - **Numeric semantics:** a column stops at a height of 12 to 16 blocks. The stop at height 16 is
-  certain. The heights 12 to 15 each stop with probability 0.25 of the ticks that grow.
+  certain. Each growth from a height of 11 to 14 stops the column with probability 0.25.
 - **Edge cases:**
   - The three top blocks carry the leaves: `large` at the top, `small` below it, `none` lower.
+    The second block of a column has `small` leaves and the first has `none`.
   - The thick form (`age` 1) starts at the third block of a column and stays.
-- **Conformance tests:** experiment E-G4.
+- **Conformance tests:** kernel: grow a column from a sapling with the draws forced. Result: the
+  leaves and the ages of the column follow Numeric semantics and Edge cases.
 
-Provenance: `documentation` for the leaves on the top blocks, the thick form and the height
-range (the wiki states that at 4 blocks the thickness grows and that at 5 blocks "the top
-three have leaves"). The exact steps are `source_suggested`. Kind: semantic. Confidence: low.
+Provenance: `source_suggested`. The wiki agrees on the leaves of the top blocks, the thick form
+and the height range. Kind: semantic. Confidence: high.
 
 ---
 
 ## 7. Saplings
 
-A sapling is a block of the tag `#minecraft:saplings` with the property `stage` (0 or 1). The
-block definition of each sapling has a `minecraft:placement_filter` on the tag
-`#minecraft:supports_vegetation` (`block-support.md`, SUP-VEG-001). `azalea`, `flowering_azalea`
-and `mangrove_propagule` are also in the tag; their rows of Table 7 are U8.
+A sapling is a block of the tag `#minecraft:saplings` with the property `stage` (0 or 1), except
+`azalea` and `flowering_azalea`, which have no `stage` and no random tick. The block definition
+of each sapling has a `minecraft:placement_filter` on the tag `#minecraft:supports_vegetation`
+(`block-support.md`, SUP-VEG-001); the mangrove propagule uses `#minecraft:supports_mangrove_propagule`.
 
 ### GRW-SAP-001: The random tick of a sapling
 
 - **Inputs:** a random tick at a sapling at P with stage `s`.
 - **Behavior:** the tick does these steps in this order:
-  1. If the ambient light at P + U is less than 9, the tick ends.
+  1. If the ambient light at P + U is less than 9, the tick ends. A mangrove propagule skips
+     this step.
   2. Draw `r(7)`. If the result is not 0, the tick ends.
-  3. If `s` is 0, set P to the sapling with `stage` 1, with flags 4. The tick ends.
+  3. If `s` is 0, set P to the sapling with `stage` 1, with flags 260. The tick ends.
   4. Grow the tree (GRW-SAP-002).
 - **Numeric semantics:** with `random_tick_speed` 3, a sapling in light gets a pick about one
   time in 1365 ticks, and it passes step 2 one time in 7 picks. A sapling needs two passes.
@@ -510,59 +606,69 @@ and `mangrove_propagule` are also in the tag; their rows of Table 7 are U8.
     open sky and without a light source does not grow around midnight. Crops grow then
     (GRW-CRP-003).
   - The client does not see the change of `stage`. It sees the tree.
+  - A mangrove propagule that hangs (`hanging` true) does not grow a tree. Its tick sets
+    `age` + 1 with flags 2 while `age` is less than 4, and does nothing at `age` 4.
 - **Conformance tests:** experiment E-G5.
 
-Provenance: `documentation` for the light 9 at P + U (the wiki states "the block above the
-sapling requires a light level of at least 9"). The chance 1/7, the ambient light and the two
-stages with flags 4 are `source_suggested`. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the ambient light: experiment E-G2 (an
+oak sapling under the open sky does not grow in 2 000 ticks at midnight, then grows at noon)
+and E-G5. `source_suggested` for the chance 1/7 and the flags (U15). The wiki agrees on the
+light 9 at the block above. Kind: semantic. Confidence: high.
 
 ### GRW-SAP-002: The growth of a tree
 
 - **Inputs:** a sapling of block type B at P that grows, from GRW-SAP-001 step 4 or from a bone
   meal response. R is the random of the pick.
 - **Behavior:** these steps occur in this order:
-  1. Search a 2 × 2 square of blocks of type B that contains P. Test the squares with these
-     north-west corners in this order: P, P + N, P + W, P + N + W. The first square whose four
-     positions all hold B is the square. When B has no row "2 × 2" in Table 7, skip this step.
-  2. Select the tree feature from Table 7 (GRW-SAP-003) with R. When the table gives no feature
-     (for example a dark oak sapling that is not in a square), nothing occurs.
-  3. Set each sapling of the square, or P alone, to air with flags 4.
-  4. Run the tree feature with R at the north-west corner of the square, or at P. The feature
-     makes its sets as the generation does. Each block of the tree is a set (SIM-SET-002).
-  5. If the feature placed nothing, set each position of step 3 to its sapling again, with
-     flags 4.
+  1. If Table 7 has a row "2 × 2" for B: search a 2 × 2 square of blocks of type B that contains
+     P. Test the squares with these north-west corners in this order: P, P + N, P + W,
+     P + N + W. The first square whose four positions all hold B is the square. When there is a
+     square, select the feature of the row "2 × 2" with R, set each of the four positions to the
+     block form of its fluid with flags 818, and run the feature with R at the north-west
+     corner. If the feature placed nothing, set the four positions to their saplings again with
+     flags 260. These steps end the growth, also when the feature placed nothing.
+  2. Select the feature of the row "no" of Table 7 with R. "Flowers near" is true when at least
+     one block of the tag `#minecraft:flowers` is in the box dx ±2, dy −1..+1, dz ±2 around P.
+     When the row gives no feature, nothing occurs.
+  3. Set P to the block form of its fluid with flags 818. Run the feature with R at P. If the
+     feature placed nothing, set P to its sapling again with flags 260.
 - **Edge cases:**
   - A feature that finds no room places nothing. The sapling stays with `stage` 1. The next
     pass of GRW-SAP-001 step 2 tries again.
+  - A spruce or jungle sapling that is in a square never grows its small tree. When the large
+    feature finds no room, nothing grows.
   - The leaves that a tree feature places have `persistent` false and `distance` 7. The leaves
     then take their distance through GRW-LEF-001.
-  - Steps 3 and 5 do not reach the clients. A client sees the sapling vanish only when the
-    tree is placed.
+  - Flags 818 sync the clients and make no neighbor updates, no shape updates and no drops. The
+    reset with flags 260 does not reach the clients. A client sees the sapling vanish, then the
+    tree, or the sapling again when the server sends the column later.
+  - A waterlogged mangrove propagule leaves a water source when it grows.
   - The room that a feature needs, and which blocks it can replace, are the rules of the
     feature. They are not in this document.
 - **Conformance tests:** experiment E-G5.
 
-Provenance: `documentation` for the 2 × 2 order (the wiki states "southeast, northeast, southwest
-and northwest, only the first found 2 × 2 sapling square tries to grow") and for the failure
-without room. The leaves are `black_box_confirmed` by each tree feature file, whose
-`foliage_provider` has `"persistent": "false"` and `"distance": "7"`. Steps 3 to 5 are
-`source_suggested`. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the leaves: each tree feature file has
+`"persistent": "false"` and `"distance": "7"` in its `foliage_provider`, and experiment E-G5
+(no persistent leaf in any grown tree; a square grows one tree with logs at its four positions;
+a sapling under a stone plate stays). `source_suggested` for the flags and the order of the
+steps. The wiki agrees on the search order ("southeast, northeast, southwest and northwest")
+and on the failure without room. Kind: semantic. Confidence: high. U16 records one run in which
+a square of dark oak did not grow.
 
 ### GRW-SAP-003: Which tree feature a sapling grows
 
-- **Behavior:** Table 7 gives the tree feature for each sapling. "Flowers near" is true when at
-  least one block of the tag `#minecraft:flowers` is in the box dx ±2, dy −1..+1, dz ±2 around
-  P. A row with two features and a draw selects with R.
+- **Behavior:** Table 7 gives the tree feature for each sapling. A row with weights selects one
+  feature with R, with the probability of its weight over the sum of the weights of the row.
 
 **Table 7. Tree features of the saplings.** A feature name is a key under
 `data/minecraft/worldgen/feature/`.
 
 | Sapling | Square | Feature |
 |---------|--------|---------|
-| `oak_sapling` | no | `fancy_oak` when `r(10)` = 0, else `oak`. With flowers near: `fancy_oak_bees_005` or `oak_bees_005` |
+| `oak_sapling` | no | `oak` with weight 9, `fancy_oak` with weight 1. With flowers near: `oak_bees_005` with weight 9, `fancy_oak_bees_005` with weight 1 |
 | `birch_sapling` | no | `birch`; with flowers near: `birch_bees_005` |
 | `spruce_sapling` | no | `spruce` |
-| `spruce_sapling` | 2 × 2 | `mega_spruce` when `r(2)` = 0, else `mega_pine` |
+| `spruce_sapling` | 2 × 2 | `mega_spruce` with weight 1, `mega_pine` with weight 1 |
 | `jungle_sapling` | no | `jungle_tree_no_vine` |
 | `jungle_sapling` | 2 × 2 | `mega_jungle_tree` |
 | `acacia_sapling` | no | `acacia` |
@@ -571,23 +677,23 @@ without room. The leaves are `black_box_confirmed` by each tree feature file, wh
 | `pale_oak_sapling` | no | none |
 | `pale_oak_sapling` | 2 × 2 | `pale_oak_bonemeal` |
 | `cherry_sapling` | no | `cherry`; with flowers near: `cherry_bees_005` |
-| `poplar_sapling` | no | one of `red_poplar`, `orange_poplar`, `yellow_poplar` (U8) |
-| `azalea`, `flowering_azalea` | no | `azalea_tree` (U8) |
-| `mangrove_propagule` (planted) | no | `mangrove` or `tall_mangrove` (U8) |
+| `poplar_sapling` | no | `red_poplar`, `orange_poplar`, `yellow_poplar`, each with weight 1 |
+| `mangrove_propagule` | no | `mangrove` with weight 15, `tall_mangrove` with weight 85 |
+| `azalea`, `flowering_azalea` (bone meal only) | no | `azalea_tree` |
 
 - **Edge cases:**
-  - A spruce or jungle sapling that is in a square never grows its small tree. When the large
-    feature finds no room, nothing grows.
   - A birch sapling never grows a tall birch. `super_birch_bees` is a feature of the generation
     only.
+  - A dark oak or pale oak sapling that is not in a square grows nothing, and the pass of
+    GRW-SAP-001 that reached step 4 has no effect.
 - **Conformance tests:** experiment E-G5.
 
-Provenance: `documentation` for the tree of each sapling and for "Oak or Fancy Oak" (the
-wiki table of the sapling page), and for the bee nest near flowers ("5% chance", which the
-`_bees_005` features carry). The features exist in the data pack (`black_box_confirmed` by
-their files). The draw `r(10)` for the fancy oak, the draw `r(2)` for the mega spruce, the
-`_no_vine` and `_bonemeal` variants, and the flower box are `source_suggested`. Kind: semantic.
-Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed`: each feature of the table is a file of the
+data pack, and experiment E-G5 grows the tree of each row (the logs and the leaves of its wood;
+a poplar sapling gives one of the three poplars; a single dark oak sapling gives nothing). The
+weights and the variants `_no_vine`, `_bonemeal` and `_bees_005` are `source_suggested`. The
+wiki agrees on the trees of each sapling and on "Oak or Fancy Oak". Kind: semantic.
+Confidence: high.
 
 ---
 
@@ -598,27 +704,34 @@ this section, "the spread block" is the block type of the state at P.
 
 ### GRW-SPR-001: Can the spread block stay
 
-- **Inputs:** a position Q and the block A at Q + U.
+- **Inputs:** a position Q and the block state A at Q + U.
 - **Behavior:** the spread block *can stay* at Q when one of these conditions is true, tested
   in this order:
   1. A is `snow` with `layers` 1: can stay.
   2. A holds a fluid with `level` 8 (a source or a falling fluid): cannot stay.
-  3. A is a full occluder: cannot stay.
+  3. The light dampening into the top face is 15 or more: cannot stay. The light dampening into
+     the top face is the `minecraft:light_dampening` of A, or 16 when the occlusion shape of the
+     spread block and the occlusion shape of A together cover the face between Q and Q + U.
   4. Otherwise: can stay.
 - **Edge cases:**
-  - Snow with 2 or more layers is a full occluder. The grass block below it changes to dirt.
-  - Glass, leaves, slabs, stairs and fences are not full occluders. The grass block below them
-    stays.
+  - Snow with 2 or more layers has `minecraft:light_dampening` 15. The grass block below it
+    changes to dirt.
+  - Glass and leaves have a light dampening below 15 and no occlusion shape that covers the
+    face. The grass block below them stays.
+  - A bottom slab or a slab with its full face down, on a grass block, covers the face
+    together with the grass block. The grass block changes to dirt. A top slab does not cover
+    the face from below, so the grass block stays.
   - The light at Q + U does not matter here. A grass block under a torch in a closed room of
     glass stays.
   - A waterlogged block at Q + U holds a fluid with `level` 8. The grass block below it changes
     to dirt. Flowing water with `level` below 8 does not kill it.
+- **Conformance tests:** experiment E-G6.
 
-Provenance: `documentation` for the snow layer and the water (the wiki states "a single snow
-layer makes grass snowy; thicker layers cause the grass block to revert to plain dirt", and that
-water kills grass). The occluder test, in place of the "light level four or below" that the wiki
-states, is `source_suggested`. Experiment E-G6 decides between them (U9). Kind: semantic.
-Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed`: experiment E-G6 (dirt under stone, under a
+water source, under two snow layers and under a bottom slab; the grass block stays under glass,
+under leaves, under one snow layer and under a top slab). The wiki agrees on the snow layer and
+on water. The wiki states "a light level of four or below" for the death; this version reads
+the light dampening, not the light. Kind: semantic. Confidence: high.
 
 ### GRW-SPR-002: The random tick of the spread block
 
@@ -629,8 +742,8 @@ Confidence: medium.
   3. Do these steps four times:
      1. Draw the offset `(r(3) − 1, r(5) − 3, r(3) − 1)`. Let Q = P plus the offset.
      2. If the block at Q is not `dirt`, continue with the next repetition.
-     3. If the spread block cannot stay at Q, or Q + U holds water of any level, continue with
-        the next repetition.
+     3. If the spread block cannot stay at Q, or Q + U holds a fluid of the tag
+        `#minecraft:water` of any level, continue with the next repetition.
      4. Set Q to the spread block with `snowy` true when the block at Q + U is in the tag
         `#minecraft:snow`, and `snowy` false otherwise.
 - **Numeric semantics:** the offset is uniform over the 3 × 5 × 3 box dx ±1, dy −3..+1, dz ±1.
@@ -646,11 +759,13 @@ Confidence: medium.
     ceiling stays (GRW-SPR-001).
 - **Conformance tests:** experiment E-G6.
 
-Provenance: `documentation` for the range, the four draws, the light 9 above the source and
-the targets (the wiki states "within a 3×5×3 range", "checking 4 blocks within range", "a light
-level of 9 or brighter directly above it", and "but not coarse dirt or rooted dirt"). The
-ambient light, the water test at Q + U and the `snowy` tag are `source_suggested`. Kind:
-semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the tags: the files
+`data/minecraft/tags/block/snow.json` and `data/minecraft/tags/fluid/water.json`.
+`source_suggested_black_box_confirmed` for the targets and the spread of mycelium: experiment
+E-G6 (dirt becomes a grass block, coarse dirt and rooted dirt stay, dirt in a ring of mycelium
+becomes mycelium, mycelium under stone becomes dirt). `source_suggested` for the four draws and
+the ambient light (U15). The wiki agrees on the range, the four draws, the light 9 above the
+source and the targets. Kind: semantic. Confidence: high.
 
 ---
 
@@ -665,109 +780,131 @@ which resolves to `#minecraft:logs` in the vanilla data pack.
 - **Inputs:** a shape update at leaves at P from the direction d, or the scheduled tick of the
   leaves at P.
 - **Behavior:**
-  - The *distance from* a neighbor state N is 0 when N is a log, the `distance` of N when N is
-    leaves, and 7 otherwise.
-  - On a shape update from d: let `k` be the distance from the state at P + d, plus 1, with a
-    limit of 7. If `k` is less than the `distance` at P, or if the state at P + d is leaves or a
-    log, schedule a block tick at P with the delay 1 (SIM-SCH-003). The shape function does not
-    change the state.
-  - On the scheduled tick: let `m` be 1 plus the smallest distance from the six neighbors, with
-    a limit of 7. If `m` is not the `distance` at P, set P to the leaves with `distance` `m`,
-    with flags 3.
+  - The *distance from* a block state N is 0 when N is a log, the `distance` of N when N has
+    that property, and 7 otherwise.
+  - On a shape update from d: let `k` be the distance from the state at P + d, plus 1. If `k` is
+    not the `distance` at P, schedule a block tick at P with the delay 1 (SIM-SCH-003). The
+    shape function does not change the state.
+  - On the scheduled tick: let `m` be the smallest of 7 and, for each of the six neighbors, the
+    distance from it plus 1. If `m` is not the `distance` at P, set P to the leaves with
+    `distance` `m`, with flags 3.
 - **Edge cases:**
   - Persistent leaves update their distance as other leaves do. They never decay.
   - The change reaches the clients one tick after the change of the neighbor. An observer that
     faces the leaves pulses on the tick.
-  - A chain of leaves updates one block for each tick, up to 6 blocks from the log.
+  - A chain of leaves updates one block for each tick, up to 6 blocks from the log. The seventh
+    leaf block keeps `distance` 7 and decays.
+  - A shape update from a neighbor whose distance from is 7 gives `k` = 8. Leaves with
+    `distance` 7 then schedule a tick that changes nothing, when the other neighbors give 7 too.
+  - Leaves that a player places have `persistent` true and the distance of GRW-LEF-001 at the
+    moment of the placement.
 - **Conformance tests:** experiment E-G7.
 
-Provenance: `documentation` for the taxicab distance up to 6, the one-tick delay and the
-persistent leaves (the wiki states "a maximum distance of 6 blocks", "changes after 1 game tick",
-and "Leaves placed by players never decay"). The tag is `black_box_confirmed` by
-`data/minecraft/tags/block/prevents_nearby_leaf_decay.json`. The exact condition that schedules
-the tick is `source_suggested` (U10). Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the tag: the file
+`data/minecraft/tags/block/prevents_nearby_leaf_decay.json`, and experiment E-G7 (a line of
+eight leaf blocks from a log has the distances 1 to 6 after 20 ticks, and the two last keep 7).
+`source_suggested` for the exact condition that schedules the tick. The wiki agrees on the
+distance up to 6, on the one tick of delay and on the persistent leaves. Kind: semantic.
+Confidence: high.
 
 ### GRW-LEF-002: The random tick of leaves
 
 - **Inputs:** a random tick at leaves at P with `distance` 7 and `persistent` false.
 - **Behavior:** the server spawns the drops of the state at P (`block-loot.md`), then removes P.
-  Waterlogged leaves leave a water source (SIM-SET-004).
+  Waterlogged leaves leave a water source (SIM-SET-004). The server sends no level event 2001
+  for the decay.
 - **Edge cases:**
   - Leaves with `distance` below 7 do not tick randomly (GRW-TBL-001). A leaf block whose log
     was removed decays only after GRW-LEF-001 set its distance to 7.
-  - Whether the clients receive the level event 2001 (the break particles and sound) for a
-    decay is U10.
+  - Without the level event, a client shows no break particles and plays no break sound for a
+    decay. The item drops are the only visible effect.
 - **Conformance tests:** experiment E-G7.
 
-Provenance: `documentation` for the decay and the drops (the wiki states that leaves "decay
-(disappear) when they receive a block tick if they are not connected to any log", and gives the
-drop chances of the tables). The remove without the level event is `source_suggested` (U10).
-Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed`: experiment E-G7 (20 lone leaf blocks with
+`distance` 7 are all gone after 2 000 ticks; the two leaf blocks past the sixth of a line are
+gone, and the six others stay). `source_suggested` for the absence of the level event. The wiki
+agrees on the decay and on the drops. Kind: semantic. Confidence: high.
 
 ---
 
 ## 10. Ice and snow
 
 Ice is `ice`, with one state and `minecraft:light_dampening` 1. Frosted ice is `frosted_ice`,
-with the property `age` 0 to 3. The snow layer is `snow`, with the property `layers` 1 to 8.
+with the property `age` 0 to 3 and `minecraft:light_dampening` 1. The snow layer is `snow`, with
+the property `layers` 1 to 8 and `minecraft:light_dampening` 0.
 
 ### GRW-ICE-001: The random tick of ice
 
 - **Inputs:** a random tick at ice at P.
 - **Behavior:** if the block light at P is more than `11 − 1`, that is, 11 or more, the ice
-  melts: when the dimension type has `ultrawarm` true, remove P; otherwise set P to a water
-  source. Then the water makes a neighbor update at P, so that the fluid schedules its tick.
+  melts: the server sends the game event `block_destroy` at P; then, when the environment
+  attribute `gameplay/water_evaporates` is true at P, it removes P; otherwise it sets P to a
+  water source and makes a neighbor update at P for the water.
 - **Edge cases:**
   - The sky light does not melt ice. Ice under the sun stays.
   - Ice melts also when the block below is air.
   - The threshold is the block light at P itself, not at a neighbor. The light dampening of the
-    ice (1) is the reason for the threshold 11 and not 12 (U11).
+    ice (1) is the reason for the threshold 11 and not 12.
+  - In the nether, `gameplay/water_evaporates` is true, and the melt leaves air.
 - **Conformance tests:** experiment E-G7.
 
-Provenance: `documentation` for the melt by block light, the water, the nether and the block
-below (the wiki states "melts into water if the block light level ... is higher than 11, even if
-there is no block below it", "Sky light level is ignored", and "If ice melts or is broken in the
-Nether, no water is produced"). The threshold 11 in place of the 12 of the wiki is
-`source_suggested`, with the dampening 1 `black_box_confirmed` by `ice.json` (U11).
-Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the dampening: `ice.json` has
+`minecraft:light_dampening` 1, and experiment E-G7 (ice with a torch at the Manhattan distance 3,
+block light 11, is water after 2 000 ticks; ice with a torch at the distance 4, block light 10,
+stays; ice under the sun stays). `source_suggested` for the melt in a dimension where water
+evaporates. The wiki states "higher than 11" and agrees on the water, the nether and the block
+below. Kind: semantic. Confidence: high.
 
 ### GRW-ICE-002: Frosted ice
 
-- **Inputs:** a scheduled tick at frosted ice at P with age `a`. Frosted ice does not tick
-  randomly (GRW-TBL-001).
-- **Behavior:** the placement side effect of frosted ice schedules its tick with the delay
-  `20 + r(20)` (U12). The tick does these steps:
-  1. Count the frosted ice blocks among the six neighbors of P. Let `c` be the count.
-  2. If `r(3)` = 0 or `c` < 4, and the block light at P is more than `11 − a`: if `a` < 3, set
-     P to frosted ice with age `a + 1`; otherwise melt P into a water source, and increase the
-     age of each neighbor that is frosted ice by one tick of this rule.
-  3. Schedule the tick again with the delay `20 + r(20)`.
+- **Inputs:** the placement side effect of frosted ice at P, a scheduled tick at frosted ice at
+  P with age `a`, or a neighbor update at frosted ice at P from a frosted ice block. Frosted ice
+  does not tick randomly (GRW-TBL-001).
+- **Behavior:**
+  - The placement side effect schedules a block tick at P with the delay `60 + r(61)`, that is,
+    60 to 120, from the dimension random.
+  - The *brightness* at P is the block light at P in the dimension `minecraft:the_end`, and the
+    ambient light at P in each other dimension.
+  - *Crack* at P: when `a` < 3, set P to frosted ice with age `a + 1`, with flags 2, play the
+    cracking sound at P, and send the game event `block_change`. When `a` is 3, melt P as
+    GRW-ICE-001 does.
+  - The scheduled tick does these steps:
+    1. Let `c` be the count of frosted ice among the six neighbors of P. If `r(3)` is not 0 and
+       `c` is 4 or more, go to step 4. The draw occurs before the count.
+    2. If the brightness at P is not more than `11 − a − 1`, go to step 4.
+    3. Crack at P. If P melted: for each neighbor of P that is frosted ice, crack at it; when
+       that neighbor did not melt, schedule a block tick at it with the delay `20 + r(21)`. The
+       tick ends.
+    4. Schedule a block tick at P with the delay `20 + r(21)`.
+  - On a neighbor update from a frosted ice block, when fewer than 2 of the six neighbors of P
+    are frosted ice, melt P as GRW-ICE-001 does.
 - **Edge cases:**
-  - Frosted ice in darkness never melts.
-  - When `random_tick_speed` is 0, frosted ice does not melt (U12).
-- **Conformance tests:** none in this document. The frost walker enchantment that makes
-  frosted ice is not in this version.
+  - Frosted ice in darkness never melts by itself. The thresholds are 10, 9, 8 and 7 for the
+    ages 0 to 3.
+  - `random_tick_speed` does not change the delays.
+  - Nothing makes frosted ice in this version: the frost walker enchantment is not in scope.
+- **Conformance tests:** none against vanilla in this document (U14).
 
-Provenance: `documentation` (the wiki states "ticked every 1–2 seconds", "If a 1/3 chance
-succeeds or the block has fewer than 4 frosted ice blocks in the 6 blocks surrounding it, and
-the internal light level at the block would be greater than 11 minus the age, then the age is
-incremented", and "When the age reaches 4, the block turns into water and all adjacent blocks
-have their age incremented"). Kind: semantic. Confidence: low.
+Provenance: `source_suggested`. The wiki states "ticked every 1–2 seconds" and the condition
+"greater than 11 minus the age"; this version has the first delay 60 to 120 and the dampening
+in the threshold. Kind: semantic. Confidence: medium.
 
 ### GRW-ICE-003: The random tick of a snow layer
 
 - **Inputs:** a random tick at `snow` at P.
 - **Behavior:** if the block light at P is more than 11, the server spawns the drops of the
-  state at P (`block-loot.md`) and removes P. All layers go at one time.
+  state at P (`block-loot.md`), removes P, and sends the game event `block_destroy` at P. All
+  layers go at one time.
 - **Edge cases:**
   - The sky light does not melt snow.
-  - The snow layer has `minecraft:light_dampening` 0, so the threshold is 12 (compare
-    GRW-ICE-001).
+  - The threshold is 12, because the rule does not read the light dampening of the snow.
   - The drops of the table of `snow` without a tool are nothing.
 - **Conformance tests:** experiment E-G7.
 
-Provenance: `documentation` (the wiki states "Snow melts if there is ... block light level of 12
-or more" and "they melt all at once in Java Edition"). Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed`: experiment E-G7 (five layers with a torch at
+the distance 2, block light 12, are gone; five layers with a torch at the distance 3, block
+light 11, stay). The wiki agrees ("block light level of 12 or more", "they melt all at once").
+Kind: semantic. Confidence: high.
 
 ---
 
@@ -779,14 +916,16 @@ Farmland is `farmland`, with the property `moisture` 0 to 7.
 
 - **Inputs:** a farmland at P.
 - **Behavior:** farmland at P *has water* when at least one position of the box dx ±4,
-  dy 0..+1, dz ±4 around P holds a fluid of type `minecraft:water`, of any level. A waterlogged
-  block counts.
+  dy 0..+1, dz ±4 around P holds a fluid of the tag `#minecraft:water`, of any level. A
+  waterlogged block counts.
 - **Edge cases:** the box has 9 × 2 × 9 = 162 positions. Blocks between the water and the
   farmland do not matter.
 
-Provenance: `documentation` (the wiki states "up to four blocks away horizontally (including
-diagonally)" and "at the same level or one block above the farmland block level", and that
-flowing water counts). Kind: semantic. Confidence: high.
+Provenance: `source_suggested_black_box_confirmed`: experiment E-G8 (farmland at the distances
+1 to 4 from a water source at its level or one level below it is moist, farmland at the distance
+5 is dry, and farmland one level above the water is dry). The wiki agrees ("up to four blocks
+away horizontally (including diagonally)", "at the same level or one block above").
+Kind: semantic. Confidence: high.
 
 ### GRW-FRM-002: The random tick of farmland
 
@@ -796,133 +935,187 @@ flowing water counts). Kind: semantic. Confidence: high.
      farmland with `moisture` 7, with flags 2. The tick ends.
   2. If `m` > 0, set P to farmland with `moisture` `m − 1`, with flags 2. The tick ends.
   3. If the block at P + U is in the tag `#minecraft:maintains_farmland`, the tick ends.
-  4. Set P to `dirt`. The entities on P move up by the height difference (farmland is 15/16 of
-     a block high). The crop case does not occur here, because of step 3.
+  4. Turn P to dirt (GRW-FRM-003).
 - **Edge cases:**
   - Farmland with a crop on it dries to `moisture` 0 and stays farmland.
   - The moisture jumps from any value to 7 in one tick. It goes down one level in each tick.
   - A fence gate above farmland keeps it farmland; the tag names `#minecraft:fence_gates`.
   - A new farmland from a hoe has `moisture` 0. Its first wet tick sets 7.
-  - The change to dirt from a trample, from a solid block placed above, or from a piston is not
-    a random tick. Those rules are not in this document.
+  - The change to dirt from a trample or from a piston is not a random tick. Those rules are
+    not in this document.
 - **Conformance tests:** experiment E-G8.
 
-Provenance: `documentation` for the count down, the jump to 7 and the dirt without a crop (the
-wiki states "The wetness value counts down to 0", "Newly hydrated farmland jumps from 0 to 7",
-and "Farmland eventually decays into normal dirt if it's dehydrated and nothing is planted in
-it"). The tag is `black_box_confirmed` by `data/minecraft/tags/block/maintains_farmland.json`.
-The rain, the flags, the order of the steps and one level for each tick are `source_suggested`.
-Kind: semantic. Confidence: medium.
+Provenance: `source_suggested_black_box_confirmed` for the tag: the file
+`data/minecraft/tags/block/maintains_farmland.json`, and experiment E-G8 (dry farmland with
+`moisture` 7 and no crop is dirt after 400 ticks, and a grass block takes that dirt; dry farmland
+with wheat has `moisture` 0 and keeps the wheat; farmland near water has `moisture` 7).
+`source_suggested` for the rain and the flags. The wiki agrees on the count down, the jump to 7
+and the dirt without a crop. Kind: semantic. Confidence: high.
+
+### GRW-FRM-003: Farmland under a solid block, and the turn to dirt
+
+- **Inputs:** a shape update at farmland at P from `U`, or the scheduled tick of the farmland at
+  P, or step 4 of GRW-FRM-002.
+- **Behavior:**
+  - Farmland can stay at P when the block at P + U is not solid, or is in the tag
+    `#minecraft:maintains_farmland`.
+  - On a shape update from `U`, when the farmland cannot stay, the server schedules a block
+    tick at P with the delay 1. On the scheduled tick, when the farmland cannot stay, it turns P
+    to dirt.
+  - *Turn P to dirt*: the server sets P to `dirt` with flags 3, and sends the game event
+    `block_change` at P. Before the set, the entities whose box intersects the block above the
+    farmland shape move up to stand on the dirt (farmland is 15/16 of a block high).
+- **Edge cases:** a pumpkin or a melon that a stem grows on farmland is solid and not in the tag.
+  The farmland under it turns to dirt one tick later.
+- **Conformance tests:** kernel: put stone on farmland. Result: one tick later P is dirt.
+
+Provenance: `source_suggested`. The wiki agrees ("solid block covering top"). Kind: semantic.
+Confidence: high.
 
 ---
 
 ## 12. Bone meal responses
 
 The bone meal item is `minecraft:bone_meal`. When a player or a dispenser uses it on a block at
-P, the block gives one of two results: it accepts the bone meal and changes the world, or it
-rejects it. On an accept, the item logic takes one bone meal in survival and asks the clients
-for the growth particles at P. On a reject, the use does nothing: the
-item stays, and the player can place a block. These item rules are not in this document.
+P, the block gives one of two results: it accepts the bone meal, or it rejects it. On an accept,
+the item logic takes one bone meal in survival and asks the clients for the growth particles at
+P. On a reject, the use does nothing: the item stays, and the player can place a block. These
+item rules are not in this document.
 
 A response has two parts. The **test** decides whether the block is a target. The **draw**, when
-the rule has one, decides whether this use succeeds. A block that passes the test but fails the
-draw still accepts the bone meal: the item is consumed and the particles play, and the world
-does not change.
+the rule has one, decides whether this use changes the world. A block that passes the test
+accepts the bone meal also when it fails the draw: the item is consumed and the particles play,
+and the world does not change. The draw comes from the dimension random.
 
 ### GRW-BON-001: Crops and stems
 
 - **Inputs:** bone meal on a crop or a stem at P with age `a`.
 - **Behavior:**
   - Test: `a` is less than the last age.
-  - Response: draw `r(4) + 2`, that is, 2 to 5. For `beetroots`, divide the result by 3 with
+  - Response: draw `2 + r(4)`, that is, 2 to 5. For `beetroots`, divide the result by 3 with
     integer division, that is, 0 with probability 1/4 and 1 otherwise. For `torchflower_crop`,
     the increase is 1. Set P to the crop or stem with age `min(a + increase, last age)`, with
     flags 2. For `torchflower_crop` at the last age, GRW-CRP-004 applies.
+  - For a stem whose new age is 7, the server then runs the random tick of the stem at P
+    (GRW-STM-001) at once, with the dimension random.
 - **Edge cases:**
-  - A stem at `age` 7 rejects the bone meal. Bone meal never makes a fruit.
+  - A stem at `age` 7 rejects the bone meal. The bone meal that brings a stem to `age` 7 can
+    make a fruit in the same use, through the random tick that follows.
   - A beetroot that draws 0 accepts the bone meal and does not change.
-- **Conformance tests:** experiment E-G9.
+- **Conformance tests:** kernel: bone meal on `wheat[age=0]` over 100 000 uses. Result: the ages
+  2 to 5 each in 1/4 of the uses. U15 names the black-box test.
 
-Provenance: `documentation` (the wiki states "The plant matures 2–5 growth stages" for wheat,
-carrots, potatoes and the stems, "75% chance of growing to the next growth stage" for beetroots,
-"Grows every stage" for the torchflower crop, and "bone meal does not help produce the actual
-melons"). The division by 3 is `derived` from the 75%. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested`. The wiki agrees on "2–5 growth stages", "75% chance" for
+beetroots and "Grows every stage" for the torchflower crop; it states that bone meal "does not
+help produce the actual melons", which the random tick after the last stage contradicts.
+Kind: semantic. Confidence: high.
 
-### GRW-BON-002: Saplings
+### GRW-BON-002: Saplings and azaleas
 
-- **Inputs:** bone meal on a sapling at P.
+- **Inputs:** bone meal on a sapling, a mangrove propagule, an azalea or a flowering azalea at P.
 - **Behavior:**
-  - Test: true.
-  - Draw: `u` < 0.45.
-  - Response: GRW-SAP-001 steps 3 and 4, without the light test.
+  - Sapling. Test: when Table 7 has only a row "2 × 2" for the sapling, P is in a square
+    (GRW-SAP-002 step 1); and the position `base_height` blocks above P is inside the build
+    height, where `base_height` is the field of the `trunk_placer` of the first feature of
+    the row "no" of Table 7. Draw: `u` < 0.45. Response: GRW-SAP-001 steps 3 and 4, without the
+    light test.
+  - Mangrove propagule that hangs. Test: `age` < 4. No draw. Response: set P to the propagule
+    with `age` + 1, with flags 2.
+  - Azalea and flowering azalea. Test: the position 6 blocks above P is inside the build
+    height, and P + U holds no fluid. Draw: `u` < 0.45. Response: GRW-SAP-002 steps 2 and 3
+    with the feature `azalea_tree`.
 - **Edge cases:**
   - Bone meal grows a sapling in darkness.
-  - A dark oak sapling that is not in a square accepts the bone meal and does not change.
+  - A dark oak sapling or a pale oak sapling that is not in a square rejects the bone meal. The
+    item stays.
   - A sapling whose tree finds no room accepts the bone meal and does not change.
-- **Conformance tests:** experiment E-G9.
+- **Conformance tests:** kernel: bone meal on an oak sapling with `stage` 0 over 100 000 uses.
+  Result: 0.45 of them give `stage` 1. U15 names the black-box test.
 
-Provenance: `documentation` (the wiki states "45% chance of growing to the next growth stage, if
-possible", "even without sufficient light", and that bone meal on an obstructed sapling is
-wasted). Kind: semantic. Confidence: medium.
+Provenance: `source_suggested`. The wiki agrees on "45% chance", on the growth "even without
+sufficient light" and on the waste of bone meal on an obstructed sapling; it states that a dark
+oak sapling outside a square wastes the bone meal, which the test contradicts. Kind: semantic.
+Confidence: high.
 
 ### GRW-BON-003: Grass block
 
 - **Inputs:** bone meal on a grass block at P.
 - **Behavior:**
-  - Test: the block at P + U is air.
+  - Test: the block at P + U is air, and P + U is inside the build height.
   - Response: do 128 attempts. Attempt number `i`, from 0 to 127, does these steps:
-    1. Let Q = P + U. Do `floor(i / 16)` steps: draw the offset `(r(3) − 1, (r(3) − 1) × r(3) / 2,
-       r(3) − 1)` with integer division, and add it to Q. After each step, if the block at
-       Q + D is not a grass block, or the block at Q has a full collision box, end this attempt.
-    2. If the block at Q is `short_grass` and `r(10)` = 0, run the bone meal response of the
-       short grass at Q (it becomes `tall_grass`). Continue with step 3.
-    3. If the block at Q is air: with `r(8)` = 0, place the flower feature of the biome at Q
-       (U13); otherwise place the placed feature `minecraft:grass_bonemeal` at Q. A feature
-       places nothing where its block cannot stay.
+    1. Let Q = P + U. Do `floor(i / 16)` steps: draw `dx` and `dz` uniform in −1..1, draw `dy`
+       as a uniform value in −1..1 times `r(3)`, with integer division by 2, and add
+       `(dx, dy, dz)` to Q. After each step, if the block at Q + D is not the grass block, or the
+       block at Q has a full collision box, end this attempt.
+    2. If the block at Q is `short_grass`, draw `u`. If `u` < 0.1 and the short grass accepts
+       bone meal there, run its response at Q (it becomes `tall_grass`).
+    3. If the block at Q is air and Q is inside the build height, draw `u`. If `u` < 0.125:
+       select with the dimension random one feature of the *bone meal features* of the biome
+       at Q, and place that configured feature at Q; when the biome has none, this attempt
+       ends. Otherwise place the placed feature `minecraft:grass_bonemeal` at Q.
+
+  The *bone meal features* of a biome are the configured features that its placed features
+  name, in the order of the biome, that are in the feature tag
+  `#minecraft:can_spawn_from_bone_meal`.
 - **Numeric semantics:** the attempts reach at most 7 steps from P + U, that is, the box
-  dx ±7, dy ±7, dz ±7. The vertical step is 0 with probability 2/3.
+  dx ±7, dy ±7, dz ±7. The vertical step is 0 with probability 2/3. The features of the tag are
+  `simple_block` features that place one flower at Q when the flower can stay there.
 - **Edge cases:**
   - The response accepts the bone meal also when all 128 attempts place nothing.
   - Mycelium has no response. It rejects bone meal.
-  - A two-block flower never comes from this response.
-- **Conformance tests:** experiment E-G9.
+  - A two-block flower never comes from this response: no feature of the tag places one.
+  - The placed feature `grass_bonemeal` places `short_grass` where the block is air and the
+    short grass can stay.
+  - The feature of a flower is placed as a configured feature: the `count` and the `offset` of
+    its placed feature do not apply. One use places at most one block for each attempt.
+- **Conformance tests:** kernel: bone meal on a grass block in plains, over 10 000 uses. Result:
+  each new block is within dx ±7, dz ±7 of P; the flowers are poppies, dandelions and the
+  flowers of `flower_plain`, and 1/8 of the placed blocks are flowers (binomial tolerance). U15
+  names the black-box test.
 
-Provenance: `documentation` for the area and the plants (the wiki states "Grass blocks within a
-15×15×15 ... area of the target block randomly choose which type of foliage to grow" and names
-short grass, tall grass, flowers and pink petals). The placed feature `grass_bonemeal` is
-`black_box_confirmed` by its file (the feature `minecraft:grass` places `minecraft:short_grass`
-where the block is air). The 128 attempts, the walk, the draws 1/10 and 1/8 are
-`source_suggested`. The flower feature of the biome is U13. Kind: semantic. Confidence: low.
+Provenance: `source_suggested_black_box_confirmed` for the data: the files
+`data/minecraft/worldgen/placed_feature/grass_bonemeal.json` (the feature `minecraft:grass`
+places `minecraft:short_grass` where the block is air) and
+`data/minecraft/tags/worldgen/feature/can_spawn_from_bone_meal.json` (`flower_default`,
+`flower_flower_forest`, `flower_swamp`, `flower_plain`, `flower_meadow`, `flower_cherry`,
+`wildflower`, `flower_pale_garden`). `source_suggested` for the 128 attempts, the walk and the
+draws. The wiki agrees on the "15×15×15" area and the plants. Kind: semantic. Confidence: high.
 
 ### GRW-BON-004: Bamboo
 
 - **Inputs:** bone meal on a bamboo sapling or on bamboo at P.
 - **Behavior:**
-  - Bamboo sapling. Test: the block at P + U is air. Response: GRW-BAM-001 step 4.
-  - Bamboo. Test: let T be the top bamboo of the column of P, and `h` its height as in
-    GRW-BAM-002 step 4. The test is true when the state at T has `stage` 0, the block at T + U
-    is air, and `h` < 16. Response: let `k` be `r(2) + 1`. Do `k` times: if the block at T + U is
-    air and `h` < 16, grow one block at T (GRW-BAM-003), then let T be T + U and `h` be `h + 1`.
+  - Bamboo sapling. Test: the block at P + U is air, and P + U is inside the build height. No
+    draw. Response: GRW-BAM-001 step 4.
+  - Bamboo. Let T be the top bamboo of the column of P, and `h` the height of the column, with
+    each count limited to 16. Test: `h` < 16, the state at T has `stage` 0, and T + U is air and
+    inside the build height. No draw. Response: let `k` be `1 + r(2)`. Do `k` times: if `h` < 16,
+    the state at T has `stage` 0, and T + U is air and inside the build height, grow one block
+    at T (GRW-BAM-003) with the height `h`, then let T be T + U and `h` be `h + 1`; otherwise
+    the response ends.
 - **Edge cases:**
   - Bone meal on a bamboo in the middle of a column grows the top of the column.
-  - A bamboo with `stage` 1 at the top rejects the bone meal.
-- **Conformance tests:** experiment E-G9.
+  - A column whose top has `stage` 1 rejects the bone meal.
+  - The second block of the response can stop the column (GRW-BAM-003 step 3).
+- **Conformance tests:** kernel: bone meal on the base of a column of 3 over 100 000 uses.
+  Result: the column grows 1 block in half of the uses and 2 in the other half.
 
-Provenance: `documentation` (the wiki states "Grows the bamboo by 1–2 stems", "Transforms a
-bamboo shoot into a 2-block tall bamboo", and that bamboo blocked above wastes the bone meal).
-The test at the top of the column is `source_suggested`. Kind: semantic. Confidence: medium.
+Provenance: `source_suggested`. The wiki agrees ("Grows the bamboo by 1–2 stems", "Transforms a
+bamboo shoot into a 2-block tall bamboo"). Kind: semantic. Confidence: high.
 
 ### GRW-BON-005: Blocks that reject bone meal
 
-- **Behavior:** `sugar_cane`, `cactus`, `attached_melon_stem`, `attached_pumpkin_stem`, a
-  crop or a stem at its last age, bamboo with `stage` 1 at the top of its column, `mycelium`,
-  `farmland`, `ice`, `snow`, the leaves, and each block that no rule of this document or of a
-  later document gives a response, reject bone meal. The item stays.
-- **Conformance tests:** experiment E-G9, step for stone.
+- **Behavior:** `sugar_cane`, `cactus`, `cactus_flower`, `attached_melon_stem`,
+  `attached_pumpkin_stem`, a crop or a stem at its last age, a dark oak or pale oak sapling
+  that is not in a square, a bamboo column whose top has `stage` 1 or is at height 16,
+  `mycelium`, `farmland`, `ice`, `snow`, the leaves, and each block that no rule of this
+  document or of a later document gives a response, reject bone meal. The item stays.
+- **Conformance tests:** kernel: bone meal on stone. Result: no change, and the response is a
+  reject.
 
-Provenance: `documentation` (the wiki states "Bone meal does not affect: Cactus, Vines, Nether
-wart, Sugar cane (Java only), Chorus plants, or other plants not listed"). Kind: semantic.
-Confidence: high.
+Provenance: `source_suggested`. The wiki agrees ("Bone meal does not affect: Cactus, Vines,
+Nether wart, Sugar cane (Java only), Chorus plants, or other plants not listed").
+Kind: semantic. Confidence: high.
 
 ---
 
@@ -942,29 +1135,32 @@ Confidence: high.
 | GRW-CRP-003 | ±1 | −1..0 | ±1 | P | none |
 | GRW-STM-001 | ±1 | −1..0 | ±1 | P and one horizontal neighbor | none |
 | GRW-CAN-001 | 0 | −n..+1 | 0 | P and P + U | none. `n` as Note 2 of SIM-MODEL-009 |
+| GRW-CAN-002 (tick) | ±1 | −1..0 | ±1 | P | item drops |
 | GRW-CAC-001 | ±1 | −n..+2 | ±1 | P and P + U | a neighbor update at P + U |
-| GRW-BAM-001 | 0 | 0..+1 | 0 | P and P + U | none |
+| GRW-CAC-002 (tick) | ±1 | ±1 | ±1 | P | item drops |
+| GRW-BAM-001 | 0 | 0..+1 | 0 | P + U | none |
 | GRW-BAM-002, GRW-BAM-003 | 0 | −16..+1 | 0 | P + U, P + D, P + 2D | none |
 | GRW-SAP-001, GRW-SAP-002 | ±10 | −13..+34 | ±10 | the blocks of one tree feature, and the saplings of the square | none. Note 1 of SIM-MODEL-009: the bound holds for the vanilla features |
 | GRW-SPR-002 | ±1 | −3..+2 | ±1 | P, or up to 4 dirt blocks in the box | none |
 | GRW-LEF-001 (tick) | ±1 | ±1 | ±1 | P | none |
 | GRW-LEF-002 | 0 | 0 | 0 | P | item drops |
-| GRW-ICE-001 | 0 | 0 | 0 | P | a neighbor update at P |
-| GRW-ICE-002 | ±1 | ±1 | ±1 | P and its six neighbors | none |
-| GRW-ICE-003 | 0 | 0 | 0 | P | item drops |
-| GRW-FRM-002 | ±4 | 0..+1 | ±4 | P | the rain at P + U; the entities on P move up |
-| GRW-BON-001 | 0 | 0 | 0 | P | none |
+| GRW-ICE-001 | 0 | 0 | 0 | P | a neighbor update at P; a game event |
+| GRW-ICE-002 (tick) | ±1 | ±1 | ±1 | P and its six neighbors | ticks at the neighbors; a sound; game events |
+| GRW-ICE-003 | 0 | 0 | 0 | P | item drops; a game event |
+| GRW-FRM-002 | ±4 | 0..+1 | ±4 | P | the rain at P + U; the entities on P move up; a game event |
+| GRW-FRM-003 (tick) | 0 | 0..+1 | 0 | P | the entities on P move up; a game event |
+| GRW-BON-001 | ±1 | −1..0 | ±1 | P, and one horizontal neighbor for a stem | none |
 | GRW-BON-002 | as GRW-SAP-002 | | | | |
-| GRW-BON-003 | ±7, or more (U13) | ±7 | ±7 | up to 128 blocks in the box | none |
-| GRW-BON-004 | 0 | −16..+2 | 0 | up to 2 new blocks and 2 leaf changes | none |
+| GRW-BON-003 | ±7 | ±7 | ±7 | up to 128 blocks in the box | none |
+| GRW-BON-004 | 0 | −16..+18 | 0 | up to 2 new blocks and 2 leaf changes | none |
 
 - **Edge cases:** a tree feature that a data pack adds can reach past the bound of GRW-SAP-002.
   An instance that cannot measure the extent of a feature must treat the handler as a handler
   with no bound (SIM-MODEL-009, Note 1).
 
 Provenance: `derived` from the rules of this document, and consistent with SIM-MODEL-009,
-Table 1 (`source_suggested_black_box_confirmed` against that table). GRW-CAC-001 adds +2 for
-the flower neighbors. Kind: semantic. Confidence: medium.
+Table 1. GRW-CAC-001 adds +2 for the flower test. GRW-BON-004 reads up to 16 blocks above P.
+Kind: semantic. Confidence: high.
 
 ---
 
@@ -986,51 +1182,41 @@ the flower neighbors. Kind: semantic. Confidence: medium.
 
 ## 15. Unresolved
 
-Each item names the rules that it affects and the experiment or the source that decides it.
+Each item names the rules that it affects and what decides it.
 
 - **U1: The condition of each randomly ticking state, and its data form** (GRW-TBL-001,
   GRW-TBL-002). The block definitions carry no flag. The conditions of the "later" row of
-  Table 1 are not stated. Proposal to the owner: let the update tool that writes the block
-  definitions also write the property "randomly ticking" for each block state, from the game,
-  into the definitions or into a report under `assets/mcrs/reports/`. Until then, Table 1 is
-  the source, and a data pack cannot add a randomly ticking block.
-- **U2: The sky darken** (GRW-SAP-001, GRW-SPR-002). Its exact function of the time of day and
-  the weather is not in any specification. The client computes the same value for the light
-  that it shows. Experiment E-G5 shows the two ends: noon and midnight.
+  Table 1 are not stated. A possible source is the update tool that writes the block
+  definitions: it can write the property for each block state from the game, into the
+  definitions or into a report under `assets/mcrs/reports/`. The owner decides the source.
+  Until then, Table 1 is the source, and a data pack cannot add a randomly ticking block.
 - **U3: Crops on a base that is not farmland** (GRW-CRP-002). A crop cannot stay there
   (GRW-CRP-001), so only a command makes the case. Decide by policy: the formula gives `g` from
   1.
-- **U4: The skip of the torchflower crop** (GRW-CRP-003, step 2). The wiki states the skip for
-  beetroots only. Experiment E-G1 with `torchflower_crop` decides it.
-- **U5: Shape functions of the growth blocks** (GRW-CAN-001, GRW-CAC-001, GRW-STM-001). The
-  survival of sugar cane (water next to the base, or `#minecraft:supports_sugar_cane_adjacently`),
-  the break of a cactus next to a solid block, and the attached stem that loses its fruit are
-  shape functions. `block-support.md` does not state them, and its data form (SUP-PRED-002)
-  allows only offsets of one step, while the water test of sugar cane reads P + D + horizontal.
-  Question to the author of `block-support.md`.
-- **U6: The age at which a cactus draws for a flower** (GRW-CAC-001, step 3). The wiki states
-  "exactly 9 random ticks". Experiment E-G4 with a cactus at each age decides whether the draw
-  is at `age` 8 or at another age, and whether the `n` for the chance counts P.
-- **U7: The states that the bamboo sapling sets** (GRW-BAM-001, step 4). Experiment E-G4.
-- **U8: The azalea, the mangrove propagule and the poplar sapling** (GRW-SAP-003). Their
-  features and draws are not documented for this version. Experiment E-G5 with each of them.
-- **U9: Death of the grass block under a block that is not a full occluder** (GRW-SPR-001). The
-  wiki states a light level of 4; this document states the full occluder. Experiment E-G6 with
-  glass, an upside-down slab and a torch decides it.
-- **U10: Leaves** (GRW-LEF-001, GRW-LEF-002). Which shape updates schedule the distance tick,
-  and whether a decay sends the level event 2001. Experiment E-G7 with an observer and a
-  client recorder.
-- **U11: The melt threshold of ice** (GRW-ICE-001). 11 or 12. Experiment E-G7 with a torch at
-  the Manhattan distances 3 and 4.
-- **U12: The schedule of frosted ice** (GRW-ICE-002). The delay and the role of
-  `random_tick_speed`. No experiment at this version: nothing makes frosted ice.
-- **U13: The flower feature of the biome for bone meal** (GRW-BON-003). The data pack of this
-  version has no configured feature of the type `minecraft:flower`; the flowers of a biome are
-  placed features such as `minecraft:flower_plains` with their own `count` and `offset`. Which
-  feature the response places, and with which placement, is not known. Experiment E-G9 with a
-  flat world in plains: count the flowers and their distance from P after 100 uses.
-- **U14: The distribution of the growth time** (GRW-CRP-003). Experiment E-G1 gives the
-  fixture for the exhaustive tier. It has not run.
+- **U5: The data form of the survival predicates** (GRW-CAN-002, GRW-CAC-002, GRW-FRM-003,
+  GRW-STM-002). The predicates read P + D plus a horizontal step, and a fluid tag. The data form
+  of `block-support.md` (SUP-PRED-002) allows only offsets of one step and no fluid tag.
+  Question to the author of `block-support.md`: extend the form, or keep these predicates as
+  rules of this document.
+- **U14: Frosted ice** (GRW-ICE-002). No experiment is possible at this version: nothing makes
+  frosted ice. The rule stays `source_suggested`.
+- **U15: Experiments that have not run.** The rates of the rules that E-G2 to E-G8 confirm are
+  not measured: the 1/7 of a sapling, the 1/3 of bamboo, the four draws of the spread block.
+  These rules have a kernel test and no black-box result at all: GRW-CRP-002 and GRW-CRP-003 (the distribution of the growth time of a lone wheat,
+  of a 9 × 9 field, of a dry wheat and of a diagonal pair, over 20 runs of 20 000 ticks at
+  `random_tick_speed` 3, with beetroots and the torchflower crop); GRW-STM-001 (the side of the
+  fruit over 200 stems); GRW-CAN-001, GRW-CAC-001, GRW-BAM-001 to GRW-BAM-003 (the heights,
+  the flower and the leaves over 100 columns); GRW-BON-001 to GRW-BON-004 (the histogram of 200
+  dispensers of bone meal on wheat, beetroots, a sapling, a grass block in plains and bamboo,
+  and the count of bone meal that stays). Each of these gives a fixture for the exhaustive tier
+  of the growth tests when it runs.
+- **U16: A square of dark oak that did not grow** (GRW-SAP-002). In experiment E-G5, the square
+  of dark oak saplings with the north-west corner (0, −60, 760) did not grow in 405 ticks at
+  `random_tick_speed` 1000, while the square of pale oak with the same feature parameters grew.
+  In experiment E-G5b, three squares of dark oak at other positions grew in 1 507 ticks, and the
+  feature `minecraft:dark_oak` places at a free position. The cause of the first result is not
+  known. A repeat of E-G5 at the same position decides whether the position or the run is the
+  cause.
 
 ---
 
@@ -1039,77 +1225,74 @@ Each item names the rules that it affects and the experiment or the source that 
 Each experiment runs on a vanilla dedicated server of the version of
 `assets/minecraft/version.json`, with `online-mode=false`, `level-type=minecraft:flat`,
 `pause-when-empty-seconds=-1` and `spawn-protection=0`. The commands go to the console. The
-default flat world has a grass block at y −61 and air above. Each case stands in its own column,
+default flat world has a grass block at y −61 and air above. Each case stands in its own area,
 force-loaded with `forceload add`. `tick freeze` stops the ticks before the scene is built, and
 `tick step <n>` runs exactly `n` ticks. `gamerule random_tick_speed <k>` sets the rate. The
-result of a step is read with `execute if block <P> <state>`, which prints "Test passed" to the
-console. A histogram over a field is read with `clone` of the field to a scratch area, then
-`fill ... minecraft:structure_void replace <state>` for each state, which prints the count.
+result of a step is read with `execute if block <P> <state>`, which prints "Test passed" or
+"Test failed" to the console.
 
-A dark room is a box of stone of 15 × 5 × 15 inside, with a roof two blocks thick. The block
-light at a position inside comes from a torch at a known Manhattan distance: a torch gives 14,
-and the light falls by 1 for each block. The sky light inside is 0.
+A dark room is a box of stone with a roof of two blocks, built so that the sky light inside is 0.
+The block light at a position inside comes from a torch at a known Manhattan distance: a torch
+gives 14, and the light falls by 1 for each block.
 
-A fixture of an experiment holds the input (the `setblock` commands, `k`, the number of ticks
-and of runs) and the observation: a list of `(tick, position, state)` for a deterministic case, a
-histogram (state → count) over `N` runs for a random case, and a list of `(dx, dy, dz, block)`
-relative to the sapling for a tree.
+A fixture holds the input (the `setblock` commands, `k`, the number of ticks) and the
+observation: a list of `(position, state)` after the ticks, and for a tree a list of
+`(dx, dy, dz, block)` relative to the sapling. The fixtures of this section are under
+`crates/mcrs_minecraft_simulation/tests/fixtures/vanilla/growth/`.
 
-- **E-G1** (the growth formula). In a dark room with torches that give light 15 at each crop:
-  a lone wheat on moist farmland (a water source at distance 4 at the same level); a 9 × 9
-  field of wheat on moist farmland with water in the center; a lone wheat on dry farmland; two
-  wheat diagonal to each other on dry farmland; the same with `beetroots` and
-  `torchflower_crop`. Use `k` = 3 and `tick step 20000`, in 20 runs. Record the histogram of
-  the ages. Expected: the mean count of growth steps follows GRW-CRP-003 (1/7 for the lone
-  moist wheat, 1/3 in the center of the field, 1/13 for the dry wheat, 1/23 for the diagonal
-  pair, 2/3 of these rates for beetroots).
-- **E-G2** (light and survival). In a dark room, wheat on moist farmland with a torch at the
-  Manhattan distances 5 (light 9), 6 (light 8) and 7 (light 7). Use `k` = 300 and
-  `tick step 2000`. Expected: the wheat at light 9 reaches `age` 7; the wheat at light 8 stays
-  at `age` 0 and stays wheat; the wheat at light 7 stays wheat until a shape update: then set a
-  block next to it; expected: it pops. Then, under the open sky: `time set midnight`, wheat on
-  moist farmland with no torch, `tick step 2000`. Expected: `age` 7.
-- **E-G3** (the fruit). Under light 15, `melon_stem[age=7]` on farmland with dirt at the four
-  horizontal neighbors, in 200 copies. Use `k` = 300 and `tick step 400`. Expected: each copy
-  that grew a fruit is an attached stem that faces the fruit; the four directions each have
-  about 1/4 of the fruits. Then the same with stone instead of dirt. Expected: no fruit.
-- **E-G4** (the columns). Under light 15: sugar cane on sand next to water; cactus on sand;
-  `bamboo_sapling` on dirt; `cactus[age=8]` with free sides, in 100 copies. Use `k` = 300 and
-  `tick step 4000`. Expected: sugar cane and cactus reach a height of 3 and not 4; bamboo
-  reaches 12 to 16 and never 17, with `large` leaves at the top, `small` below it, and `age` 1
-  from the third block; the cactus copies grow a flower in about 10 of 100 cases, and a cactus
-  with a flower stays at its height.
-- **E-G5** (the saplings). Under the open sky at noon: one sapling of each type of Table 7, a
-  2 × 2 square of dark oak, of pale oak, of spruce and of jungle, and an oak sapling under a
-  stone block at P + 2U. Use `k` = 4096 and `tick step 400`. Expected: each sapling grows the
-  tree of Table 7, with leaves that have `persistent` false; the squares grow one large tree
-  from the north-west corner; the sapling under stone stays, with `stage` 1 after a time. Then
-  `time set midnight`, a new oak sapling, `tick step 2000`. Expected: it stays a sapling.
-  Record each tree as `(dx, dy, dz, block)`.
-- **E-G6** (grass and mycelium). Under light 15, a grass block next to dirt, coarse dirt and
-  rooted dirt; a grass block under stone, under glass, under a water source, under one snow
-  layer, under two snow layers, under an upside-down stone slab, under a torch in a glass
-  room; the same cases with mycelium. Use `k` = 300 and `tick step 2000`. Expected: only the
-  dirt becomes a grass block (mycelium for mycelium); the grass under stone, under water and
-  under two snow layers is dirt; the others stay (U9 decides the slab).
-- **E-G7** (leaves, ice, snow). `oak_leaves[distance=7]` alone, in 100 copies, `k` = 300,
-  `tick step 2000`: expected: none remains, and the drops lie on the ground. A line of 8 leaves
-  from an oak log: expected: `distance` 1 to 6 for the first six, and the two last decay. Ice
-  with a torch at the Manhattan distance 3 and another at 4, `tick step 2000`: expected: the
-  first is water, the second decides U11. A snow layer with `layers` 5 next to a torch at the
-  distance 2: expected: air. Ice under the sun with no torch: expected: ice.
-- **E-G8** (farmland). Farmland at the distances 1 to 5 from a water source, at the same
-  level, one below and one above; farmland with no water, with and without wheat on it. Use
-  `k` = 300 and `tick step 400`. Expected: `moisture` 7 up to the distance 4 at the same level
-  and one above; 0 at the distance 5 and for the water one below; the dry farmland without
-  wheat is dirt, and the dry farmland with wheat has `moisture` 0 and is farmland.
-- **E-G9** (bone meal). A dispenser with 64 bone meal that faces a `wheat[age=0]`, pulsed
-  one time with a block of redstone and reset, in 200 copies: expected: the histogram of the
-  ages is 2 to 5 with about 50 copies each, and each dispenser holds 63. The same at stone:
-  expected: the dispenser holds 64. The same at `beetroots[age=0]`: expected: about 150 copies
-  at `age` 1 and 50 at `age` 0, and each dispenser holds 63. The same at an oak sapling in a
-  dark room, 200 copies: expected: about 90 copies grew a tree or changed `stage`. The same at
-  a grass block in plains, 100 uses at one block: expected: short grass, tall grass and flowers
-  within dx ±7; record the farthest distance for U13.
+Each experiment below ran one time. The fixture gives the commands of the scene, the
+`random_tick_speed` and the number of ticks that ran, and the state of each position that the
+experiment reads.
 
-The experiments E-G1 and E-G9 give the fixtures for the exhaustive tier of the growth tests.
+- **E-G2** (the light of a crop). Build a dark room. Put wheat with `age` 0 on moist farmland at
+  four places, with a torch at the Manhattan distance 5, 6, 7, and with no torch. Put wheat on
+  moist farmland and an oak sapling under the open sky. Set the time to midnight. Run 2 020
+  ticks at `random_tick_speed` 300. Then put stone next to the wheat of the three dark places.
+  Then set the time to noon and run 412 ticks at `random_tick_speed` 1000. Result: the wheat at
+  light 9 has `age` 7. The wheat at light 8 has `age` 0, and stays after the stone. The wheat at
+  light 7 and the wheat in darkness have `age` 0, and are air after the stone. The wheat under
+  the open sky has `age` 7 at midnight. The sapling is a sapling at midnight, and a log after
+  the run at noon. Fixture: `crates/mcrs_minecraft_simulation/tests/fixtures/vanilla/growth/e-g2.json`.
+- **E-G5** (the saplings). Under the open sky at noon, put one sapling of each type of Table 7,
+  a square of dark oak, of pale oak, of spruce and of jungle, and an oak sapling under a plate
+  of stone at P + 3U. Run 405 ticks at `random_tick_speed` 1000. Count the logs and the leaves in
+  the box dx ±12, dy −1..+40, dz ±12 of each sapling. Result: each sapling of a row "no" of
+  Table 7 is a log of its wood, with leaves of its wood and no persistent leaf. The poplar
+  sapling gives orange poplar leaves. The single dark oak sapling stays. The squares of pale oak,
+  spruce and jungle are logs at their four positions, with 43, 81 and 79 logs. The square of
+  dark oak stays (U16). The sapling under the plate stays. Fixture: `e-g5.json` in the same
+  directory.
+- **E-G5b** (the dark oak square). Put three squares of dark oak saplings at three positions and
+  a square of pale oak. Place the feature `minecraft:dark_oak` with the command `place feature`
+  at a free position. Run 1 507 ticks at `random_tick_speed` 1000. Result: the three squares of
+  dark oak are logs at their four positions, with 38 to 40 logs each, as the square of pale oak.
+  The command places the feature. Fixture: `e-g5b.json`.
+- **E-G6** (the spread block). Under the open sky at noon, put dirt, coarse dirt and rooted dirt
+  in the grass surface. Put stone, glass, a water source in a cell of glass, one snow layer, two
+  snow layers, a bottom slab, a top slab and persistent leaves on grass blocks. Put a ring of
+  mycelium around one dirt, and mycelium under stone. Run 2 016 ticks at `random_tick_speed`
+  300. Result: the dirt is a grass block; the coarse dirt and the rooted dirt stay. The grass
+  under stone, under the water, under two snow layers and under the bottom slab is dirt. The
+  grass under glass, under one snow layer, under the top slab and under the leaves stays. The
+  dirt in the ring is mycelium. The mycelium under stone is dirt. Fixture: `e-g6.json`.
+- **E-G7** (leaves, ice, snow). Put 20 lone oak leaves with `distance` 7. Put an oak log with
+  a line of eight oak leaves with `distance` 7 to its east. Put ice with a torch at the Manhattan
+  distance 3, ice with a torch at the distance 4, five snow layers with a torch at the distance
+  2, five layers with a torch at the distance 3, and ice with no torch. Run 20 ticks at
+  `random_tick_speed` 0, then 2 007 ticks at `random_tick_speed` 300. Result: after the 20 ticks
+  the line has the distances 1 to 6, 7 and 7. After the run, none of the 20 lone leaves remains;
+  the line has the distances 1 to 6, and its two last blocks are air. The ice at light 11 is
+  water, the ice at light 10 is ice, the snow at light 12 is air, the snow at light 11 stays, and
+  the ice under the sun is ice. Fixture: `e-g7.json`.
+- **E-G8** (farmland). Put a water source in the surface with farmland and wheat at the
+  distances 1 to 5 east of it, at its level. Put a second source with a glass block east of it,
+  and farmland one level below the surface at the distances 2 to 6, each in a hole with wheat;
+  run 2 ticks before the wheat, so that the light settles. Put a third source with farmland one
+  level above the surface at the distances 1 to 4. Put farmland with `moisture` 7 and no water
+  near it, one with wheat and one without. Run 421 ticks at `random_tick_speed` 300. Result: at
+  the level of the water, the farmland at the distances 1 to 4 has `moisture` 7 and the one at 5
+  has `moisture` 0. One level below the water, the farmland at the distances 2 to 4 has
+  `moisture` 7 and the ones at 5 and 6 have `moisture` 0; all the wheat in the holes stays. One
+  level above the water, all the farmland has `moisture` 0. The dry farmland without wheat is a
+  grass block, and the one with wheat has `moisture` 0 and keeps the wheat. Fixture:
+  `e-g8.json`.
