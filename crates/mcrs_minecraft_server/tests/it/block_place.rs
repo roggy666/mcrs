@@ -20,6 +20,7 @@ use mcrs_minecraft_engine_world::session::PlayerSession;
 use mcrs_minecraft_engine_world::world::dimension::{DimensionTypeConfig, InDimension};
 use mcrs_minecraft_engine_world::world::storage::random_ticks::RandomTickIndex;
 use mcrs_minecraft_engine_world::world::storage::section::SectionIndex;
+use mcrs_minecraft_entity::entity_type_keys::EntityType;
 use mcrs_minecraft_game_mode::{GameMode, PlayerGameMode};
 use mcrs_minecraft_item_key::item_keys::Item;
 use mcrs_minecraft_item_stack::{Count, ItemStack, Kind};
@@ -40,6 +41,7 @@ use mcrs_voxel::{BlockPos, BlockStateId, ColumnPos, SectionPos};
 
 use crate::commands::chats;
 use crate::host_app::{self, PlayServer};
+use crate::mob_replication::mob_entities;
 
 const PLACER: Uuid = Uuid::from_u128(1);
 const STONE: Kind = Kind(1);
@@ -453,4 +455,58 @@ fn plc_sup_001_a_poppy_is_placed_only_where_it_can_stay() {
     ticks(&mut server, 2);
     let placed = send(&mut server, &placer, &use_on(ground, Direction::Up, 4));
     assert_eq!(placed.watcher, [format!("block_update 65 {poppy}")]);
+}
+
+#[test]
+fn egg_use_001_a_spawn_egg_used_on_a_block_spawns_its_mob_on_the_face() {
+    let mut app = host_app::make_host_app();
+    install_item_table(app.world_mut(), test_item_table()).unwrap();
+    app.add_plugins((
+        VanillaBlocksPlugin::default(),
+        VanillaEntityPhysicsPlugin,
+        VanillaItemEntityPlugin,
+        VanillaBlockPlacePlugin,
+    ));
+    let (mut server, placer, ground) = placer_in(app, on_the_ground);
+    let world = server.world();
+    let stack = world.get::<Slots>(placer.player).unwrap().get(0).unwrap();
+    world
+        .entity_mut(stack)
+        .insert(Kind(Item::PigSpawnEgg.id().number()));
+    assert!(
+        mob_entities(&mut server).is_empty(),
+        "no mob before the use"
+    );
+
+    let answer = send(&mut server, &placer, &use_on(ground, Direction::Up, 1));
+    ticks(&mut server, 2);
+
+    let mobs = mob_entities(&mut server);
+    assert_eq!(mobs.len(), 1, "one mob spawns: {:?}", answer.placer);
+    let pig = &mobs[0];
+    assert_eq!(pig.mob.kind.entity_type, EntityType::Pig);
+    assert_eq!(
+        pig.state.body.position,
+        ground.as_dvec3() + DVec3::new(0.5, 1.0, 0.5),
+        "the pig stands on the clicked face"
+    );
+    assert!(
+        !answer
+            .placer
+            .iter()
+            .any(|line| line.starts_with("block_update")),
+        "no refresh for a spawn: {:?}",
+        answer.placer
+    );
+    assert!(
+        answer.placer.iter().any(|line| line == "ack 1"),
+        "the sequence is acknowledged: {:?}",
+        answer.placer
+    );
+    let count = {
+        let world = server.world();
+        let stack = world.get::<Slots>(placer.player).unwrap().get(0).unwrap();
+        world.get::<Count>(stack).unwrap().get()
+    };
+    assert_eq!(count, 64, "a creative placer keeps the egg");
 }

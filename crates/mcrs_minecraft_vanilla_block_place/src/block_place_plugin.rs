@@ -42,7 +42,7 @@ use mcrs_minecraft_volume::{BlockVolume, Unavailable, Volume};
 use mcrs_voxel::{BlockPos, BlockStateId};
 use rustc_hash::FxHashMap;
 
-use crate::{Click, Spot, placed_state, replaceable};
+use crate::{Click, SpawnEggSet, Spot, placed_state, replaceable};
 
 #[derive(Clone)]
 pub struct BlockPlacePlugin;
@@ -54,7 +54,8 @@ impl Plugin for BlockPlacePlugin {
             place_blocks
                 .in_set(TickSet::ClientInput)
                 .after(BlockBreakSet)
-                .after(BlockUseSet),
+                .after(BlockUseSet)
+                .after(SpawnEggSet),
         );
     }
 }
@@ -328,7 +329,11 @@ struct BlockItem {
     interact: Option<SwingAnimation>,
 }
 
-fn placement_swing(player: Entity, hand: Hand, animation: Option<SwingAnimation>) -> SwingPlayer {
+pub(crate) fn placement_swing(
+    player: Entity,
+    hand: Hand,
+    animation: Option<SwingAnimation>,
+) -> SwingPlayer {
     let animation = animation.unwrap_or_default();
     let kind = match animation.kind {
         SwingKind::None => SwingAnimationKind::None,
