@@ -10,4 +10,5 @@
     reason = "test input is written as JSON"
 )]
 
+mod block_connections;
 mod block_support;

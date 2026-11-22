@@ -132,7 +132,7 @@ static WORLD: LazyLock<(BlockDefinitions, BlockSupport, Vec<SupportIssue>)> = La
     (definitions, support, issues)
 });
 
-fn definitions() -> &'static BlockDefinitions {
+pub(crate) fn definitions() -> &'static BlockDefinitions {
     &WORLD.0
 }
 
@@ -140,7 +140,7 @@ fn support() -> &'static BlockSupport {
     &WORLD.1
 }
 
-fn state(text: &str) -> BlockStateId {
+pub(crate) fn state(text: &str) -> BlockStateId {
     let (name, properties) = text.split_once('[').unwrap_or((text, ""));
     let entry = definitions()
         .block(&format!("minecraft:{name}"))

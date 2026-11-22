@@ -4,7 +4,27 @@ use mcrs_minecraft_core::voxel_shape::Aabb;
 
 const EPSILON: f32 = 1.0e-4;
 
-type Rect = [f32; 4];
+pub(crate) type Rect = [f32; 4];
+
+pub(crate) const POST_AREA: Rect = [7.0, 7.0, 9.0, 9.0];
+
+pub(crate) fn arm_area(side: Direction) -> Rect {
+    match side {
+        Direction::North => [7.0, 0.0, 9.0, 9.0],
+        Direction::South => [7.0, 7.0, 9.0, 16.0],
+        Direction::West => [0.0, 7.0, 9.0, 9.0],
+        Direction::East => [7.0, 7.0, 16.0, 9.0],
+        Direction::Down | Direction::Up => POST_AREA,
+    }
+}
+
+pub(crate) fn bottom_covers(shape: &[Aabb], region: Rect) -> bool {
+    let area: Vec<Rect> = shape
+        .iter()
+        .filter_map(|aabb| face_rect(aabb, Direction::Down))
+        .collect();
+    covers(&area, &region)
+}
 
 pub fn passes(shape: &[Aabb], direction: Direction, test: FaceTest) -> bool {
     let area: Vec<Rect> = shape
