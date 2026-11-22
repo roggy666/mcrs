@@ -1,0 +1,959 @@
+# Fluids: behavioural specification
+
+Version: see `assets/minecraft/version.json`.
+
+This document states water and lava on the server: the fluid state of a position, the fluid
+tick, the flow from a position to its neighbours, the formation of a new source, the blocks that
+water and lava form when they meet, the blocks that hold water, and the bubble columns.
+
+`block-simulation.md` states the machinery that this document uses: the sets and their flags
+(SIM-SET-002), the neighbor updates (SIM-NBR-001), the shape updates (SIM-SHP-001), the
+scheduled block ticks and fluid ticks (SIM-SCH-001 to SIM-SCH-011) and the random ticks
+(SIM-RND-002). This document refers to these rules by id and does not repeat them.
+`block-placing.md`, `block-breaking.md` and `falling-block.md` state what a player action or a
+falling block does to a fluid; this document refers to them.
+
+Out of scope:
+
+- The random tick of lava, which lights fire. `block-simulation.md`, section 12, states fire.
+- What a fluid does to an entity inside it, and the push of a flow. `entity-physics.md`
+  states the inside actions.
+- Sponges, ice, frosted ice, snow layers, cauldrons and buckets. The environment attribute
+  `gameplay/water_evaporates` concerns the bucket; it does not change the flow of a water
+  block (FLD-TCK-002).
+- The client: the render of a fluid, its sounds and its particles.
+
+## 0. Conventions
+
+### 0.1 Terms
+
+- **Set**, **flags**, **neighbor update**, **shape update**, **scheduled tick**, **placement
+  side effect**, **removal side effect**, **chain**, **randomly ticking**, **section**: as
+  `block-simulation.md` defines them. This document writes flags as numbers.
+- **Fluid type**, **fluid state**, **source**, **flowing**, **level**: as `block-simulation.md`,
+  section 0.1, defines them. The level is 1 to 8. A source has the level 8.
+- **Falling**: a flowing state with the level 8. A falling state has fluid of the same type
+  directly above it, or had it when the state was computed.
+- **Fluid block**: a block state of `minecraft:water` or `minecraft:lava`. Its property `level`
+  is the **block level**, 0 to 15. FLD-STA-001 maps the block level to a fluid state.
+- **Fluid state of a position**: the fluid state that the block state at the position gives
+  through its component `mcrs:fluid_state`. A fluid block gives its own state. A waterlogged block
+  and a bubble column give a water source. Each other block state gives `minecraft:empty`.
+- **Fluid holder**: a block state whose fluid state is not `minecraft:empty`: a fluid block, a
+  waterlogged block or a bubble column.
+- **Waterloggable block**: a block whose states have the property `waterlogged`. A
+  **waterlogged block** is such a state with `waterlogged` = true.
+- **Fluid tick**: a scheduled fluid tick (SIM-SCH-001) that runs at a position whose fluid state
+  is of the type of the tick (SIM-SCH-007).
+- **Tick period**: the delay of the fluid tick that a fluid holder schedules for itself
+  (FLD-TCK-002).
+- **Drop**: the level that a fluid loses from one position to the next horizontal position
+  (FLD-FLW-001).
+- **Slope distance**: the number of steps that the search for a hole looks ahead from a
+  neighbour (FLD-FLW-004).
+- **Open position** for a fluid: a position whose block the fluid can replace (FLD-FLW-003).
+- **Hole**: a position whose block below can take the fluid, or holds the same fluid
+  (FLD-FLW-004).
+- **New state of a position**: the fluid state that FLD-FLW-002 computes for a position from its
+  neighbours.
+- **Spread**: the write of a fluid from a position into a neighbour (FLD-FLW-005).
+- **Conversion**: the change of a fluid block to a solid block when water and lava meet
+  (FLD-CNV-001 to FLD-CNV-003).
+- **Bubble column**: a block state of `minecraft:bubble_column`. Its property `drag` is false in
+  an **upward** column and true in a **downward** column. A **base** is `minecraft:soul_sand`
+  or `minecraft:magma_block`.
+- **World rule**: a value of the registry `minecraft:game_rule` that a server operator changes
+  (FLD-RUL-001).
+- **Fast lava**: the value true of the environment attribute `minecraft:gameplay/fast_lava` at
+  the position (`environment-attributes.md`).
+- **Solid**: a block state whose collision box is not empty and has a mean extent of at least
+  35/48 of a block over the three axes, or a height of at least 1 block. A full cube, a slab, a
+  fence and a wall are solid; air, a fluid, a plant, a torch, a carpet and one layer of snow
+  are not. The collision box is the component `minecraft:collision_box` of the block
+  definition (FLD-FLW-003).
+
+### 0.2 Provenance
+
+- `black_box_confirmed`: shown by a game-produced artefact that is cited by path. An experiment
+  of section 13 produced the artefact, or the game shipped it.
+- `source_suggested_black_box_confirmed`: taken from the reference behaviour, and consistent
+  with an artefact cited by path.
+- `source_suggested`: taken from the reference behaviour, with no artefact yet. Confidence is at
+  most medium, and section 12 names the experiment that decides it.
+- `documentation`: taken from public documentation of player-facing behaviour.
+- `design`: a choice of this project. The rule states the reason.
+- `derived`: it follows from other rules of this document, through the argument in the rule.
+- `unresolved`: not decided. Section 12 collects these items.
+
+Each rule states its kind, as `docs/spec/README.md` defines it.
+
+### 0.3 Artefacts cited
+
+- `../../assets/mcrs/block_definition/water.json` and `lava.json`: the property `level` of the
+  fluid blocks and the component `mcrs:fluid_state` of each block level.
+- `../../assets/mcrs/block_definition/oak_slab.json`: the component `mcrs:fluid_state` of a
+  waterlogged block.
+- `../../assets/mcrs/block_definition/bubble_column.json`: the property `drag` and the component
+  `mcrs:fluid_state` of a bubble column.
+- `../../assets/mcrs/block_definition/soul_sand.json` and `magma_block.json`: the two bases of a
+  bubble column.
+- `../../assets/mcrs/registry_definition/game_rule.json`: the world rules
+  `minecraft:water_source_conversion` and `minecraft:lava_source_conversion` with their defaults.
+- `../../assets/mcrs/reports/registries.json`: the registry `minecraft:fluid`.
+- `../../assets/mcrs/reports/packets.json`: the packet `minecraft:level_event` (play clientbound
+  id 47).
+- The fixtures under `../../crates/mcrs_minecraft_simulation/tests/fixtures/vanilla/fluid/`: the
+  records of the experiments of section 13. Each record holds the commands of the scene, and for
+  each observed tick the block changes, the pending fluid ticks and the pending block ticks of
+  the box of the scene. This document cites a record by its file name.
+
+### 0.4 ID prefixes
+
+| Prefix | Subject |
+|--------|---------|
+| `FLD-STA` | the fluid state of a position and the fluid blocks |
+| `FLD-TCK` | the fluid tick: period, schedule, delay |
+| `FLD-FLW` | the flow: levels, the new state, open positions, holes, spread |
+| `FLD-SRC` | the formation of a source and the retreat of a flow |
+| `FLD-CNV` | the blocks that water and lava form |
+| `FLD-WLG` | waterlogged blocks |
+| `FLD-BUB` | bubble columns |
+| `FLD-RUL` | the world rules and the environment attribute of this domain |
+| `FLD-FTP` | the footprint of each handler of this domain |
+| `FLD-DEV` | intentional deviations (section 11) |
+
+### 0.5 Directions
+
+The directions are `D` (down), `U` (up), `N`, `S`, `W` and `E`. A position P plus a direction d
+is the neighbour P + d. The **horizontal neighbours** of P are P + N, P + S, P + W and P + E.
+Where a rule of this document visits the horizontal neighbours, the result does not depend on
+the order of the visit, except where the rule states an order.
+
+---
+
+## 1. Fluid state
+
+### FLD-STA-001: Block level and fluid state
+
+- **Behavior:** a fluid block with the block level `b` gives this fluid state of its type:
+
+| Block level `b` | Fluid state |
+|-----------------|-------------|
+| 0 | source, level 8 |
+| 1 to 7 | flowing, level `8 − b` |
+| 8 to 15 | falling: flowing, level 8 |
+
+  The fluid block of a fluid state is the inverse: a source gives `b` = 0, a flowing state with
+  the level `l` < 8 gives `b` = `8 − l`, and a falling state gives `b` = 8. The server writes
+  only the block levels 0 to 8. A block level 9 to 15 comes only from a command or a save, and
+  the server treats it as 8.
+- **Edge cases:** a position outside the vertical extent, or in a section that is not loaded,
+  has the fluid state `minecraft:empty` (SIM-SET-003).
+
+Provenance: `black_box_confirmed` by `water.json` and `lava.json` (the component
+`mcrs:fluid_state` of each block level), by the registry `minecraft:fluid` of
+`registries.json`, and by E-FL1 and E-FL4 (the server writes the block levels 0 to 8 only).
+Kind: semantic. Confidence: high.
+
+### FLD-STA-002: Blocks that hold a fluid
+
+- **Behavior:** the fluid state of a position comes from its block state:
+  - a fluid block: FLD-STA-001;
+  - a waterlogged block: a water source (FLD-WLG-001);
+  - a bubble column: a water source (FLD-BUB-001);
+  - each other block state: `minecraft:empty`.
+
+  A block state that is not a fluid block never holds lava, and never holds flowing water.
+
+Provenance: `black_box_confirmed` by `oak_slab.json` and `bubble_column.json` (the component
+`mcrs:fluid_state` appears only on the waterlogged permutation, and only as a water source).
+Kind: semantic. Confidence: high.
+
+---
+
+## 2. The fluid tick
+
+### FLD-TCK-001: The steps of a fluid tick
+
+- **Inputs:** a fluid tick at P of the type F. S is the fluid state of P when the tick runs.
+- **Behavior:** the tick does these steps in this order:
+  1. If S is a source, go to step 3.
+  2. Let N be the new state of P (FLD-FLW-002).
+     - If N is `minecraft:empty`: set P to `minecraft:air` with flags 3. S becomes empty.
+     - Else, if N is not S: set P to the fluid block of N with flags 3. Schedule the fluid tick
+       (P, F) with the delay of FLD-TCK-003. S becomes N.
+     - Else: P does not change.
+  3. If S is not empty: spread from P with the state S (FLD-FLW-005).
+- **Ordering constraints:** each set completes, with its chain, before the next step
+  (SIM-SET-002). The sets of step 3 are part of the tick.
+- **Edge cases:**
+  - When step 2 removes P, step 3 does nothing. A position that became air spreads nothing.
+  - When P does not change in step 2 and step 3 writes nothing, the tick schedules no tick. A
+    flow that reached its final shape has no pending fluid tick (`water_flat_floor.json`: no
+    fluid tick is pending from tick 40 on; `lava_overworld.json`: none from tick 120 on).
+  - The tick of a source never changes P. It only spreads. A waterlogged block and a bubble
+    column tick as a source.
+- **Conformance tests:** E-FL1, E-FL2, E-FL8.
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL1, E-FL6 and E-FL8
+(`water_flat_floor.json`, `waterlogged.json`, `water_source_removed.json`). Kind: semantic.
+Confidence: high.
+
+### FLD-TCK-002: Tick period
+
+- **Behavior:** the tick period of a fluid at P is:
+
+| Fluid | Fast lava at P | Tick period |
+|-------|----------------|-------------|
+| water | any | 5 |
+| lava | false | 30 |
+| lava | true | 10 |
+
+  The period is the delay of each fluid tick that this document schedules, except the delay of
+  FLD-TCK-003. The attribute is the switch, not the dimension: a dimension whose environment
+  sets `gameplay/fast_lava` to true has fast lava, and the nether of the vanilla data pack is
+  such a dimension.
+- **Edge cases:** a water block that a command puts in the nether flows with the period 5, as in
+  the overworld (`water_nether.json`). The attribute `gameplay/water_evaporates` does not act on
+  a water block.
+- **Conformance tests:** E-FL1 (water: a new ring of levels every 5 ticks), E-FL3 (lava: a new
+  ring every 30 ticks in the overworld and every 10 ticks in the nether).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL1 (`water_flat_floor.json`) and
+E-FL3 (`lava_overworld.json`, `lava_nether.json`, `water_nether.json`). Kind: semantic.
+Confidence: high.
+
+### FLD-TCK-003: The delay after a change
+
+- **Inputs:** a fluid tick at P that changes P from the flowing state S to the flowing state N
+  (FLD-TCK-001 step 2).
+- **Behavior:** the delay of the tick that step 2 schedules is the tick period of the fluid at
+  P. A rise of the level, a fall of the level and a change to or from a falling state all give
+  the same delay. The fluid tick draws no random value.
+- **Edge cases:** a longer delay of lava after a rise of its level, four periods with the
+  probability 3/4, is a behaviour of earlier versions of the game. This version does not show
+  it: 80 changes of the level of lava, 40 upward and 40 downward, each give the delay 30
+  (`lava_level_rise_delay.json`, `lava_level_change_delay.json`).
+- **Conformance tests:** E-FL3.
+
+Provenance: `black_box_confirmed` by E-FL3 (`lava_level_rise_delay.json`,
+`lava_level_change_delay.json`: the pending lava tick at each changed position has `t` = 30
+right after its change). Kind: semantic. Confidence: high.
+
+### FLD-TCK-004: Who schedules a fluid tick
+
+- **Behavior:** these events schedule the fluid tick (P, F) with the tick period as its delay,
+  where F is the fluid type of the fluid state of P:
+  1. The placement side effect of a set that puts a fluid holder at P (SIM-SET-002 step 2.7),
+     when the set did not end in a conversion (FLD-CNV-001). A set by a command, by a spread, by
+     a bucket, by a tick, or a set that puts a waterlogged block or a bubble column, all count.
+  2. The neighbor-changed handler of a fluid holder at P (SIM-NBR-001), when it did not end in a
+     conversion.
+  3. The fluid tick itself, when it changes P (FLD-TCK-001 step 2; the delay of FLD-TCK-003).
+
+  No other event schedules a fluid tick. A fluid tick that is already pending absorbs a second
+  schedule of the same (P, F) (SIM-SCH-004). As a result, the work of a flow is proportional to
+  the positions that change, not to the positions that hold a fluid.
+- **Edge cases:**
+  - The random tick of lava (SIM-RND-002) schedules no fluid tick.
+  - A set with flags that have no *notify-neighbors* bit and no placement side effect (for
+    example flags 530) puts a fluid that does not flow until an event of the list touches it.
+  - A source that a set puts at P has a pending tick with the delay of the period
+    (`water_flat_floor.json`: one pending `minecraft:water` tick with `t` = 5 at tick 0;
+    `waterlogged.json`: the same for a waterlogged slab). A source whose neighbours change gets a
+    new tick through event 2.
+- **Conformance tests:** E-FL1, E-FL6, E-FL7, E-FL8.
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL1, E-FL6, E-FL7 and E-FL8
+(`water_flat_floor.json`: the pending fluid ticks after each set; `waterlogged.json`: the
+pending tick of a waterlogged slab after its set and after a change of its neighbour;
+`bubble_column.json`: the pending ticks of each column block after its set;
+`water_source_removed.json`: the neighbours of a removed source change 5 ticks after the
+removal). Kind: semantic. Confidence: high.
+
+### FLD-TCK-005: No random value
+
+- **Behavior:** no rule of this document draws a random value. The flow of water and lava, the
+  formation of a source, each conversion and each bubble column are functions of the block
+  states, of the world rules and of the environment attribute. The only random behaviour of a
+  fluid is the random tick of lava, which `block-simulation.md` (SIM-RND-002, section 12)
+  states.
+- **Postconditions:** the same stored state and the same inputs give the same flow, for each
+  count of threads and in each run.
+
+Provenance: `derived` from FLD-TCK-003 and the rules of sections 3 to 7. Kind: semantic.
+Confidence: high.
+
+---
+
+## 3. Flow
+
+### FLD-FLW-001: Levels and the drop
+
+- **Behavior:** the drop and the slope distance of a fluid at P are:
+
+| Fluid | Fast lava at P | Drop | Slope distance |
+|-------|----------------|------|----------------|
+| water | any | 1 | 4 |
+| lava | false | 2 | 2 |
+| lava | true | 1 | 4 |
+
+  A flowing state at a horizontal neighbour of a position with the level `l` has at most the
+  level `l − drop` (FLD-FLW-002). A level of 0 or less is no fluid. As a result, on a flat floor
+  water reaches 7 positions from a source (levels 7 to 1), lava reaches 3 positions (levels 6, 4,
+  2), and lava with fast lava reaches 7 positions.
+- **Conformance tests:** E-FL1 (`water_flat_floor.json`: at tick 100, the block levels 1 to 7
+  at the Manhattan distances 1 to 7 from the source, and nothing at the distance 8), E-FL3
+  (`lava_overworld.json`: the block levels 2, 4, 6 at the distances 1 to 3; `lava_nether.json`:
+  the block levels 1 to 7 at the distances 1 to 7), E-FL10.
+
+Provenance: the drops `source_suggested_black_box_confirmed` by E-FL1 and E-FL3. The slope
+distance of water `source_suggested_black_box_confirmed` by E-FL10 (`water_slope_hole_4.json`,
+`water_slope_hole_5.json`, `water_slope_hole_6.json`). The slope distances of lava
+`source_suggested`; section 12, U-03. Kind: semantic. Confidence: high for the drops and for
+water, medium for the slope distances of lava.
+
+### FLD-FLW-002: The new state of a position
+
+- **Inputs:** a position Q and a fluid type F. The block state at Q.
+- **Behavior:** the new state of Q for F is computed from the neighbours of Q in these steps:
+  1. Let `m` be the highest level among the horizontal neighbours of Q whose fluid state is of
+     the type F and whose face toward Q is open (FLD-FLW-003 step 3). Let `s` be the count of
+     those neighbours that are sources. If no such neighbour exists, `m` = 0 and `s` = 0.
+  2. If `s` ≥ 2, the world rule of FLD-SRC-001 allows a conversion to a source, and the block
+     below Q is solid or holds a source of F, the new state is a source of F.
+  3. Else, if the fluid state of Q + U is of the type F and the face between Q and Q + U is open,
+     the new state is falling.
+  4. Else, if `m − drop` > 0, the new state is flowing with the level `m − drop`. The drop is
+     the drop at Q (FLD-FLW-001).
+  5. Else the new state is `minecraft:empty`.
+
+  The fluid state of Q itself is not an input. The new state is a function of the six
+  neighbours of Q, of the block below Q and of the world rule.
+- **Edge cases:**
+  - A falling state gives its horizontal neighbours the level `8 − drop`, as a source does
+    (`water_falling.json`: the level 7 around the position where the fall lands;
+    `lava_falling.json`: the level 6).
+  - "Solid" in step 2 is the property of a block state that its definition sets. A full cube is
+    solid; air, a fluid and a plant are not. Section 12 (U-04) lists the open question for the
+    partial blocks.
+- **Conformance tests:** E-FL2 (`water_trench_source.json`: the middle of a 1 × 3 trench becomes
+  a source at tick 5; the middles of a 1 × 4 trench stay at the level 7; a middle above a water
+  source becomes a source; a middle above air stays flowing and falls), E-FL8.
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL1, E-FL2, E-FL4 and E-FL8. Kind:
+semantic. Confidence: high; the solid test of step 2 medium.
+
+### FLD-FLW-003: Open positions
+
+- **Inputs:** a fluid F at P, a direction d and the neighbour Q = P + d.
+- **Behavior:** F can flow from P into Q when all these conditions are true:
+  1. The fluid state of Q permits the replacement:
+     - `minecraft:empty`: yes;
+     - water: only when F is lava and d = D (the lava then forms stone, FLD-CNV-002);
+     - lava: never. Water never displaces lava.
+  2. The block state at Q can take F:
+     - `minecraft:air`: yes;
+     - a waterloggable block: no. Only a placement into a source waterlogs it
+       (`block-placing.md`, PLC-STA-005), never a flow (FLD-WLG-004);
+     - a block of these types: no: each door, each sign and hanging sign, `minecraft:ladder`,
+       `minecraft:sugar_cane`, `minecraft:bubble_column`, `minecraft:nether_portal`,
+       `minecraft:end_portal`, `minecraft:end_gateway`, `minecraft:structure_void`;
+     - each other block state: yes when it is not solid (section 0.1), no when it is solid. Short
+       grass, a torch, a sapling, a carpet, a lily pad and one layer of snow take a fluid; a
+       full cube, a fence and a wall do not.
+  3. The face between P and Q is open: neither the block at P nor the block at Q covers the full
+     face between them with its collision box. A fluid block, air and a plant cover no face.
+- **Edge cases:** when Q is a flowing state of F, condition 1 is false. The fluid at Q is not
+  written by P; Q computes its own new state in its tick (FLD-FLW-002). This is why a flow
+  retreats position by position when its source is gone (FLD-SRC-002).
+- **Conformance tests:** E-FL1 (water flows into air), E-FL5 (`fluid_conversions.json`: water
+  that reaches a lava source stops beside it and the lava converts; lava beside water converts
+  and does not enter; lava above water enters it and forms stone), E-FL6 (`waterlogged.json`: a
+  flow of the level 7 beside a fence leaves the fence dry), E-FL8, E-FL9.
+
+Provenance: conditions 1 and 2 for air, fluid blocks and waterloggable blocks
+`source_suggested_black_box_confirmed` by E-FL1, E-FL5, E-FL6 and E-FL8. Condition 2 for
+blocks that are not solid `source_suggested_black_box_confirmed` by E-FL9
+(`displaced_blocks.json`: short grass, a torch, a carpet and a sapling take water and lava; a
+rail, which is waterloggable, and a fence do not). The thresholds of "solid", the list of block
+types that never take a fluid, and condition 3 are `source_suggested`; section 12, U-08 and
+U-11. Kind: semantic. Confidence: high for the confirmed rows, medium for the rest.
+
+### FLD-FLW-004: Holes and the slope search
+
+- **Inputs:** a position P with the fluid F, and its horizontal neighbours.
+- **Behavior:**
+  - A position Q is a **hole** for F when the face between Q and Q + D is open and the fluid
+    state of Q + D is of the type F, or the block at Q + D can take F (FLD-FLW-003 condition 2).
+  - The **slope** of a horizontal neighbour Q of P is:
+    - 0, when Q is a hole;
+    - else the smallest number of horizontal steps from Q to a hole, over positions that F can
+      pass (FLD-FLW-003 conditions 2 and 3, and the position is not a source of F), without a
+      step back toward the position that the search came from, up to the slope distance;
+    - 1000 when no hole is in reach.
+  - The **spread directions** of P are the horizontal directions d whose neighbour P + d has the
+    smallest slope among the four neighbours, and that F can pass. When no hole is in reach of
+    any neighbour, each passable direction is a spread direction.
+- **Numeric semantics:** the search from a neighbour at the distance 1 from P takes up to the
+  slope distance of steps. As a result, a hole at the horizontal distance `slope distance + 1`
+  from P turns the flow, and a hole one position farther does not.
+- **Edge cases:** the search reads only the positions that it steps over, their blocks below and
+  the faces between them. It does not read the level of a fluid on its way.
+- **Conformance tests:** E-FL10 (`water_slope_hole_4.json`, `water_slope_hole_5.json`: a water
+  source on a flat floor with one hole at the distance 4 or 5 flows only toward the hole, in one
+  line; `water_slope_hole_6.json`: with the hole at the distance 6, the water flows in each
+  direction, as on a floor without a hole).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL10 for water. The slope distances of
+lava `source_suggested`; section 12, U-03. Kind: semantic. Confidence: high for water, medium
+for lava.
+
+### FLD-FLW-005: The spread
+
+- **Inputs:** a position P with the fluid state S of the type F, from FLD-TCK-001 step 3.
+- **Behavior:** the spread does these steps:
+  1. Let B = P + D. If F can flow from P into B (FLD-FLW-003 with d = D): write B (step 4) with
+     the new state of B. Then, if P has at least 3 horizontal neighbours that are sources of F,
+     spread to the sides (step 3). The spread ends.
+  2. Else, if S is a source, or B is not a hole for F: spread to the sides (step 3). Else the
+     spread ends: a falling flow above a hole, or above the same fluid, does not spread to the
+     sides.
+  3. *Spread to the sides.* Let `n` be `8 − drop` when S is falling, else `level(S) − drop`. If
+     `n` ≤ 0, nothing occurs. Else, for each spread direction d of P (FLD-FLW-004) such that F can
+     flow from P into Q = P + d (FLD-FLW-003): write Q with the new state of Q, when that state
+     is not empty.
+  4. *Write Q with the state N.* If the block at Q is not air, displace it (FLD-FLW-006). Then
+     set Q to the fluid block of N with flags 3. The placement side effect of that set schedules
+     the fluid tick of Q (FLD-TCK-004 event 1), or converts the block (FLD-CNV-001,
+     FLD-CNV-002).
+- **Ordering constraints:** step 1 before step 3. The order of the directions in step 3 is not
+  observable: each write puts the new state of Q, and that state does not depend on the writes
+  of the other directions in the same spread. The new state of Q reads the neighbours of Q at the
+  time of the write (`water_source_removed.json`: the position of a removed source gets the level
+  6 from a neighbour that still has the level 7, and the level 4 in its own tick 5 ticks later).
+- **Edge cases:**
+  - The state that a write puts at Q is the new state of Q, not `n`. The two are equal when P is
+    the only neighbour of Q with fluid. When Q has two source neighbours, the write puts a
+    source at Q at once (`water_trench_source.json`: the middle of a 1 × 3 trench is a source at
+    tick 5, in the tick of the ends).
+  - A source above a hole falls in its first tick and does not spread to the sides. Its next tick
+    comes from the neighbor update of the position below, 5 ticks later for water; then B holds
+    the same fluid, step 1 is false, and the source spreads to the sides
+    (`water_falling.json`: the fall at tick 5, the level 7 beside the source at tick 10).
+  - A falling flow that reaches a floor spreads to the sides with `n` = `8 − drop`
+    (`water_falling.json`: the level 7 at tick 20 around the position where the fall lands;
+    `lava_falling.json`: the level 6 at tick 120). The flows beside the source fall too, so a
+    fall of 3 positions gives a disc of the radius 8 for water on the floor.
+  - A fall into a pool of sources ends in the position above the pool. No fluid appears on the
+    floor around the pool (`water_falling_on_pool.json`).
+- **Conformance tests:** E-FL1, E-FL2, E-FL4, E-FL8.
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL1, E-FL2, E-FL4 and E-FL8, except the
+clause of step 1 about 3 source neighbours, which is `source_suggested` (section 12, U-09).
+Kind: semantic. Confidence: high; the clause of 3 source neighbours medium.
+
+### FLD-FLW-006: The block that a flow displaces
+
+- **Inputs:** a write of FLD-FLW-005 step 4 at a position Q whose block is not air.
+- **Behavior:**
+  - Water drops the loot of the block at Q (the drops of SIM-SET-004, with no tool), then the
+    set replaces the block. A player sees the item of the block appear: wheat seeds from short
+    grass, the torch, the carpet, the sapling.
+  - Lava replaces the block with no drop. The step records the level event of FLD-CNV-004 at Q.
+- **Edge cases:** a block that is not solid has no removal side effect that leaves another
+  block.
+- **Conformance tests:** E-FL9 (`displaced_blocks.json`: at tick 40 the column holds one item
+  entity for each block that water displaced, and at tick 120 no item for a block that lava
+  displaced).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL9 for the drops; the level event
+`documentation` (section 12, U-10). Kind: semantic. Confidence: high for the drops, medium for
+the level event.
+
+---
+
+## 4. Sources
+
+### FLD-SRC-001: Formation of a source
+
+- **Behavior:** a position Q becomes a source of F when its new state is a source (FLD-FLW-002
+  step 2): at least two horizontal neighbours of Q are sources of F, the block below Q is solid
+  or holds a source of F, and the world rule allows it. The world rule is
+  `minecraft:water_source_conversion` for water (default true) and
+  `minecraft:lava_source_conversion` for lava (default false) (FLD-RUL-001). Q becomes a source
+  in the tick that writes Q: the spread of a neighbour (FLD-FLW-005 step 4) or the tick of Q
+  (FLD-TCK-001 step 2).
+- **Edge cases:**
+  - Two sources at the ends of a 1 × 3 trench make the middle a source 5 ticks after their
+    placement (water). With `water_source_conversion` false, the middle stays at the level 7.
+  - Two sources with two positions between them make no source: each middle has one source
+    neighbour.
+  - Two lava sources at the ends of a 1 × 3 trench make the middle a lava source 30 ticks after
+    their placement only when `lava_source_conversion` is true. With the default, the middle
+    stays at the level 6.
+  - A middle above a hole does not become a source. It becomes flowing, and the hole below it
+    becomes falling.
+- **Conformance tests:** E-FL2.
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL2 (`water_trench_source.json`,
+`water_trench_no_conversion.json`, `lava_trench_source.json`). Kind: semantic. Confidence: high.
+
+### FLD-SRC-002: Retreat of a flow
+
+- **Behavior:** when a set removes a source or lowers a level at P, each fluid neighbour of P
+  gets a neighbor update and schedules its fluid tick (FLD-TCK-004 event 2). In that tick, the
+  neighbour computes its new state (FLD-FLW-002) from its own neighbours. A neighbour with no
+  fluid neighbour of a higher level becomes empty, and its set gives the next ring its neighbor
+  updates. As a result, the flow retreats outward from the removed source, one tick period at a
+  time, and a position with another path to a source keeps the level of that path.
+- **Edge cases:** a removed source in the middle of its flow is written again by its
+  neighbours in their first tick, with the level that they still have minus the drop. It
+  retreats with them in the ticks that follow (FLD-FLW-005, Ordering constraints). On a flat
+  floor, the rings at an even distance and the rings at an odd distance from the removed source
+  change in turn, every 5 ticks for water, and each ring loses two levels in 10 ticks. The disc
+  of the radius 7 is gone 35 ticks after the removal.
+- **Conformance tests:** E-FL8 (`water_source_removed.json`).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL8. Kind: semantic. Confidence: high.
+
+---
+
+## 5. Blocks that water and lava form
+
+### FLD-CNV-001: Lava that meets water
+
+- **Inputs:** the placement side effect of a set that puts a lava block at P, and the
+  neighbor-changed handler of a lava block at P.
+- **Behavior:** the handler visits the positions P + U, P + N, P + S, P + W and P + E. If the
+  fluid state of one of them is water:
+  - when the fluid state of P is a source, set P to `minecraft:obsidian`;
+  - else set P to `minecraft:cobblestone`.
+
+  The set uses flags 3. The handler records the level event of FLD-CNV-004 at P. The handler
+  then schedules no fluid tick at P.
+- **Edge cases:**
+  - Water below a lava block converts nothing: P + D is not visited. Lava above water converts
+    the water, not itself (FLD-CNV-002).
+  - Water never flows into the lava position (FLD-FLW-003). A water flow that reaches a
+    neighbour of lava converts the lava at the moment of its own set, inside the chain of that
+    set, in the same tick.
+  - A lava source that a set puts next to water becomes obsidian in the same set. A water source
+    that a set puts beside or above a lava source makes it obsidian in the same set.
+- **Conformance tests:** E-FL5 (`fluid_conversions.json`: a) a flow of lava at the level 2 is
+  cobblestone in the tick of the set of water beside it; b1) water beside a lava source gives
+  obsidian at once; b2) water above a lava source gives obsidian at once; b3) water below a lava
+  source changes nothing; c2) and c3) a water flow that reaches a lava source gives obsidian in
+  the tick of the flow; e) a lava source beside a water source is obsidian at once).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL5. Kind: semantic. Confidence: high.
+
+### FLD-CNV-002: Lava that falls into water
+
+- **Inputs:** a spread of lava from P into B = P + D (FLD-FLW-005 step 1) where the fluid state
+  of B is water.
+- **Behavior:** the write sets B to `minecraft:stone` with flags 3 and records the level event
+  of FLD-CNV-004 at B. No lava is written at B.
+- **Edge cases:** this is the only case where lava displaces water (FLD-FLW-003 condition 1).
+  Lava that flows to the side of water does not enter it; the lava block converts by
+  FLD-CNV-001 at its own set. A lava source directly above water forms stone at its first tick.
+- **Conformance tests:** E-FL5 (`fluid_conversions.json`: c1) a lava source 3 positions above a
+  water source: the water position is stone at tick 90; b3) water set below a lava source: the
+  water position is stone 30 ticks later).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL5. Kind: semantic. Confidence: high.
+
+### FLD-CNV-003: Basalt
+
+- **Inputs:** the same handler as FLD-CNV-001.
+- **Behavior:** when the block below P is `minecraft:soul_soil`, and one of the five visited
+  positions holds `minecraft:blue_ice`, the handler sets P to `minecraft:basalt` with flags 3
+  and records the level event of FLD-CNV-004 at P. The water test of FLD-CNV-001 comes first at
+  each visited position.
+- **Conformance tests:** E-FL5 (`fluid_conversions.json`: d) a lava source set on soul soil
+  beside blue ice is basalt at once; d2) a flow of lava that reaches such a position is basalt
+  in the tick of the flow, tick 30).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL5. Kind: semantic. Confidence: high.
+
+### FLD-CNV-004: The fizz
+
+- **Behavior:** each conversion of FLD-CNV-001 to FLD-CNV-003, and each block that lava
+  displaces (FLD-FLW-006), records one level event with the id 1501 and the data 0 at the
+  position of the new block (SIM-EFX-001). The server delivers it as SIM-EFX-003 states, in the
+  packet `minecraft:level_event` (play clientbound id 47). The client plays the extinguish sound
+  of lava and shows smoke.
+
+Provenance: the packet id `black_box_confirmed` by `packets.json`. The event id `documentation`
+(the public protocol documentation lists 1501 as the lava fizz); section 12 (U-10) names the
+capture that confirms it. Kind: wire for the id, semantic for the occasions. Confidence:
+medium.
+
+---
+
+## 6. Waterlogged blocks
+
+### FLD-WLG-001: A waterlogged block is a water source
+
+- **Behavior:** the fluid state of a waterlogged block is a water source (FLD-STA-002). For
+  each rule of this document, a waterlogged block at Q counts as a water source at Q: it counts
+  in `s` of FLD-FLW-002, it makes Q + D "holds a source" for the position above, and water
+  cannot flow into Q.
+- **Edge cases:** a waterloggable block never holds flowing water and never holds lava.
+
+Provenance: `black_box_confirmed` by `oak_slab.json`. Kind: semantic. Confidence: high.
+
+### FLD-WLG-002: A waterlogged block flows
+
+- **Behavior:** the fluid tick of a waterlogged block is the tick of a water source (FLD-TCK-001
+  with S a source): it spreads into the open neighbours of the block (FLD-FLW-005). The spread
+  passes only the faces that the block does not cover (FLD-FLW-003 condition 3).
+- **Conformance tests:** E-FL6 (`waterlogged.json`: a) a waterlogged bottom slab in open air
+  gives its 4 horizontal neighbours the level 7 at tick 5 and a disc of the radius 7 by tick 35;
+  c) a waterlogged fence gives its open neighbour the level 7, also after the source beside it
+  is gone).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL6. Kind: semantic. Confidence: high.
+
+### FLD-WLG-003: When a waterlogged block ticks
+
+- **Behavior:** a set that puts a waterlogged block at P schedules the fluid tick (P, water)
+  with the tick period of water, and a change of a neighbour of P schedules it again
+  (FLD-TCK-004 events 1 and 2). A waterlogged block that a command puts in open air flows at
+  once, as a water source does.
+- **Conformance tests:** E-FL6 (`waterlogged.json`: a) one pending `minecraft:water` tick with
+  `t` = 5 at the slab at tick 0, and again after a neighbour of the slab changes at tick 20).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL6. Kind: semantic. Confidence: high.
+
+### FLD-WLG-004: Flowing water and a waterloggable block
+
+- **Behavior:** a flow never writes into a waterloggable block. The position of a waterloggable
+  block is not open for a flow (FLD-FLW-003 condition 2), waterlogged or not. A waterloggable
+  block becomes waterlogged only through a placement into a water source (`block-placing.md`,
+  PLC-STA-005), a bucket, or a set that puts the waterlogged state.
+- **Conformance tests:** E-FL6 (`waterlogged.json`: b) a flow of the level 7 reaches the
+  position beside a fence at tick 55; the fence keeps `waterlogged` = false to tick 70).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL6. Kind: semantic. Confidence: high.
+
+### FLD-WLG-005: Removal of a waterlogged block
+
+- **Behavior:** a destroy of a waterlogged block (SIM-SET-004) leaves a water source at its
+  position, because the destroy sets the block form of the fluid at the position. The source
+  then flows as each other source does. A set that puts another block at the position, without
+  a destroy, leaves what that set puts. `block-breaking.md` states the break by a player, and
+  `falling-block.md` (FBK-LND-004) states a falling block that lands in a source.
+- **Edge cases:** the command `setblock` with the mode `destroy` destroys the block and then
+  sets the new block. It leaves no source (`waterlogged.json`: a) the slab position is air after
+  the command, and the water around it retreats as after a removed source).
+
+Provenance: `derived` from SIM-SET-004 and FLD-WLG-001. The break by a player is not in a
+record; section 12, U-05. Kind: semantic. Confidence: medium.
+
+---
+
+## 7. Bubble columns
+
+### FLD-BUB-001: State
+
+- **Behavior:** a bubble column is a block state of `minecraft:bubble_column` with the property
+  `drag`. Its fluid state is a water source (FLD-STA-002). It is replaceable by a block
+  placement, and a fluid cannot flow into it (FLD-FLW-003). For each rule of sections 3 and 4
+  it counts as a water source.
+
+Provenance: `black_box_confirmed` by `bubble_column.json`. Kind: semantic. Confidence: high.
+
+### FLD-BUB-002: Formation and removal
+
+- **Behavior:** a line of water sources directly above a base becomes a column of bubble
+  columns: `drag` = false above `minecraft:soul_sand`, `drag` = true above
+  `minecraft:magma_block`. The line is each water source from the position above the base
+  upward, to the first block that is not a water source. The whole line changes in one tick. When
+  the base is gone, the whole column above its position becomes water sources again, in one
+  tick.
+- **Edge cases:** flowing water above a base does not become a column. A waterlogged block above
+  the base is not a water source block, so it ends the line.
+- **Conformance tests:** E-FL7 (`bubble_column.json`: five water sources in a walled column
+  above soul sand become `bubble_column[drag=false]` together; above a magma block
+  `bubble_column[drag=true]`; after the base is replaced by stone, the five blocks become
+  `minecraft:water` together).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL7. The result for a player is also
+`documentation`. Kind: semantic. Confidence: high.
+
+### FLD-BUB-003: Ticks of a column
+
+- **Behavior:**
+  - A set that puts a base at P, with a fluid holder at P + U, schedules a block tick at P + U
+    with the delay 20. The type of the tick is the block at P + U. When the tick runs and P + U
+    is a water source, the line above the base becomes a column (FLD-BUB-002).
+  - A change of the block below a bubble column at Q schedules a block tick at Q with the
+    delay 5 and the type `minecraft:bubble_column`. When the tick runs, the block below Q
+    decides: a base or a bubble column keeps the column, each other block turns Q and each bubble
+    column above Q into water sources (FLD-BUB-002).
+  - Each set that puts a bubble column schedules its fluid tick (FLD-TCK-004 event 1), and the
+    column ticks as a water source (FLD-TCK-001).
+- **Conformance tests:** E-FL7 (`bubble_column.json`: at tick 10, the set of the base; a
+  pending block tick of the type `minecraft:water` with `t` = 20 at the position above; the
+  column at tick 30. At tick 40, the base becomes stone; a pending block tick of the type
+  `minecraft:bubble_column` with `t` = 5 at the lowest column block; water at tick 45).
+
+Provenance: `source_suggested_black_box_confirmed` by E-FL7. The growth of a column when a
+water source appears above it is not in a record; section 12, U-07. Kind: semantic.
+Confidence: high for the formation and the removal, medium for the growth.
+
+### FLD-BUB-004: Entities
+
+- **Behavior:** the push of an entity in a bubble column is not in this document.
+  `entity-physics.md` states the inside actions of an entity; issue #88 adds the push of a flow
+  and of a column.
+
+Provenance: `design`: a boundary of this document. Kind: unspecified. Confidence: high.
+
+---
+
+## 8. World rules and attributes
+
+### FLD-RUL-001: World rules of this domain
+
+- **Behavior:** each rule is a value of the world. A server operator changes one rule without
+  the others.
+
+| Rule | Type | Default | Effect |
+|------|------|---------|--------|
+| `minecraft:water_source_conversion` | boolean | true | FLD-FLW-002 step 2, FLD-SRC-001 for water |
+| `minecraft:lava_source_conversion` | boolean | false | FLD-FLW-002 step 2, FLD-SRC-001 for lava |
+
+  The environment attribute `minecraft:gameplay/fast_lava` (`environment-attributes.md`) is
+  the switch of FLD-TCK-002 and FLD-FLW-001. It is a value of the environment at the position,
+  not a test of the dimension key.
+- **Edge cases:** this document adds no setting of the server. Each number of this document is
+  the vanilla value, and the budget of fluid ticks is the budget of SIM-SCH-006.
+
+Provenance: `black_box_confirmed` by `game_rule.json` (both rules, their types and defaults),
+by `registries.json` (the registry `minecraft:game_rule`) and by E-FL2 (the effect of each
+value). Kind: semantic. Confidence: high.
+
+---
+
+## 9. Footprints
+
+### FLD-FTP-001: The footprint of each handler
+
+- **Behavior:** one call of each handler of this document reads and writes only positions in
+  the box of Table 1, relative to the position P of the call. The box contains each read of
+  FLD-FLW-002, FLD-FLW-003 and FLD-FLW-004 for P and for each position that the call writes,
+  and each set of the call. Neighbor updates and shape updates that a set makes are new items
+  (SIM-MODEL-005); their targets are at most one position outside the writes.
+
+**Table 1. Footprints.** `d` is the slope distance at P (FLD-FLW-001).
+
+| Handler | `dx` | `dy` | `dz` | Writes | Reads beyond the writes |
+|---------|------|------|------|--------|-------------------------|
+| fluid tick of water (`d` = 4) | ±5 | −2..+1 | ±5 | P, P + D and the 4 horizontal neighbours | the slope search to the distance `d` + 1 and the blocks below it; the neighbours of each write for its new state; the blocks that cover a face |
+| fluid tick of lava without fast lava (`d` = 2) | ±3 | −2..+1 | ±3 | the same | the same, and the soul soil below P + D for FLD-CNV-003 |
+| fluid tick of lava with fast lava (`d` = 4) | ±5 | −2..+1 | ±5 | the same | the same |
+| placement side effect and neighbor-changed handler of a lava block (FLD-CNV-001, FLD-CNV-003) | ±1 | −1..+1 | ±1 | P | the 5 visited positions and the block below P |
+| placement side effect and neighbor-changed handler of a water block, a waterlogged block or a bubble column | 0 | 0 | 0 | none | none; it schedules the fluid tick of P |
+| placement side effect of a base (FLD-BUB-003) | 0 | +1 | 0 | none | the block above P; it schedules a block tick at P + U |
+| block tick of the block above a base, and block tick of a bubble column (FLD-BUB-003) | 0 | −1..+n | 0 | P and the line of water sources or bubble columns above P | the block below P. `n` is the height of the line |
+| random tick of lava | ±3 | 0..+3 | ±3 | fire | `block-simulation.md`, Table 1; the fire rules of its section 12 |
+
+- **Edge cases:** the write at P + D can convert (FLD-CNV-003 at P + D reads P + D − D, that is
+  2 below P, for the soul soil). This is why `dy` reaches −2. The conversion of a neighbour that
+  the spread writes is part of the tick (a chain item of its set).
+- **Invariants:** Table 6 of SIM-MODEL-009 gives ±5, −1..+1, ±5 for a fluid tick. The bound of
+  this document is wider by one position below. An implementation of this document must use the
+  bound of Table 1, and Table 6 of `block-simulation.md` must be extended to −2..+1 when the
+  fluid tick is implemented.
+
+Provenance: `derived` from the rules of this document and from SIM-MODEL-009. Kind: semantic.
+Confidence: medium.
+
+---
+
+## 10. Numeric constants
+
+| Constant | Value | Where | Provenance |
+|----------|-------|-------|------------|
+| Tick period of water | 5 | FLD-TCK-002 | `source_suggested_black_box_confirmed` (E-FL1) |
+| Tick period of lava | 30; 10 with fast lava | FLD-TCK-002 | `source_suggested_black_box_confirmed` (E-FL3) |
+| Delay after a level change | the tick period; no longer delay | FLD-TCK-003 | `black_box_confirmed` (E-FL3) |
+| Drop of water | 1 | FLD-FLW-001 | `source_suggested_black_box_confirmed` (E-FL1) |
+| Drop of lava | 2; 1 with fast lava | FLD-FLW-001 | `source_suggested_black_box_confirmed` (E-FL3) |
+| Slope distance of water | 4 | FLD-FLW-001 | `source_suggested_black_box_confirmed` (E-FL10) |
+| Slope distance of lava | 2; 4 with fast lava | FLD-FLW-001 | `source_suggested` (U-03) |
+| Sources that form a source | 2 horizontal neighbours | FLD-FLW-002 | `source_suggested_black_box_confirmed` (E-FL2) |
+| Sources that keep a sideways spread above a hole | 3 horizontal neighbours | FLD-FLW-005 | `source_suggested` (U-09) |
+| Level event of the fizz | 1501 | FLD-CNV-004 | `documentation` (U-10) |
+| Block tick delay above a new base | 20 | FLD-BUB-003 | `source_suggested_black_box_confirmed` (E-FL7) |
+| Block tick delay of a bubble column | 5 | FLD-BUB-003 | `source_suggested_black_box_confirmed` (E-FL7) |
+| `water_source_conversion` default | true | FLD-RUL-001 | `black_box_confirmed` (`game_rule.json`) |
+| `lava_source_conversion` default | false | FLD-RUL-001 | `black_box_confirmed` (`game_rule.json`) |
+| `level_event` packet id | 47 | FLD-CNV-004 | `black_box_confirmed` (`packets.json`) |
+
+---
+
+## 11. Intentional deviations
+
+- **Rule:** FLD-TCK-001, FLD-FLW-005. **Reference:** the fluid ticks of one phase run in the
+  collection order of SIM-SCH-006, and the vanilla order across columns depends on the column
+  layout. **Reason:** the order of the fluid ticks of different positions inside one phase is
+  the ordering policy of the instance (SIM-MODEL-008). Each rule of this document gives the
+  result inside one position; the result of a flow after the phase does not depend on the
+  order, because each write puts the new state of its target (FLD-FLW-005). **Visible to the
+  client:** no: the client receives the block changes of a tick in one `section_blocks_update`
+  for each section (SIM-SET-005). **Bug reference:** none. **Test:** a differential test
+  compares the states after the tick, not inside it; the tick of each change is compared under
+  the exact policy and reported, not failed.
+
+## 12. Unresolved
+
+Each item lists the rules that it affects and the experiment that answers it. The experiments
+of this section have not run.
+
+- **U-03: The slope distances of lava** (FLD-FLW-001, FLD-FLW-004). The values 2 and 4 with fast
+  lava. Experiment: as E-FL10, with a lava source and a hole at the distances 2, 3 and 4 in the
+  overworld, and at the distances 5 and 6 above the roof of the nether.
+- **U-04: Solid blocks under a new source** (FLD-FLW-002 step 2). Which partial blocks count as
+  solid: a slab, a carpet, glass, a waterlogged block. Experiment: a 1 × 3 trench with each
+  block under the middle; read whether the middle becomes a source.
+- **U-05: The break of a waterlogged block by a player** (FLD-WLG-005). The command `setblock`
+  cannot show it (FLD-WLG-005, Edge cases). Experiment: a player breaks a waterlogged slab in
+  open air; read the position and the flow around it with
+  `tools/mcrs_minecraft_client_recorder`.
+- **U-07: Growth of a bubble column** (FLD-BUB-002, FLD-BUB-003). Experiment: a column of two
+  bubble columns, then a water source set above it; read the ticks until the new block is a
+  bubble column, and the pending block ticks.
+- **U-08: Blocks that never take a fluid, and the thresholds of "solid"** (FLD-FLW-003
+  condition 2, FLD-FLW-002 step 2). The list of block types (doors, signs, ladders, sugar cane,
+  portals, structure void) and the thresholds 35/48 and 1 of the term "solid" come from the
+  reference. Experiment: as E-FL9, with a door, a sign, a ladder, sugar cane, a lily pad, a
+  snow layer, a bottom slab without water and a lectern in the path of water; read which are
+  displaced.
+- **U-09: The sideways spread above a hole with 3 source neighbours** (FLD-FLW-005 step 1).
+  Experiment: a 3 × 3 pool of sources on a floor, with a hole under its edge; read whether the
+  edge above the hole still gives the floor beside it the level 7.
+- **U-10: The id of the fizz** (FLD-CNV-004). Capture the packets of a vanilla client during
+  E-FL5 with `tools/mcrs_minecraft_client_recorder` and read the `level_event` packets.
+- **U-11: The faces that a flow passes** (FLD-FLW-003 condition 3). Which blocks cover a face
+  for a flow: stairs, a slab, a trapdoor, a waterlogged fence. Experiment: a waterlogged bottom
+  slab and a waterlogged top slab beside air; read where water appears.
+
+## 13. Experiments
+
+The experiments ran on the vanilla dedicated server of the version of
+`assets/minecraft/version.json`, with a flat overworld, no player, `random_tick_speed` 0,
+`spawn_mobs` false and the chunks of the scene force-loaded. Each scene starts with
+`/tick freeze`. The blocks of the scene come from `/setblock` and `/fill`. After each
+`/tick step`, `/save-all flush` writes the columns, and the record of the experiment takes the
+block changes, the `fluid_ticks` and the `block_ticks` of the columns from the region files.
+The tick 0 of a record is the state after the last command of the scene, before any step. The
+floor of the overworld scenes is the grass of the flat world, at y = −61; the fluids start at
+y = −60. The records are the fixtures of section 0.3.
+
+- **E-FL1** (`water_flat_floor.json`). Put a water source at (16, −60, 16) on the floor. Step
+  one tick at a time to tick 45, then to tick 100. Result: at tick 0, one pending
+  `minecraft:water` tick with `t` = 5 at the source; `t` counts down by one in each step. At
+  tick 5, the 4 horizontal neighbours have the block level 1, and each has a pending tick with
+  `t` = 5. At tick `5k`, for `k` = 2 to 7, the positions at the Manhattan distance `k` get the
+  block level `k`. No position at the distance 8 changes. From tick 40 on, no fluid tick is
+  pending and nothing changes. At tick 100, the disc has the radius 7.
+- **E-FL8** (`water_source_removed.json`). Continue E-FL1 at tick 100. Set the source to air.
+  Step one tick at a time to tick 50. Result: at tick 0, the 4 neighbours have a pending tick
+  with `t` = 5. At tick 5, the 4 neighbours have the block level 3 and the removed position has
+  the block level 2. At tick 10, the removed position and the ring at the distance 2 have the
+  block level 4. At tick 15, the rings at the distances 1 and 3 have the block level 5. At tick
+  20, the distances 0, 2 and 4 have the level 6; at tick 25, the distances 1, 3 and 5 have the
+  level 7. At tick 30, the distances 0, 2, 4 and 6 are air; at tick 35, the distances 1, 3, 5
+  and 7 are air, and no fluid tick is pending.
+- **E-FL2** (`water_trench_source.json`, `water_trench_no_conversion.json`,
+  `lava_trench_source.json`). Build four walled trenches on the floor: A is 1 × 3; B is 1 × 4;
+  C is 1 × 3 with a water source under its middle; D is 1 × 3 with air under its middle. Put
+  water sources at the two ends of each. Step one tick at a time to tick 30. Result: at tick 5,
+  the middle of A and the middle of C are sources, the two middles of B have the block level 1,
+  and the middle of D has the block level 1. At tick 10, the air under the middle of D has the
+  block level 8. Nothing else changes. Then set `water_source_conversion` to false and repeat A:
+  the middle has the block level 1 at tick 5 and stays so to tick 30. Then build two lava
+  trenches 1 × 3. With `lava_source_conversion` false, the middle has the block level 2 at tick
+  30 and stays so to tick 90. With the rule true, the middle is a lava source at tick 30.
+- **E-FL3** (`lava_overworld.json`, `lava_nether.json`, `water_nether.json`,
+  `lava_level_rise_delay.json`, `lava_level_change_delay.json`). Put a lava source on the floor of the overworld
+  and step one tick at a time to tick 130. Result: at tick 30, the 4 neighbours have the block
+  level 2; at tick 60, the distance 2 has the block level 4; at tick 90, the distance 3 has the
+  block level 6; then nothing changes and no fluid tick is pending. Then, above the roof of the
+  nether, put a stone platform, a lava source on it, and step one tick at a time to tick 60.
+  Result: at tick `10k`, for `k` = 1 to 7, the distance `k` has the block level `k`. Put a water
+  source on the same platform. Result: at tick 5 its neighbours have the block level 1, at tick
+  10 the distance 2 has the block level 2. Then, in 40 walled 1 × 4 trenches `[A][Q][P][B]` of
+  the overworld, put the source A, step 120 ticks, put the source B, and step 30 ticks. Result:
+  P has the block level 4 before B, and the block level 2 at tick 150; the pending lava tick at
+  each of the 40 positions P has `t` = 30. Then, in 40 other trenches `[A][Q][P][B]`, put A and
+  B, step 60 ticks, set B to air, step 30 ticks, and after 180 more ticks put B again and step
+  30 ticks. Result: P has the block level 2 with A and B, the block level 4 at tick 90 after B
+  is gone, and the block level 2 again at tick 271; after each change, the pending lava tick at
+  each of the 40 positions P has `t` = 30.
+- **E-FL4** (`water_falling.json`, `lava_falling.json`, `water_falling_on_pool.json`). Put a
+  water source 3 positions above the floor, and step one tick at a time to tick 60. Result: the
+  position below the source is falling (block level 8) at tick 5, the next at tick 10, and the
+  position on the floor at tick 15. At tick 10, the 4 neighbours of the source have the block
+  level 1. At tick 20, the 4 neighbours of the position on the floor have the block level 1.
+  The 4 flows beside the source fall too and land at tick 25. The disc on the floor grows by one
+  ring every 5 ticks, to the radius 8 at tick 55. The same with lava, in steps of 5 ticks to tick
+  200: the fall at ticks 30, 60 and 90; the block level 2 around the position on the floor at
+  tick 120; the flows beside the source land at tick 150; the block level 4 at the distance 3 at
+  tick 180. Then dig a 3 × 3 pit of water sources into the floor and put a water source 3
+  positions above its centre. Result: the fall reaches the position above the pit at tick 15;
+  the 4 flows beside the source fall into the positions above the pit; no water appears on the
+  floor around the pit.
+- **E-FL5** (`fluid_conversions.json`). Build these scenes, with the lava first, and step 100
+  ticks: a) a walled 1 × 5 trench with a lava source at one end; b1) a lava source in a 1 × 2
+  pocket; b2) a lava source with air above it; b3) a lava source with air below it; c1) a walled
+  water source with a lava source 3 positions above it; c2) a walled 1 × 3 trench `[L][air][W]`;
+  c3) a walled 1 × 4 trench `[W][air][air][L]`; d) soul soil with a lava source on it and blue
+  ice beside the lava; d2) a walled 1 × 2 trench with a lava source, soul soil under the second
+  position and blue ice behind it. Result during the 100 ticks: d) is basalt at tick 0; c2) the
+  water flows into the middle at tick 5 and the lava source is obsidian; c3) the water reaches
+  the position beside the lava source at tick 10 and the lava source is obsidian; d2) the lava
+  flows onto the soul soil at tick 30 and that position is basalt; c1) the lava falls at ticks
+  30 and 60, and the water position is stone at tick 90; a) the lava has the block levels 2, 4,
+  6 along the trench at tick 90. Then set water: a) at the far end of the trench; b1) beside the
+  lava source; b2) above it; b3) below it. Result at once: a) the lava of the block level 6
+  beside the water is cobblestone; b1) and b2) obsidian; b3) nothing. 30 ticks later, b3) the
+  water position is stone. Then put a water source in a 1 × 2 pocket and a lava source beside
+  it. Result at once: the lava position is obsidian.
+- **E-FL6** (`waterlogged.json`). a) Set `oak_slab[type=bottom,waterlogged=true]` in open air.
+  Result: a pending `minecraft:water` tick with `t` = 5 at the slab; at tick 5 the 4 horizontal
+  neighbours have the block level 1; the disc has the radius 7 at tick 35. Set a neighbour of
+  the slab to stone, then to air. Result: a pending `minecraft:water` tick at the slab; the
+  neighbour has the block level 1 at the next multiple of 5. Run `setblock ... air destroy` at
+  the slab. Result: the position is air, and the water retreats as in E-FL8. b) A walled 1 × 3
+  trench with a water source at one end and `oak_fence` at the other end. Result: the middle has
+  the block level 1 at tick 5; the fence keeps `waterlogged=false` for 20 ticks. c) A walled
+  1 × 3 trench with a water source at one end and `oak_fence[waterlogged=true]` beside it.
+  Result: at tick 5 the third position has the block level 1. Set the source to air. Result: at
+  tick 5 the source position has the block level 1 from the fence.
+- **E-FL7** (`bubble_column.json`). Two walled 1 × 1 × 5 columns of water sources on the floor.
+  Set `soul_sand` under one and `magma_block` under the other. Step one tick at a time for 30
+  ticks. Result: at tick 0, a pending block tick of the type `minecraft:water` with `t` = 20 at
+  the position above each base, and a pending fluid tick with `t` = 5. At tick 20, the five
+  blocks above the soul sand are `bubble_column[drag=false]` and the five above the magma block
+  are `bubble_column[drag=true]`, all in one tick; each has a pending fluid tick with `t` = 5.
+  Set both bases to stone. Result: a pending block tick of the type `minecraft:bubble_column`
+  with `t` = 5 at the lowest block of each column. At tick 5, the ten blocks are water sources.
+- **E-FL9** (`displaced_blocks.json`). Twelve walled 1 × 2 trenches. In the second position of
+  each, put one of `short_grass`, `torch`, `rail`, `white_carpet`, `oak_sapling`, `oak_fence`;
+  in the first position, a water source in six trenches and a lava source in the other six.
+  Step to tick 120 and read the item entities of the column. Result: at tick 5, the water
+  replaces the short grass, the torch, the carpet and the sapling with the block level 1; the
+  rail and the fence stay. At tick 30, the lava replaces the same four blocks with the block
+  level 2; the rail and the fence stay. At tick 40 and at tick 120, the column holds four item
+  entities: wheat seeds, a torch, a white carpet and an oak sapling, each at the position of a
+  block that water replaced. No item comes from a block that lava replaced.
+- **E-FL10** (`water_slope_hole_4.json`, `water_slope_hole_5.json`, `water_slope_hole_6.json`).
+  On the floor, dig one hole at the distance 4 east of a water source, in a second scene at the
+  distance 5, in a third at the distance 6. Step 45 ticks. Result: with the hole at the distance
+  4 or 5, the water flows only east, one position every 5 ticks, and falls into the hole; no
+  water appears north, south or west of the source. With the hole at the distance 6, the water
+  flows in each direction and makes the disc of E-FL1.

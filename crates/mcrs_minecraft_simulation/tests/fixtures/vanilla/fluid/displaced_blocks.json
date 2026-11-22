@@ -1,0 +1,2109 @@
+{
+ "experiment": "E-FL9",
+ "name": "displaced_blocks",
+ "dimension": "minecraft:overworld",
+ "box": [
+  7,
+  -61,
+  159,
+  11,
+  -59,
+  190
+ ],
+ "setup": [
+  "fill 7 -60 159 10 -60 161 minecraft:stone",
+  "fill 8 -60 160 9 -60 160 minecraft:air",
+  "setblock 9 -60 160 minecraft:short_grass",
+  "fill 7 -60 161 10 -60 163 minecraft:stone",
+  "fill 8 -60 162 9 -60 162 minecraft:air",
+  "setblock 9 -60 162 minecraft:torch",
+  "fill 7 -60 163 10 -60 165 minecraft:stone",
+  "fill 8 -60 164 9 -60 164 minecraft:air",
+  "setblock 9 -60 164 minecraft:rail",
+  "fill 7 -60 165 10 -60 167 minecraft:stone",
+  "fill 8 -60 166 9 -60 166 minecraft:air",
+  "setblock 9 -60 166 minecraft:white_carpet",
+  "fill 7 -60 167 10 -60 169 minecraft:stone",
+  "fill 8 -60 168 9 -60 168 minecraft:air",
+  "setblock 9 -60 168 minecraft:oak_sapling",
+  "fill 7 -60 169 10 -60 171 minecraft:stone",
+  "fill 8 -60 170 9 -60 170 minecraft:air",
+  "setblock 9 -60 170 minecraft:oak_fence",
+  "fill 7 -60 173 10 -60 175 minecraft:stone",
+  "fill 8 -60 174 9 -60 174 minecraft:air",
+  "setblock 9 -60 174 minecraft:short_grass",
+  "fill 7 -60 175 10 -60 177 minecraft:stone",
+  "fill 8 -60 176 9 -60 176 minecraft:air",
+  "setblock 9 -60 176 minecraft:torch",
+  "fill 7 -60 177 10 -60 179 minecraft:stone",
+  "fill 8 -60 178 9 -60 178 minecraft:air",
+  "setblock 9 -60 178 minecraft:rail",
+  "fill 7 -60 179 10 -60 181 minecraft:stone",
+  "fill 8 -60 180 9 -60 180 minecraft:air",
+  "setblock 9 -60 180 minecraft:white_carpet",
+  "fill 7 -60 181 10 -60 183 minecraft:stone",
+  "fill 8 -60 182 9 -60 182 minecraft:air",
+  "setblock 9 -60 182 minecraft:oak_sapling",
+  "fill 7 -60 183 10 -60 185 minecraft:stone",
+  "fill 8 -60 184 9 -60 184 minecraft:air",
+  "setblock 9 -60 184 minecraft:oak_fence",
+  "setblock 8 -60 160 minecraft:water",
+  "setblock 8 -60 162 minecraft:water",
+  "setblock 8 -60 164 minecraft:water",
+  "setblock 8 -60 166 minecraft:water",
+  "setblock 8 -60 168 minecraft:water",
+  "setblock 8 -60 170 minecraft:water",
+  "setblock 8 -60 174 minecraft:lava",
+  "setblock 8 -60 176 minecraft:lava",
+  "setblock 8 -60 178 minecraft:lava",
+  "setblock 8 -60 180 minecraft:lava",
+  "setblock 8 -60 182 minecraft:lava",
+  "setblock 8 -60 184 minecraft:lava"
+ ],
+ "events": [
+  {
+   "tick": 0,
+   "command": "fill 7 -60 159 10 -60 161 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 12 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 160 9 -60 160 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 160 minecraft:short_grass",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 160"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 161 10 -60 163 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 162 9 -60 162 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 162 minecraft:torch",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 162"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 163 10 -60 165 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 164 9 -60 164 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 164 minecraft:rail",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 164"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 165 10 -60 167 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 166 9 -60 166 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 166 minecraft:white_carpet",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 166"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 167 10 -60 169 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 168 9 -60 168 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 168 minecraft:oak_sapling",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 168"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 169 10 -60 171 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 170 9 -60 170 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 170 minecraft:oak_fence",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 170"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 173 10 -60 175 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 12 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 174 9 -60 174 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 174 minecraft:short_grass",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 174"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 175 10 -60 177 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 176 9 -60 176 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 176 minecraft:torch",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 176"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 177 10 -60 179 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 178 9 -60 178 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 178 minecraft:rail",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 178"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 179 10 -60 181 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 180 9 -60 180 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 180 minecraft:white_carpet",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 180"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 181 10 -60 183 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 182 9 -60 182 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 182 minecraft:oak_sapling",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 182"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 7 -60 183 10 -60 185 minecraft:stone",
+   "feedback": [
+    "System chat: Successfully filled 8 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "fill 8 -60 184 9 -60 184 minecraft:air",
+   "feedback": [
+    "System chat: Successfully filled 2 block(s)"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 9 -60 184 minecraft:oak_fence",
+   "feedback": [
+    "System chat: Changed the block at 9, -60, 184"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 160 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 160"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 162 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 162"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 164 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 164"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 166 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 166"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 168 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 168"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 170 minecraft:water",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 170"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 174 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 174"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 176 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 176"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 178 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 178"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 180 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 180"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 182 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 182"
+   ]
+  },
+  {
+   "tick": 0,
+   "command": "setblock 8 -60 184 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 8, -60, 184"
+   ]
+  }
+ ],
+ "observations": [
+  {
+   "tick": 0,
+   "changes": [
+    [
+     7,
+     -60,
+     159,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     160,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     161,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     162,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     163,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     164,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     165,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     166,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     167,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     168,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     169,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     170,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     171,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     173,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     174,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     175,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     176,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     177,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     178,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     179,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     180,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     181,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     182,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     183,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     184,
+     "minecraft:stone"
+    ],
+    [
+     7,
+     -60,
+     185,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     159,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     161,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     163,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     165,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     167,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     169,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     171,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     173,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     175,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     177,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     179,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     181,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     183,
+     "minecraft:stone"
+    ],
+    [
+     8,
+     -60,
+     185,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     159,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     160,
+     "minecraft:short_grass"
+    ],
+    [
+     9,
+     -60,
+     161,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     162,
+     "minecraft:torch"
+    ],
+    [
+     9,
+     -60,
+     163,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     164,
+     "minecraft:rail"
+    ],
+    [
+     9,
+     -60,
+     165,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     166,
+     "minecraft:white_carpet"
+    ],
+    [
+     9,
+     -60,
+     167,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     168,
+     "minecraft:oak_sapling"
+    ],
+    [
+     9,
+     -60,
+     169,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     170,
+     "minecraft:oak_fence[east=true,north=true,south=true,waterlogged=false,west=false]"
+    ],
+    [
+     9,
+     -60,
+     171,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     173,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     174,
+     "minecraft:short_grass"
+    ],
+    [
+     9,
+     -60,
+     175,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     176,
+     "minecraft:torch"
+    ],
+    [
+     9,
+     -60,
+     177,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     178,
+     "minecraft:rail"
+    ],
+    [
+     9,
+     -60,
+     179,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     180,
+     "minecraft:white_carpet"
+    ],
+    [
+     9,
+     -60,
+     181,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     182,
+     "minecraft:oak_sapling"
+    ],
+    [
+     9,
+     -60,
+     183,
+     "minecraft:stone"
+    ],
+    [
+     9,
+     -60,
+     184,
+     "minecraft:oak_fence[east=true,north=true,south=true,waterlogged=false,west=false]"
+    ],
+    [
+     9,
+     -60,
+     185,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     159,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     160,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     161,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     162,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     163,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     164,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     165,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     166,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     167,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     168,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     169,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     170,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     171,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     173,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     174,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     175,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     176,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     177,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     178,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     179,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     180,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     181,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     182,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     183,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     184,
+     "minecraft:stone"
+    ],
+    [
+     10,
+     -60,
+     185,
+     "minecraft:stone"
+    ]
+   ],
+   "label": "blocks in place",
+   "fluid_ticks": []
+  },
+  {
+   "tick": 0,
+   "changes": [
+    [
+     8,
+     -60,
+     160,
+     "minecraft:water"
+    ],
+    [
+     8,
+     -60,
+     162,
+     "minecraft:water"
+    ],
+    [
+     8,
+     -60,
+     164,
+     "minecraft:water"
+    ],
+    [
+     8,
+     -60,
+     166,
+     "minecraft:water"
+    ],
+    [
+     8,
+     -60,
+     168,
+     "minecraft:water"
+    ],
+    [
+     8,
+     -60,
+     170,
+     "minecraft:water"
+    ],
+    [
+     8,
+     -60,
+     174,
+     "minecraft:lava"
+    ],
+    [
+     8,
+     -60,
+     176,
+     "minecraft:lava"
+    ],
+    [
+     8,
+     -60,
+     178,
+     "minecraft:lava"
+    ],
+    [
+     8,
+     -60,
+     180,
+     "minecraft:lava"
+    ],
+    [
+     8,
+     -60,
+     182,
+     "minecraft:lava"
+    ],
+    [
+     8,
+     -60,
+     184,
+     "minecraft:lava"
+    ]
+   ],
+   "label": "sources placed",
+   "fluid_ticks": [
+    [
+     8,
+     -60,
+     160,
+     "minecraft:water",
+     5
+    ],
+    [
+     8,
+     -60,
+     162,
+     "minecraft:water",
+     5
+    ],
+    [
+     8,
+     -60,
+     164,
+     "minecraft:water",
+     5
+    ],
+    [
+     8,
+     -60,
+     166,
+     "minecraft:water",
+     5
+    ],
+    [
+     8,
+     -60,
+     168,
+     "minecraft:water",
+     5
+    ],
+    [
+     8,
+     -60,
+     170,
+     "minecraft:water",
+     5
+    ],
+    [
+     8,
+     -60,
+     174,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     176,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     178,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     180,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     182,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     184,
+     "minecraft:lava",
+     30
+    ]
+   ]
+  },
+  {
+   "tick": 10,
+   "changes": [
+    [
+     9,
+     -60,
+     160,
+     "minecraft:water[level=1]"
+    ],
+    [
+     9,
+     -60,
+     162,
+     "minecraft:water[level=1]"
+    ],
+    [
+     9,
+     -60,
+     166,
+     "minecraft:water[level=1]"
+    ],
+    [
+     9,
+     -60,
+     168,
+     "minecraft:water[level=1]"
+    ]
+   ],
+   "fluid_ticks": [
+    [
+     8,
+     -60,
+     174,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     176,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     178,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     180,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     182,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     184,
+     "minecraft:lava",
+     20
+    ]
+   ]
+  },
+  {
+   "tick": 20,
+   "changes": [],
+   "fluid_ticks": [
+    [
+     8,
+     -60,
+     174,
+     "minecraft:lava",
+     10
+    ],
+    [
+     8,
+     -60,
+     176,
+     "minecraft:lava",
+     10
+    ],
+    [
+     8,
+     -60,
+     178,
+     "minecraft:lava",
+     10
+    ],
+    [
+     8,
+     -60,
+     180,
+     "minecraft:lava",
+     10
+    ],
+    [
+     8,
+     -60,
+     182,
+     "minecraft:lava",
+     10
+    ],
+    [
+     8,
+     -60,
+     184,
+     "minecraft:lava",
+     10
+    ]
+   ]
+  },
+  {
+   "tick": 30,
+   "changes": [
+    [
+     9,
+     -60,
+     174,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     9,
+     -60,
+     176,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     9,
+     -60,
+     180,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     9,
+     -60,
+     182,
+     "minecraft:lava[level=2]"
+    ]
+   ],
+   "fluid_ticks": [
+    [
+     8,
+     -60,
+     174,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     176,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     180,
+     "minecraft:lava",
+     30
+    ],
+    [
+     8,
+     -60,
+     182,
+     "minecraft:lava",
+     30
+    ],
+    [
+     9,
+     -60,
+     174,
+     "minecraft:lava",
+     30
+    ],
+    [
+     9,
+     -60,
+     176,
+     "minecraft:lava",
+     30
+    ],
+    [
+     9,
+     -60,
+     180,
+     "minecraft:lava",
+     30
+    ],
+    [
+     9,
+     -60,
+     182,
+     "minecraft:lava",
+     30
+    ]
+   ]
+  },
+  {
+   "tick": 40,
+   "changes": [],
+   "fluid_ticks": [
+    [
+     8,
+     -60,
+     174,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     176,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     180,
+     "minecraft:lava",
+     20
+    ],
+    [
+     8,
+     -60,
+     182,
+     "minecraft:lava",
+     20
+    ],
+    [
+     9,
+     -60,
+     174,
+     "minecraft:lava",
+     20
+    ],
+    [
+     9,
+     -60,
+     176,
+     "minecraft:lava",
+     20
+    ],
+    [
+     9,
+     -60,
+     180,
+     "minecraft:lava",
+     20
+    ],
+    [
+     9,
+     -60,
+     182,
+     "minecraft:lava",
+     20
+    ]
+   ]
+  },
+  {
+   "tick": 80,
+   "changes": [],
+   "fluid_ticks": []
+  },
+  {
+   "tick": 120,
+   "changes": [],
+   "fluid_ticks": []
+  }
+ ],
+ "notes": [
+  "each trench 1x2: fluid at x0, block at x0+1; rows every 2 in z; water rows from z=160, lava rows from z=174"
+ ],
+ "items_at_40": [
+  [
+   9.88,
+   -59.91,
+   168.88,
+   "minecraft:oak_sapling",
+   1
+  ],
+  [
+   9.88,
+   -59.9,
+   160.12,
+   "minecraft:wheat_seeds",
+   1
+  ],
+  [
+   9.88,
+   -59.9,
+   162.12,
+   "minecraft:torch",
+   1
+  ],
+  [
+   9.88,
+   -59.9,
+   166.12,
+   "minecraft:white_carpet",
+   1
+  ]
+ ],
+ "items_at_120": [
+  [
+   9.88,
+   -59.63,
+   160.12,
+   "minecraft:wheat_seeds",
+   1
+  ],
+  [
+   9.88,
+   -59.63,
+   162.12,
+   "minecraft:torch",
+   1
+  ],
+  [
+   9.88,
+   -59.63,
+   166.12,
+   "minecraft:white_carpet",
+   1
+  ],
+  [
+   9.88,
+   -59.63,
+   168.88,
+   "minecraft:oak_sapling",
+   1
+  ]
+ ],
+ "rows": {
+  "water minecraft:short_grass": 160,
+  "water minecraft:torch": 162,
+  "water minecraft:rail": 164,
+  "water minecraft:white_carpet": 166,
+  "water minecraft:oak_sapling": 168,
+  "water minecraft:oak_fence": 170,
+  "lava minecraft:short_grass": 174,
+  "lava minecraft:torch": 176,
+  "lava minecraft:rail": 178,
+  "lava minecraft:white_carpet": 180,
+  "lava minecraft:oak_sapling": 182,
+  "lava minecraft:oak_fence": 184
+ },
+ "final": [
+  [
+   7,
+   -60,
+   159,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   160,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   161,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   162,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   163,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   164,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   165,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   166,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   167,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   168,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   169,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   170,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   171,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   173,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   174,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   175,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   176,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   177,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   178,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   179,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   180,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   181,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   182,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   183,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   184,
+   "minecraft:stone"
+  ],
+  [
+   7,
+   -60,
+   185,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   159,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   160,
+   "minecraft:water"
+  ],
+  [
+   8,
+   -60,
+   161,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   162,
+   "minecraft:water"
+  ],
+  [
+   8,
+   -60,
+   163,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   164,
+   "minecraft:water"
+  ],
+  [
+   8,
+   -60,
+   165,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   166,
+   "minecraft:water"
+  ],
+  [
+   8,
+   -60,
+   167,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   168,
+   "minecraft:water"
+  ],
+  [
+   8,
+   -60,
+   169,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   170,
+   "minecraft:water"
+  ],
+  [
+   8,
+   -60,
+   171,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   173,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   174,
+   "minecraft:lava"
+  ],
+  [
+   8,
+   -60,
+   175,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   176,
+   "minecraft:lava"
+  ],
+  [
+   8,
+   -60,
+   177,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   178,
+   "minecraft:lava"
+  ],
+  [
+   8,
+   -60,
+   179,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   180,
+   "minecraft:lava"
+  ],
+  [
+   8,
+   -60,
+   181,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   182,
+   "minecraft:lava"
+  ],
+  [
+   8,
+   -60,
+   183,
+   "minecraft:stone"
+  ],
+  [
+   8,
+   -60,
+   184,
+   "minecraft:lava"
+  ],
+  [
+   8,
+   -60,
+   185,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   159,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   160,
+   "minecraft:water[level=1]"
+  ],
+  [
+   9,
+   -60,
+   161,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   162,
+   "minecraft:water[level=1]"
+  ],
+  [
+   9,
+   -60,
+   163,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   164,
+   "minecraft:rail"
+  ],
+  [
+   9,
+   -60,
+   165,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   166,
+   "minecraft:water[level=1]"
+  ],
+  [
+   9,
+   -60,
+   167,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   168,
+   "minecraft:water[level=1]"
+  ],
+  [
+   9,
+   -60,
+   169,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   170,
+   "minecraft:oak_fence[east=true,north=true,south=true,waterlogged=false,west=false]"
+  ],
+  [
+   9,
+   -60,
+   171,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   173,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   174,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   9,
+   -60,
+   175,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   176,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   9,
+   -60,
+   177,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   178,
+   "minecraft:rail"
+  ],
+  [
+   9,
+   -60,
+   179,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   180,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   9,
+   -60,
+   181,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   182,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   9,
+   -60,
+   183,
+   "minecraft:stone"
+  ],
+  [
+   9,
+   -60,
+   184,
+   "minecraft:oak_fence[east=true,north=true,south=true,waterlogged=false,west=false]"
+  ],
+  [
+   9,
+   -60,
+   185,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   159,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   160,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   161,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   162,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   163,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   164,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   165,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   166,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   167,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   168,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   169,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   170,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   171,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   173,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   174,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   175,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   176,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   177,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   178,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   179,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   180,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   181,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   182,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   183,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   184,
+   "minecraft:stone"
+  ],
+  [
+   10,
+   -60,
+   185,
+   "minecraft:stone"
+  ]
+ ]
+}
