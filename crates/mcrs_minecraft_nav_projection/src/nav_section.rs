@@ -207,6 +207,8 @@ impl NavSection {
 
 #[cfg(test)]
 mod tests {
+    use mcrs_voxel::BlockStateId;
+
     use super::*;
 
     struct Cells(Box<[BlockStateId; SectionPos::VOLUME]>);
