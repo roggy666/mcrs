@@ -91,10 +91,10 @@ pub(crate) trait BrainStateExt {
         world: &BlockGoalWorld<'_, V>,
     );
 
-    fn steer<V: BlockVolume, B>(
+    fn steer<V: BlockVolume>(
         &mut self,
         world: &BlockGoalWorld<'_, V>,
-        targets: &Targets<'_, B>,
+        targets: &Targets<'_>,
         tick: u64,
         id: EntityId,
         sensed: Sensed<'_>,
@@ -333,10 +333,10 @@ impl BrainStateExt for BrainState {
         }
     }
 
-    fn steer<V: BlockVolume, B>(
+    fn steer<V: BlockVolume>(
         &mut self,
         world: &BlockGoalWorld<'_, V>,
-        targets: &Targets<'_, B>,
+        targets: &Targets<'_>,
         tick: u64,
         id: EntityId,
         sensed: Sensed<'_>,

@@ -1,11 +1,19 @@
 use std::hash::DefaultHasher;
 use std::hash::Hash;
 use std::hash::Hasher;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 use bevy_ecs::entity::Entity;
+use bevy_ecs::query::With;
+use bevy_ecs::system::RunSystemOnce;
+use bevy_ecs::system::Single;
 use bevy_tasks::ComputeTaskPool;
 use bevy_tasks::TaskPoolBuilder;
 use glam::DVec3;
+use mcrs_engine_link::Placement;
+use mcrs_minecraft_brain::AiDelay;
+use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::PanicCauses;
 use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::WorldSeed;
@@ -22,6 +30,7 @@ use mcrs_minecraft_engine_entity_motion::MotionKind;
 use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_physics::FLOOR;
 use mcrs_minecraft_engine_physics::Mob;
+use mcrs_minecraft_engine_physics::PhysicsTables;
 use mcrs_minecraft_engine_physics::TestScene;
 use mcrs_minecraft_engine_physics::mob_body;
 use mcrs_minecraft_engine_physics::mob_row;
@@ -30,17 +39,21 @@ use mcrs_minecraft_engine_world::entity::physics::Transform;
 use mcrs_minecraft_engine_world::entity::player::Player;
 use mcrs_minecraft_engine_world::session::Owner;
 use mcrs_minecraft_engine_world::session::PlayerSession;
+use mcrs_minecraft_engine_world::world::dimension::Dimension;
+use mcrs_minecraft_engine_world::world::storage::view::WorldView;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_entity::damage_type_tag_keys::PANIC_CAUSES;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::WriterKey;
+use mcrs_minecraft_goal_world::BuildHeight;
 use mcrs_minecraft_pose::Pose;
 use mcrs_minecraft_protocol_game::entity::MobLooks;
 use mcrs_minecraft_vanilla_mobs::VanillaBrain;
 use mcrs_minecraft_vanilla_mobs::item_tables;
 use mcrs_minecraft_vanilla_mobs::kind_table;
 use mcrs_minecraft_vanilla_mobs::vanilla_brain;
+use mcrs_minecraft_volume::Volume;
 
 const PIGS: u32 = 2000;
 const TICKS: u64 = 200;
@@ -48,6 +61,7 @@ const SHORT_TICKS: u64 = 60;
 const HALF_TILES: i32 = 3;
 const CACTUS: u32 = 7;
 const HIT_TICK: u64 = 50;
+static THREADS: AtomicUsize = AtomicUsize::new(1);
 const SHORT_GOLDEN: u64 = 10_570_632_312_352_256_482;
 const LONG_GOLDEN: u64 = 7_854_557_506_117_327_600;
 
@@ -70,6 +84,7 @@ fn positions() -> Vec<DVec3> {
 }
 
 fn use_threads(threads: usize) {
+    THREADS.store(threads, Ordering::Relaxed);
     ComputeTaskPool::get_or_init(|| TaskPoolBuilder::new().num_threads(threads).build());
     assert_eq!(
         ComputeTaskPool::get().thread_num(),
@@ -81,10 +96,35 @@ fn use_threads(threads: usize) {
 struct Run {
     scene: TestScene,
     struck: Vec<Entity>,
+    host_only: bool,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct Setup {
+    placement: Placement,
+    delay: AiDelay,
+    host_only: bool,
+}
+
+const INLINE: Setup = Setup {
+    placement: Placement::Inline,
+    delay: AiDelay::AtLeast(1),
+    host_only: false,
+};
+
+fn scene_height(
+    dimension: Single<Entity, With<Dimension>>,
+    view: WorldView,
+) -> Option<BuildHeight> {
+    let bounds = view.get(*dimension)?.bounds();
+    Some(BuildHeight {
+        min: bounds.min.y,
+        max: bounds.max.y,
+    })
 }
 
 impl Run {
-    fn new(order: &[u32]) -> Self {
+    fn new(order: &[u32], setup: Setup) -> Self {
         let mut scene = TestScene::new(HALF_TILES, 0, 0, 1);
         scene.app.add_plugins(MobBrainPlugin::new(
             vanilla_brain,
@@ -92,9 +132,30 @@ impl Run {
             item_tables,
             kind_table,
         ));
-        let mut ai = MobAi::new(StageConfig::new(WorldSeed(42)), vanilla_brain, kind_table());
-        ai.set_panic_causes(PanicCauses::new([CACTUS]));
+        let config = StageConfig::new(WorldSeed(42))
+            .with_delay(StageConfig::DEFAULT_MAX_LAG, setup.delay)
+            .unwrap_or_else(|_| StageConfig::new(WorldSeed(42)));
+        let mut ai = MobAi::new(
+            config,
+            vanilla_brain,
+            kind_table(),
+            setup.placement,
+            THREADS.load(Ordering::Relaxed),
+        );
         let world = scene.app.world_mut();
+        let physics = world.resource::<PhysicsTables>().tables().clone();
+        let height = world
+            .run_system_once(scene_height)
+            .ok()
+            .flatten()
+            .unwrap_or(BuildHeight { min: -64, max: 319 });
+        ai.configure(
+            &physics,
+            ItemTables::default(),
+            PanicCauses::new([CACTUS]),
+            0,
+            height,
+        );
         world.insert_resource(ai);
         world.spawn((
             Player,
@@ -136,7 +197,11 @@ impl Run {
                 struck.push(entity);
             }
         }
-        Self { scene, struck }
+        Self {
+            scene,
+            struck,
+            host_only: setup.host_only,
+        }
     }
 
     fn tick(&mut self, tick: u64) -> u64 {
@@ -153,6 +218,11 @@ impl Run {
             }
         }
         self.scene.step();
+        self.scene
+            .app
+            .world_mut()
+            .resource_mut::<MobAi<VanillaBrain>>()
+            .settle();
         self.hash()
     }
 
@@ -190,12 +260,16 @@ impl Run {
                 .hash(&mut hasher);
             }
         }
-        for (tile, brains) in self.ai().stage().tiles() {
-            tile.hash(&mut hasher);
-            for entry in brains.iter() {
-                entry.mob.hash(&mut hasher);
-                entry.wake.hash(&mut hasher);
-                entry.brain.hash(&mut hasher);
+        if !self.host_only
+            && let Some(stage) = self.ai().inline_stage()
+        {
+            for (tile, brains) in stage.stage().tiles() {
+                tile.hash(&mut hasher);
+                for entry in brains.iter() {
+                    entry.mob.hash(&mut hasher);
+                    entry.wake.hash(&mut hasher);
+                    entry.brain.hash(&mut hasher);
+                }
             }
         }
         hasher.finish()
@@ -227,8 +301,8 @@ fn forward() -> Vec<u32> {
     clippy::indexing_slicing,
     reason = "a test helper reports a failure by panicking"
 )]
-fn run_orders(ticks: u64, orders: &[Vec<u32>]) -> Crowd {
-    let mut runs: Vec<Run> = orders.iter().map(|order| Run::new(order)).collect();
+fn run_orders(ticks: u64, orders: &[Vec<u32>], setup: Setup) -> Crowd {
+    let mut runs: Vec<Run> = orders.iter().map(|order| Run::new(order, setup)).collect();
     let start = runs[0].positions();
     let mut hash = 0;
     for tick in 1..=ticks {
@@ -248,7 +322,7 @@ fn run_orders(ticks: u64, orders: &[Vec<u32>]) -> Crowd {
     Crowd {
         hash,
         walked,
-        evaluations: runs[0].ai().stage().evaluations(),
+        evaluations: runs[0].ai().stats().evaluations_total,
     }
 }
 
@@ -272,7 +346,7 @@ fn assert_short_crowd(crowd: &Crowd) {
 #[test]
 fn the_ai_of_a_crowd_ends_on_the_golden_state_at_1_thread() {
     use_threads(1);
-    assert_short_crowd(&run_orders(SHORT_TICKS, &[forward()]));
+    assert_short_crowd(&run_orders(SHORT_TICKS, &[forward()], INLINE));
 }
 
 #[test]
@@ -284,7 +358,65 @@ fn the_ai_of_a_crowd_ends_on_the_golden_state_at_8_threads_in_any_spawn_order() 
     assert_short_crowd(&run_orders(
         SHORT_TICKS,
         &[forward(), reversed, interleaved],
+        INLINE,
     ));
+}
+
+#[test]
+fn a_stage_on_its_own_thread_with_a_fixed_delay_ends_on_the_inline_state() {
+    use_threads(4);
+    let fixed = AiDelay::Fixed(1);
+    let inline = run_orders(
+        SHORT_TICKS,
+        &[forward()],
+        Setup {
+            placement: Placement::Inline,
+            delay: fixed,
+            host_only: true,
+        },
+    );
+    let threaded = run_orders(
+        SHORT_TICKS,
+        &[forward()],
+        Setup {
+            placement: Placement::Thread,
+            delay: fixed,
+            host_only: true,
+        },
+    );
+    assert_eq!(
+        inline.hash, threaded.hash,
+        "the placement of the stage does not change the bodies and the brain states"
+    );
+    assert!(
+        threaded.walked > 0,
+        "the hit pigs walk: {}",
+        threaded.walked
+    );
+}
+
+#[test]
+fn a_stage_on_its_own_thread_with_the_default_delay_keeps_every_decision_in_the_lag() {
+    use_threads(4);
+    let threaded = run_orders(
+        SHORT_TICKS,
+        &[forward()],
+        Setup {
+            placement: Placement::Thread,
+            delay: AiDelay::AtLeast(1),
+            host_only: true,
+        },
+    );
+    assert!(
+        threaded.walked > 0,
+        "the hit pigs walk: {}",
+        threaded.walked
+    );
+    assert!(
+        threaded.evaluations > u64::from(PIGS),
+        "every pig is evaluated: {}",
+        threaded.evaluations
+    );
 }
 
 mod exhaustive {
@@ -292,7 +424,7 @@ mod exhaustive {
 
     fn assert_long_crowd(threads: usize) {
         use_threads(threads);
-        let crowd = run_orders(TICKS, &[forward()]);
+        let crowd = run_orders(TICKS, &[forward()], INLINE);
         assert_eq!(
             crowd.hash, LONG_GOLDEN,
             "every thread count ends on the same state"

@@ -6,15 +6,16 @@ use bevy_ecs::resource::Resource;
 use bevy_ecs::system::ParamSet;
 use bevy_ecs::system::Query;
 use bevy_ecs::world::Mut;
-use bevy_tasks::TaskPool;
 use bevy_utils::Parallel;
 use glam::DVec3;
-use mcrs_minecraft_brain::AiDriver;
-use mcrs_minecraft_brain::Cadence;
+use mcrs_engine_link::Link;
+use mcrs_engine_link::Placement;
 use mcrs_minecraft_brain::Decision;
+use mcrs_minecraft_brain::DecisionPipeline;
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::Fact;
 use mcrs_minecraft_brain::FactKind;
+use mcrs_minecraft_brain::IssuedDecisions;
 use mcrs_minecraft_brain::IssuedPath;
 use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::KindSet;
@@ -28,12 +29,19 @@ use mcrs_minecraft_brain::PanicCauses;
 use mcrs_minecraft_brain::PlayerTable;
 use mcrs_minecraft_brain::Proposal;
 use mcrs_minecraft_brain::Receivers;
-use mcrs_minecraft_brain::Stage;
 use mcrs_minecraft_brain::StageConfig;
-use mcrs_minecraft_brain::Tables;
 use mcrs_minecraft_brain::TileSnapshot;
+use mcrs_minecraft_brain::TileViews;
 use mcrs_minecraft_brain::find_path;
 use mcrs_minecraft_brain::sort_paths;
+use mcrs_minecraft_brain_stage::AiInput;
+use mcrs_minecraft_brain_stage::AiStage;
+use mcrs_minecraft_brain_stage::Arrival;
+use mcrs_minecraft_brain_stage::BlockDelta;
+use mcrs_minecraft_brain_stage::ProjectionWorld;
+use mcrs_minecraft_brain_stage::StageTables;
+use mcrs_minecraft_brain_stage::TickInput;
+use mcrs_minecraft_brain_stage::ai_pool;
 use mcrs_minecraft_damage::DamageSource;
 use mcrs_minecraft_damage::Exposure;
 use mcrs_minecraft_damage::Fire;
@@ -56,7 +64,9 @@ use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::TileKey;
 use mcrs_minecraft_entity_key::WriterKey;
-use mcrs_minecraft_goal_world::GoalWorld;
+use mcrs_minecraft_goal_world::BuildHeight;
+use mcrs_minecraft_nav_projection::NavTable;
+use mcrs_minecraft_physics::Tables;
 use mcrs_minecraft_volume::BlockVolume;
 use rustc_hash::FxHashMap;
 
@@ -71,7 +81,7 @@ use crate::hit_queue::HitTarget;
 use crate::hit_queue::MeleeHit;
 use crate::hit_queue::Proposed;
 use crate::hit_queue::RangedShot;
-use crate::run_tiles::run_tiles;
+use crate::presence::Presence;
 use crate::sensed::Sensed;
 use crate::targets::Targets;
 
@@ -110,16 +120,27 @@ type Entities = FxHashMap<EntityId, Entity>;
 
 pub(crate) type PlayerEntities = [(EntityId, Entity)];
 
-#[derive(Resource, Debug)]
-pub struct MobAi<B: Send + Sync + 'static> {
-    driver: AiDriver<B>,
+pub(crate) type Snapshots = Vec<(TileKey, TileSnapshot)>;
+
+#[derive(Resource)]
+pub struct MobAi<B>
+where
+    B: for<'a> MobBrain<ProjectionWorld<'a>> + Send + Sync + 'static,
+{
+    link: Link<AiStage<B>>,
+    pipeline: DecisionPipeline,
+    config: StageConfig,
+    tick: u64,
     brain_for: fn(&'static EntityTypeData) -> Option<B>,
     panic_causes: PanicCauses,
     kinds: KindTable,
     items: ItemTables,
     mob_attack: u32,
-    arrivals: Vec<Arrival<B>>,
-    departures: Vec<EntityId>,
+    nav: NavTable,
+    resend_sections: bool,
+    present: FxHashMap<EntityId, Presence>,
+    snapshots: Snapshots,
+    input: TickInput<B>,
     due: Vec<Decision>,
     due_paths: Vec<IssuedPath>,
     ended: Vec<EntityId>,
@@ -131,15 +152,6 @@ pub struct MobAi<B: Send + Sync + 'static> {
     struck: Vec<(Entity, EntityId)>,
     births: u32,
     stats: AiStats,
-}
-
-#[derive(Debug)]
-pub(crate) struct Arrival<B> {
-    pub(crate) id: EntityId,
-    pub(crate) key: EntityUuid,
-    pub(crate) tile: TileKey,
-    pub(crate) phase: u8,
-    pub(crate) brain: B,
 }
 
 #[derive(Debug, Default)]
@@ -167,13 +179,13 @@ struct TiledFact {
     fact: Fact,
 }
 
-struct Pass<'a, B, V> {
+struct Pass<'a, V> {
     tick: u64,
     players: &'a PlayerTable,
     panic_causes: &'a PanicCauses,
     due: &'a [Decision],
     due_paths: &'a [IssuedPath],
-    targets: Targets<'a, B>,
+    targets: Targets<'a>,
     world: &'a BlockGoalWorld<'a, V>,
 }
 
@@ -185,22 +197,46 @@ struct Publishing<'a, 'w, 's> {
     tick: u64,
 }
 
-impl<B: Send + Sync + 'static> MobAi<B> {
+pub(crate) fn tile_views(snapshots: &Snapshots, tile: TileKey) -> Option<TileViews<'_>> {
+    let index = snapshots
+        .binary_search_by_key(&tile, |(tile, _)| *tile)
+        .ok()?;
+    let (_, snapshot) = snapshots.get(index)?;
+    Some(TileViews {
+        tile,
+        views: &snapshot.views,
+        index: &snapshot.index,
+    })
+}
+
+impl<B> MobAi<B>
+where
+    B: for<'a> MobBrain<ProjectionWorld<'a>> + Send + Sync + 'static,
+{
     #[must_use]
     pub fn new(
         config: StageConfig,
         brain_for: fn(&'static EntityTypeData) -> Option<B>,
         kinds: KindTable,
+        placement: Placement,
+        threads: usize,
     ) -> Self {
+        let stage = AiStage::new(config, ai_pool(threads));
         Self {
-            driver: AiDriver::new(config),
+            link: Link::new(stage, placement),
+            pipeline: DecisionPipeline::new(&config),
+            config,
+            tick: 0,
             brain_for,
             panic_causes: PanicCauses::default(),
             kinds,
             items: ItemTables::default(),
             mob_attack: 0,
-            arrivals: Vec::new(),
-            departures: Vec::new(),
+            nav: NavTable::default(),
+            resend_sections: false,
+            present: FxHashMap::default(),
+            snapshots: Vec::new(),
+            input: TickInput::new(1),
             due: Vec::new(),
             due_paths: Vec::new(),
             ended: Vec::new(),
@@ -215,31 +251,63 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         }
     }
 
-    pub fn set_panic_causes(&mut self, panic_causes: PanicCauses) {
+    pub fn configure(
+        &mut self,
+        physics: &Tables,
+        items: ItemTables,
+        panic_causes: PanicCauses,
+        mob_attack: u32,
+        height: BuildHeight,
+    ) {
+        self.items = items.clone();
         self.panic_causes = panic_causes;
+        self.mob_attack = mob_attack;
+        let tables = StageTables::new(physics.clone(), items, self.kinds.clone(), height);
+        self.nav = tables.nav.clone();
+        self.resend_sections = true;
+        self.link.send(AiInput::Tables(Box::new(tables)));
     }
 
-    pub fn set_items(&mut self, items: ItemTables) {
-        self.items = items;
-    }
-
-    pub fn set_mob_attack(&mut self, damage_type: u32) {
-        self.mob_attack = damage_type;
+    pub fn settle(&mut self) {
+        self.collect_outputs();
     }
 
     #[must_use]
-    pub const fn stage(&self) -> &Stage<B> {
-        self.driver.stage()
+    pub fn inline_stage(&self) -> Option<&AiStage<B>> {
+        self.link.inline_stage()
     }
 
     #[must_use]
     pub const fn tick(&self) -> u64 {
-        self.driver.tick()
+        self.tick
     }
 
     #[must_use]
     pub const fn stats(&self) -> &AiStats {
         &self.stats
+    }
+
+    #[must_use]
+    pub fn present(&self) -> usize {
+        self.present.len()
+    }
+
+    #[must_use]
+    pub fn is_present(&self, mob: EntityId) -> bool {
+        self.present.contains_key(&mob)
+    }
+
+    #[must_use]
+    pub const fn nav_table(&self) -> &NavTable {
+        &self.nav
+    }
+
+    pub fn take_resend(&mut self) -> bool {
+        std::mem::take(&mut self.resend_sections)
+    }
+
+    pub fn blocks(&mut self) -> &mut BlockDelta {
+        &mut self.input.blocks
     }
 
     pub fn take_player_hits(&mut self) -> Vec<MobHit> {
@@ -268,12 +336,20 @@ impl<B: Send + Sync + 'static> MobAi<B> {
     }
 
     pub(crate) fn admit(&mut self, arrival: Arrival<B>) {
-        self.arrivals.push(arrival);
+        self.input.arrivals.push(arrival);
     }
 
     pub(crate) fn release(&mut self, mob: EntityId) {
-        self.arrivals.retain(|arrival| arrival.id != mob);
-        self.departures.push(mob);
+        self.input.arrivals.retain(|arrival| arrival.id != mob);
+        self.input.departures.push(mob);
+    }
+
+    fn tile_of(&self, mob: EntityId) -> Option<TileKey> {
+        self.present.get(&mob).map(|presence| presence.tile)
+    }
+
+    fn key_of(&self, mob: EntityId) -> Option<EntityUuid> {
+        self.present.get(&mob).map(|presence| presence.key)
     }
 
     pub(crate) fn prepare<V: BlockVolume + Sync>(
@@ -286,10 +362,14 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         threads: &mut Parallel<BrainOut>,
     ) {
         let started = Instant::now();
-        let tick = self.driver.begin_tick();
-        self.follow_life_cycle(tick);
+        self.tick = self.tick.saturating_add(1);
+        let tick = self.tick;
+        self.pipeline.issue(tick);
+        self.collect_outputs();
+        self.follow_life_cycle();
         let followed = Instant::now();
-        self.take_due();
+        self.take_due(tick);
+        let waited = Instant::now();
         let pass = Pass {
             tick,
             players: &players,
@@ -297,11 +377,10 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             due: &self.due,
             due_paths: &self.due_paths,
             targets: Targets {
-                replica: self.driver.replica(),
-                stage: self.driver.stage(),
+                snapshots: &self.snapshots,
+                present: &self.present,
                 players: &players,
                 kinds: &self.kinds,
-                tick,
             },
             world,
         };
@@ -347,62 +426,88 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             },
         );
         self.stats.life_cycle = followed.duration_since(started);
-        self.stats.tile_tasks = ran.duration_since(followed);
+        self.stats.wait = waited.duration_since(followed);
+        self.stats.tile_tasks = ran.duration_since(waited);
         self.stats.publish = ran.elapsed();
         self.stats.prepare = started.elapsed();
+        self.stats.mobs = self.present.len();
     }
 
-    pub fn run_stage<W: GoalWorld + Sync>(&mut self, pool: &TaskPool, world: &W)
-    where
-        B: MobBrain<W>,
-    {
-        let started = Instant::now();
-        let evaluations = self.driver.stage().evaluations();
-        let tables = Tables {
-            items: &self.items,
-            kinds: &self.kinds,
-        };
-        self.stats.decisions = self
-            .driver
-            .run_stage(world, &tables, |work, cx| run_tiles(pool, work, cx));
-        self.stats.evaluations = self
-            .driver
-            .stage()
-            .evaluations()
-            .saturating_sub(evaluations);
-        self.stats.stage = started.elapsed();
-    }
-
-    fn follow_life_cycle(&mut self, tick: u64) {
-        for mob in self.departures.drain(..) {
-            self.driver.despawn(mob);
+    fn collect_outputs(&mut self) {
+        for output in self.link.outputs() {
+            self.stats.stage = output.run.stage;
+            self.stats.evaluations = output.run.evaluations;
+            self.stats.evaluations_total = self
+                .stats
+                .evaluations_total
+                .saturating_add(output.run.evaluations);
+            self.stats.decisions = output.run.decisions;
+            self.stats.projection_sections = output.run.sections;
+            self.stats.projection_bytes = output.run.projection_bytes;
+            self.stats.without_tables = output.run.without_tables;
+            self.pipeline.ready(output.decisions);
         }
-        self.arrivals.sort_unstable_by_key(|arrival| arrival.key);
-        for arrival in self.arrivals.drain(..) {
-            if self.driver.stage().tile_of(arrival.id).is_some() {
-                continue;
+    }
+
+    fn follow_life_cycle(&mut self) {
+        for mob in &self.input.departures {
+            self.present.remove(mob);
+        }
+        self.input
+            .arrivals
+            .sort_unstable_by_key(|arrival| arrival.key);
+        let present = &mut self.present;
+        self.input.arrivals.retain(|arrival| {
+            if present.contains_key(&arrival.id) {
+                return false;
             }
-            let cadence = Cadence::new(tick, arrival.phase);
-            self.driver.spawn(
-                arrival.tile,
+            present.insert(
                 arrival.id,
-                arrival.key,
-                cadence,
-                arrival.brain,
+                Presence {
+                    key: arrival.key,
+                    tile: arrival.tile,
+                },
             );
-        }
-        self.stats.mobs = self.driver.stage().len();
+            true
+        });
     }
 
-    fn take_due(&mut self) {
+    fn take_due(&mut self, tick: u64) {
         self.due.clear();
         self.due_paths.clear();
-        let issued = self.driver.take_due();
-        self.stats.waits = self.driver.waits();
+        let issued = loop {
+            match self.pipeline.take_due(tick) {
+                Ok(due) => break due,
+                Err(wait) => {
+                    if self.stats.stage_lost {
+                        self.pipeline.ready(IssuedDecisions {
+                            tick: wait.issue_tick,
+                            ..IssuedDecisions::default()
+                        });
+                        continue;
+                    }
+                    self.stats.waits = self.stats.waits.saturating_add(1);
+                    if self.link.is_answered() || !self.link.wait_output() {
+                        self.collect_outputs();
+                        if self.pipeline.take_due(tick).is_ok() {
+                            continue;
+                        }
+                        tracing::error!(
+                            tick,
+                            issue_tick = wait.issue_tick,
+                            "the AI stage gave no decisions for a tick it was sent; the mobs go on without new decisions"
+                        );
+                        self.stats.stage_lost = true;
+                        continue;
+                    }
+                    self.collect_outputs();
+                }
+            }
+        };
         for mut decisions in issued {
             self.due_paths.append(&mut decisions.paths);
             for decision in decisions.tiles.into_values().flatten() {
-                if self.driver.stage().tile_of(decision.mob).is_some() {
+                if self.present.contains_key(&decision.mob) {
                     self.due.push(decision);
                 }
             }
@@ -433,23 +538,24 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             out.applied = 0;
         }
         gathered.moves.sort_unstable_by_key(|moved| moved.mob);
-        self.driver.relocate_all(
-            gathered
-                .moves
-                .drain(..)
-                .map(|moved| (moved.mob, moved.tile)),
-        );
+        for moved in gathered.moves.drain(..) {
+            if let Some(presence) = self.present.get_mut(&moved.mob) {
+                presence.tile = moved.tile;
+                self.input.moves.push((moved.mob, moved.tile));
+            }
+        }
         gathered
             .views
             .sort_unstable_by_key(|view| (TileKey::at(view.position), view.key));
+        self.snapshots.clear();
         for views in gathered
             .views
             .chunk_by(|a, b| TileKey::at(a.position) == TileKey::at(b.position))
         {
             if let Some(first) = views.first() {
                 let tile = TileKey::at(first.position);
-                self.driver
-                    .publish_tile(tile, TileSnapshot::new(tile, views.to_vec()));
+                self.snapshots
+                    .push((tile, TileSnapshot::new(tile, views.to_vec())));
             }
         }
         gathered.views.clear();
@@ -484,11 +590,9 @@ impl<B: Send + Sync + 'static> MobAi<B> {
                 power: shot.power,
             }));
         self.facts.clear();
-        for mob in self.ended.drain(..) {
-            if let (Some(tile), Some(key)) = (
-                self.driver.stage().tile_of(mob),
-                self.driver.stage().key_of(mob),
-            ) {
+        let ended = std::mem::take(&mut self.ended);
+        for mob in ended {
+            if let (Some(tile), Some(key)) = (self.tile_of(mob), self.key_of(mob)) {
                 self.facts.push(TiledFact {
                     tile,
                     fact: Fact {
@@ -500,22 +604,28 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             }
         }
         for fact in gathered.facts.drain(..) {
-            if let Some(tile) = self.driver.stage().tile_of(fact.mob) {
+            if let Some(tile) = self.tile_of(fact.mob) {
                 self.facts.push(TiledFact { tile, fact });
             }
         }
         self.facts.sort_by_key(|tiled| (tiled.tile, tiled.fact.mob));
-        for facts in self.facts.chunk_by(|a, b| a.tile == b.tile) {
-            if let Some(first) = facts.first() {
-                self.driver
-                    .publish_facts(first.tile, facts.iter().map(|tiled| tiled.fact));
-            }
-        }
         gathered.ended.sort_unstable();
         self.ended.append(&mut gathered.ended);
-        self.driver.publish_players(publishing.players);
         self.stats.applied = applied;
         self.gathered = gathered;
+        self.send(tick, publishing.players);
+    }
+
+    fn send(&mut self, tick: u64, players: PlayerTable) {
+        let mut input = std::mem::replace(&mut self.input, TickInput::new(tick.saturating_add(1)));
+        input.tick = tick;
+        input.tiles = self.snapshots.clone();
+        input
+            .facts
+            .extend(self.facts.iter().map(|tiled| (tiled.tile, tiled.fact)));
+        input.players = players;
+        self.stats.blocks_sent = input.blocks.landed.len() + input.blocks.patches.len();
+        self.link.send(AiInput::Tick(Box::new(input)));
     }
 
     fn request_hit(
@@ -595,7 +705,6 @@ impl<B: Send + Sync + 'static> MobAi<B> {
                     receivers,
                     entities,
                     mobs,
-                    tick,
                     facts,
                 );
             }
@@ -646,7 +755,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         their_brain.bred();
         self.births = self.births.wrapping_add(1);
         let child = EntityUuid::born(
-            self.driver.stage().config().seed().0,
+            self.config.seed().0,
             "",
             tick,
             &BirthSource::Entity(key),
@@ -678,10 +787,9 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         receivers: Receivers,
         entities: &Entities,
         mobs: &mut Hitting<'_, '_>,
-        tick: u64,
         facts: &mut Vec<Fact>,
     ) {
-        let Some(tile) = self.driver.stage().tile_of(proposer) else {
+        let Some(tile) = self.tile_of(proposer) else {
             return;
         };
         let Some((feet, kind, owner)) = entities
@@ -702,8 +810,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             Receivers::SameKind => KindSet::NONE.with(MobKind(kind.entity_type.id().number())),
             Receivers::Kinds(kinds) => *kinds,
         };
-        let replica = self.driver.replica();
-        let neighbours = Neighbours::new(tile, |tile| replica.tile(tile, tick));
+        let neighbours = Neighbours::new(tile, |tile| tile_views(&self.snapshots, tile));
         let mut found: Vec<(EntityId, EntityUuid)> = Vec::new();
         neighbours.for_each_in(min, max, &kinds, |view| {
             if view.mob != proposer && view.mob != target && view.target.is_none() {
@@ -729,7 +836,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
     }
 }
 
-impl<B, V: BlockVolume> Pass<'_, B, V> {
+impl<V: BlockVolume> Pass<'_, V> {
     #[expect(
         clippy::too_many_arguments,
         reason = "one mob of the parallel query: each component of the query row is its own parameter"
@@ -811,7 +918,7 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
         }
         brain.set_if_neq(next);
         let tile = TileKey::at(state.body.position);
-        if self.targets.stage.tile_of(id) != Some(tile) {
+        if self.targets.present.get(&id).map(|presence| presence.tile) != Some(tile) {
             out.moves.push(Move { mob: id, tile });
         }
     }

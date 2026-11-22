@@ -5,15 +5,14 @@ use mcrs_minecraft_brain::TileWork;
 use mcrs_minecraft_brain::TurnScratch;
 use mcrs_minecraft_goal_world::GoalWorld;
 
-pub(crate) fn run_tiles<B, W>(
-    pool: &TaskPool,
-    work: &mut [TileWork<'_, B>],
-    cx: &TickContext<'_, W>,
-) where
+const TASKS_PER_THREAD: usize = 4;
+
+pub fn run_tiles<B, W>(pool: &TaskPool, work: &mut [TileWork<'_, B>], cx: &TickContext<'_, W>)
+where
     B: MobBrain<W> + Send,
     W: GoalWorld + Sync,
 {
-    let tasks = pool.thread_num().saturating_mul(4).max(1);
+    let tasks = pool.thread_num().saturating_mul(TASKS_PER_THREAD).max(1);
     let total: usize = work.iter().map(TileWork::cost).sum();
     let share = total.div_ceil(tasks).max(1);
     pool.scope(|scope| {

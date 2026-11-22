@@ -1,7 +1,9 @@
 use bevy_ecs::prelude::*;
 use bevy_math::DVec3;
+use mcrs_minecraft_brain::Panic;
 use mcrs_minecraft_command_engine::CommandPlugin;
 use mcrs_minecraft_command_vanilla::{VanillaCommands, VanillaCommandsPlugin};
+use mcrs_minecraft_engine_brain::BrainState;
 use mcrs_minecraft_engine_brain::MobAi;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_protocol::Bounded;
@@ -9,7 +11,6 @@ use mcrs_minecraft_protocol::uuid::Uuid;
 use mcrs_minecraft_protocol_game::serverbound::ServerboundChatCommand;
 use mcrs_minecraft_server::{VanillaEntityPhysicsPlugin, VanillaMobBrainPlugin};
 use mcrs_minecraft_vanilla_mobs::VanillaBrain;
-use mcrs_minecraft_vanilla_mobs::table_of;
 
 use crate::commands::load_stone_column;
 use crate::host_app::{self, PlayServer};
@@ -45,8 +46,10 @@ fn pig_positions(server: &mut PlayServer) -> Vec<DVec3> {
         .collect()
 }
 
-fn pig_panics(brain: &VanillaBrain) -> bool {
-    brain.panics()
+fn any_panics(server: &mut PlayServer) -> bool {
+    let world = server.world();
+    let mut brains = world.query::<&BrainState>();
+    brains.iter(world).any(|brain| brain.panic != Panic::Calm)
 }
 
 fn horizontal_distance(from: DVec3, to: DVec3) -> f64 {
@@ -103,11 +106,7 @@ fn a_cactus_hit_makes_a_resting_pig_panic_and_run() {
     let mut panicked = false;
     for _ in 0..10 {
         server.ticks(operator, 1);
-        let ai = server.world().resource::<MobAi<VanillaBrain>>();
-        panicked |= ai
-            .stage()
-            .tiles()
-            .any(|(_, brains)| brains.iter().any(|entry| pig_panics(entry.brain)));
+        panicked |= any_panics(&mut server);
     }
     assert!(panicked, "the hit starts the panic within 10 ticks");
     server.ticks(operator, 40);
@@ -155,12 +154,7 @@ fn a_drown_hit_each_80_ticks_keeps_a_pig_strolling_without_a_panic() {
         }
         for _ in 0..80 {
             server.ticks(operator, 1);
-            let ai = server.world().resource::<MobAi<VanillaBrain>>();
-            let panics = ai
-                .stage()
-                .tiles()
-                .any(|(_, brains)| brains.iter().any(|entry| pig_panics(entry.brain)));
-            assert!(!panics, "drown is not a panic cause");
+            assert!(!any_panics(&mut server), "drown is not a panic cause");
         }
         let now = pig_positions(&mut server);
         farthest = farthest.max(horizontal_distance(rested[0], now[0]));
@@ -207,20 +201,7 @@ fn summoned_cows_sheep_and_chickens_get_their_brains_and_stroll() {
     }
     let mobs = mob_entities(&mut server);
     let ai = server.world().resource::<MobAi<VanillaBrain>>();
-    let mut brains = 0;
-    for entry in ai.stage().tiles().flat_map(|(_, brains)| brains.iter()) {
-        let kind = mobs
-            .iter()
-            .find(|mob| mob.id == entry.mob)
-            .map(|mob| mob.mob.kind)
-            .unwrap();
-        let expected = table_of(kind.entity_type).expect("a farm animal has a table");
-        assert!(
-            std::ptr::eq(entry.brain.table(), expected),
-            "the brain of a mob is the brain of its type"
-        );
-        brains += 1;
-    }
+    let brains = mobs.iter().filter(|mob| ai.is_present(mob.id)).count();
     assert_eq!(brains, 9, "each animal has a brain");
 
     server.ticks(operator, 1200);

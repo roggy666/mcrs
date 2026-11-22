@@ -15,6 +15,8 @@ pub(crate) struct AiWindow {
     publish: Duration,
     stage: Duration,
     stage_max: Duration,
+    wait: Duration,
+    wait_max: Duration,
     evaluations: u64,
     decisions: u64,
 }
@@ -29,6 +31,8 @@ impl AiWindow {
         self.publish = self.publish.saturating_add(stats.publish);
         self.stage = self.stage.saturating_add(stats.stage);
         self.stage_max = self.stage_max.max(stats.stage);
+        self.wait = self.wait.saturating_add(stats.wait);
+        self.wait_max = self.wait_max.max(stats.wait);
         self.evaluations = self.evaluations.saturating_add(stats.evaluations);
         self.decisions = self
             .decisions
@@ -49,6 +53,10 @@ impl AiWindow {
                 publish_mean_us = window.publish.as_micros() / u128::from(window.ticks),
                 stage_mean_us = window.stage.as_micros() / u128::from(window.ticks),
                 stage_max_us = window.stage_max.as_micros(),
+                wait_mean_us = window.wait.as_micros() / u128::from(window.ticks),
+                wait_max_us = window.wait_max.as_micros(),
+                projection_sections = stats.projection_sections,
+                projection_kib = stats.projection_bytes / 1024,
                 evaluations_per_tick = window.evaluations / window.ticks,
                 decisions_per_tick = window.decisions / window.ticks,
                 waits = stats.waits,

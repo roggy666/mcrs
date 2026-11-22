@@ -1,0 +1,34 @@
+[package]
+name = "mcrs_minecraft_brain_stage"
+description = "The AI stage as a worker beside the tick: the brains, the replica and the navigation projection behind an engine link, run on a pool of its own at a lower priority"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+bevy_tasks = { workspace = true, features = ["multi_threaded"] }
+glam = { workspace = true, features = ["std"] }
+mcrs_engine_link.workspace = true
+mcrs_minecraft_brain.workspace = true
+mcrs_minecraft_chunk.workspace = true
+mcrs_minecraft_entity_key.workspace = true
+mcrs_minecraft_goal_world.workspace = true
+mcrs_minecraft_nav_projection.workspace = true
+mcrs_minecraft_pathfind.workspace = true
+mcrs_minecraft_physics.workspace = true
+mcrs_minecraft_player_index.workspace = true
+mcrs_minecraft_volume.workspace = true
+mcrs_voxel.workspace = true
+rustc-hash.workspace = true
+tracing.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows-sys.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libc.workspace = true

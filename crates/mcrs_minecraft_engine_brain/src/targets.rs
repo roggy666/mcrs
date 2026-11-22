@@ -2,18 +2,20 @@ use glam::DVec3;
 use mcrs_minecraft_brain::KindTable;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::PlayerTable;
-use mcrs_minecraft_brain::Replica;
-use mcrs_minecraft_brain::Stage;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
+use rustc_hash::FxHashMap;
+
+use crate::mob_ai::Snapshots;
+use crate::mob_ai::tile_views;
+use crate::presence::Presence;
 
 #[derive(Debug)]
-pub struct Targets<'a, B> {
-    pub replica: &'a Replica,
-    pub stage: &'a Stage<B>,
+pub struct Targets<'a> {
+    pub snapshots: &'a Snapshots,
+    pub present: &'a FxHashMap<EntityId, Presence>,
     pub players: &'a PlayerTable,
     pub kinds: &'a KindTable,
-    pub tick: u64,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -38,11 +40,11 @@ impl TargetBody {
     }
 }
 
-impl<B> Targets<'_, B> {
+impl Targets<'_> {
     #[must_use]
     pub fn body(&self, id: EntityId) -> Option<TargetBody> {
-        if let Some(tile) = self.stage.tile_of(id) {
-            let views = self.replica.tile(tile, self.tick)?;
+        if let Some(presence) = self.present.get(&id) {
+            let views = tile_views(self.snapshots, presence.tile)?;
             let index = views.index.find(id)?;
             let view = views.views.get(index as usize)?;
             let dimensions = self.kinds.dimensions(view);

@@ -86,6 +86,7 @@ bevy_ecs = { workspace = true, features = ["multi_threaded"] }
 bevy_asset = { workspace = true, features = ["multi_threaded"] }
 
 [dev-dependencies]
+mcrs_minecraft_brain.workspace = true
 anyhow.workspace = true
 mcrs_minecraft_damage = { workspace = true, features = ["bevy"] }
 libc.workspace = true

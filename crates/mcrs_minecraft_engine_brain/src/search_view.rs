@@ -27,7 +27,8 @@ use mcrs_voxel::SectionPos;
 use rustc_hash::FxHashMap;
 
 use crate::BlockGoalWorld;
-use crate::block_goal_world::path_cell_of;
+use mcrs_minecraft_brain_stage::path_cell_of;
+use mcrs_minecraft_nav_projection::NavRow;
 
 const CACHE_LIMIT: usize = 64;
 
@@ -126,7 +127,10 @@ impl<'a, V: BlockVolume> CollisionWorld for SearchView<'a, V> {
 impl<V: BlockVolume> PathWorld for SearchView<'_, V> {
     fn path_cell(&self, at: BlockPos) -> PathCell {
         match self.state_at(at) {
-            Some(state) => path_cell_of(&self.tables.collision, self.tables.collision.state(state)),
+            Some(state) => path_cell_of(
+                &self.tables.collision,
+                NavRow::of(&self.tables.collision.state(state)),
+            ),
             None => self.base.unloaded_cell(),
         }
     }
