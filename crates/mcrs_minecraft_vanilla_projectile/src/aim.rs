@@ -64,6 +64,13 @@ pub fn mob_shot(shooter: &Shooter, target: &Aimed, stream: &KeyedStream) -> Opti
     })
 }
 
+/// The part of the motion of the shooter that a projectile inherits (PRJ-LCH-004): the
+/// horizontal motion always, the vertical motion only while the shooter is off the ground.
+#[must_use]
+pub fn inherited_motion(motion: DVec3, on_ground: bool) -> DVec3 {
+    DVec3::new(motion.x, if on_ground { 0.0 } else { motion.y }, motion.z)
+}
+
 #[must_use]
 pub fn launch_velocity(
     direction: DVec3,

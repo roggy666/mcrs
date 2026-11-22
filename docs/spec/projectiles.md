@@ -665,7 +665,10 @@ arrow launched at a survival player lowers its health and the player gets the he
 full arrow hit takes the knockback of PRJ-ENT-007 (test
 `prj_ent_007_a_full_arrow_hit_pushes_the_pig_away`); **E18** a player that touches an arrow of
 the status `allowed` in a block picks it up (test
-`prj_pck_001_a_player_picks_up_an_arrow_stuck_in_a_block`).
+`prj_pck_001_a_player_picks_up_an_arrow_stuck_in_a_block`); **E19** a player that walks 0.3
+blocks per tick along `x` releases a full bow draw facing `+z`: the arrow leaves with the `x`
+velocity of the walk added to its launch velocity (test
+`prj_lch_004_an_arrow_inherits_the_walk_of_its_shooter`).
 
 ## 13. Intentional deviations
 
@@ -681,26 +684,16 @@ the status `allowed` in a block picks it up (test
 - **Bug reference**: none.
 - **Test**: none; a differential test reports the difference.
 
-### PRJ-DEV-002: The shooter motion is not inherited
+### PRJ-DEV-002: removed
 
-- **Rule**: PRJ-LCH-004.
-- **Reference**: a projectile adds the motion of the shooter to its launch velocity.
-- **Reason**: the server does not keep the movement of the last movement packet of a player as a
-  velocity; the launch uses the look of the player only. A mob stands still when it shoots.
-- **Visible to the client**: yes, an arrow of a running player flies as from a standing one.
-- **Bug reference**: none.
-- **Test**: none; a differential test reports the difference.
+The shooter motion is inherited (PRJ-LCH-004) since the player index keeps the movement of the
+last movement packet of each player (`physics-architecture.md` section 5.7); a mob adds the
+velocity of its body. Experiment E19 covers it.
 
-### PRJ-DEV-003: A player death has no respawn yet
+### PRJ-DEV-003: removed
 
-- **Rule**: `entity-damage.md`, DMG-DTH-002.
-- **Reference**: a player at health 0 sees the death screen and respawns on request.
-- **Reason**: the server sends the health to the owner (DMG-NET-005) and keeps the player
-  entity; the respawn request is a separate issue of `docs/damage.md`.
-- **Visible to the client**: yes, the death screen stays until the client leaves.
-- **Bug reference**: none.
-- **Test**: none.
-
+A player at health 0 sees the death screen and respawns on request (`damage.md`, the respawn
+plugin).
 ## 14. Relation to other documents
 
 - `entity-damage.md`: the procedure of a hit, the cooldown, the reductions and the packets of

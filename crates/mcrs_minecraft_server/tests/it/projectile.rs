@@ -24,7 +24,10 @@ use mcrs_minecraft_protocol::uuid::Uuid;
 use mcrs_minecraft_protocol_game::Hand;
 use mcrs_minecraft_protocol_game::player::PlayerAction;
 use mcrs_minecraft_protocol_game::serverbound::ServerboundChatCommand;
-use mcrs_minecraft_protocol_game::serverbound::{ServerboundPlayerAction, ServerboundUseItem};
+use mcrs_minecraft_protocol_game::serverbound::{
+    ServerboundAcceptTeleportation, ServerboundMovePlayerPos, ServerboundPlayerAction,
+    ServerboundUseItem,
+};
 use mcrs_minecraft_server::VanillaItemEntityPlugin;
 use mcrs_minecraft_server::{
     VanillaEntityAttributesPlugin, VanillaEntityPhysicsPlugin, VanillaMobBrainPlugin,
@@ -228,10 +231,29 @@ fn start_with_items() -> (PlayServer, Entity, Entity) {
     app.add_plugins(VanillaProjectilePlugin);
     let mut server = PlayServer::start(app, &[(OPERATOR, 2)], 0);
     load_stone_column(&mut server);
-    let (operator, _) = server.join(OPERATOR, "op");
+    let (operator, packets) = server.join(OPERATOR, "op");
+    accept_teleports(&mut server, operator, &packets);
     let player = server.player(operator);
     server.world().get_mut::<PlayerGameMode>(player).unwrap().0 = GameMode::Survival;
     (server, operator, player)
+}
+
+/// Accepts each teleport of the login so that the client moves of the test apply.
+fn accept_teleports(server: &mut PlayServer, operator: Entity, packets: &[PacketPayload]) {
+    for packet in packets {
+        let PacketPayload::PlayerPosition(teleport) = packet else {
+            continue;
+        };
+        server.queue(
+            operator,
+            &ServerboundAcceptTeleportation {
+                teleport_id: teleport.teleport_id,
+                position: teleport.position.into(),
+                look: Look::default(),
+            },
+        );
+    }
+    server.ticks(operator, 2);
 }
 
 fn give(server: &mut PlayServer, player: Entity, item: Item, count: u8) {
@@ -431,5 +453,64 @@ fn prj_pck_001_a_player_picks_up_an_arrow_stuck_in_a_block() {
         slot_count(&mut server, player, 0),
         Some(1),
         "one arrow item enters the inventory"
+    );
+}
+
+#[test]
+fn prj_lch_004_an_arrow_inherits_the_walk_of_its_shooter() {
+    const STEP: f64 = 0.3;
+    let (mut server, operator, player) = start_with_items();
+    give(&mut server, player, Item::Bow, 1);
+    give(&mut server, player, Item::Arrow, 64);
+    server.ticks(operator, 2);
+    let start = server.world().get::<Transform>(player).unwrap().translation;
+
+    server.queue(
+        operator,
+        &ServerboundUseItem {
+            hand: Hand::Main,
+            sequence: VarInt(1),
+            look: Look {
+                yaw: 0.0,
+                pitch: 0.0,
+            },
+        },
+    );
+    for step in 1..=20 {
+        server.queue(
+            operator,
+            &ServerboundMovePlayerPos {
+                position: (start + DVec3::new(STEP * f64::from(step), 0.0, 0.0)).into(),
+                flags: mcrs_minecraft_protocol_game::MoveFlags::new().with_on_ground(true),
+            },
+        );
+        server.ticks(operator, 1);
+    }
+    let walked = server.world().get::<Transform>(player).unwrap().translation;
+    assert!(
+        (walked.x - start.x - STEP * 20.0).abs() < 1e-6,
+        "the moves apply: {start} -> {walked}"
+    );
+    server.queue(
+        operator,
+        &ServerboundPlayerAction {
+            action: PlayerAction::ReleaseUseItem,
+            pos: BlockPos::new(0, 0, 0),
+            direction: Direction::Down,
+            sequence: VarInt(2),
+        },
+    );
+    server.ticks(operator, 1);
+
+    let shot = projectiles(&mut server);
+    assert_eq!(shot.len(), 1, "the release launches one arrow");
+    let velocity = shot[0].1.0.body.velocity;
+    assert!(
+        (velocity.x - STEP).abs() < 0.05,
+        "the arrow carries the walk of the shooter along x: {velocity}"
+    );
+    assert!(
+        velocity.y.abs() < 0.05,
+        "a shooter on the ground gives no vertical motion: {velocity}"
     );
 }

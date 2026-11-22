@@ -14,10 +14,12 @@ use mcrs_minecraft_engine::use_item_request::UseItemRequest;
 use mcrs_minecraft_engine_item::Selected;
 use mcrs_minecraft_engine_item::Slots;
 use mcrs_minecraft_engine_item::StackCommandsExt;
+use mcrs_minecraft_engine_physics::PlayerIndex;
 use mcrs_minecraft_engine_world::birth_clock::BirthClock;
 use mcrs_minecraft_engine_world::entity::physics::Transform;
 use mcrs_minecraft_engine_world::entity::player::Player;
 use mcrs_minecraft_engine_world::session::Owner;
+use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::KeyedStream;
 use mcrs_minecraft_game_mode::GameMode;
@@ -25,10 +27,12 @@ use mcrs_minecraft_game_mode::PlayerGameMode;
 use mcrs_minecraft_inventory_player::OFF_HAND;
 use mcrs_minecraft_item_key::item_keys::Item;
 use mcrs_minecraft_item_stack::Kind;
+use mcrs_minecraft_player_index::PlayerFlags;
 use mcrs_minecraft_protocol_game::Hand;
 use mcrs_minecraft_protocol_game::sound::SoundSource;
 
 use crate::ProjectileKind;
+use crate::aim::inherited_motion;
 use crate::aim::launch_velocity;
 use crate::launch::LaunchSound;
 use crate::launch::ProjectileLaunch;
@@ -96,6 +100,7 @@ pub(crate) fn start_item_use(
     users: Users,
     stacks: Query<&Kind>,
     clock: Res<BirthClock>,
+    players: Res<PlayerIndex>,
     mut launches: MessageWriter<ProjectileLaunch>,
     mut commands: Commands,
 ) {
@@ -135,7 +140,7 @@ pub(crate) fn start_item_use(
             SNOWBALL_SPEED,
             INACCURACY,
             &stream,
-        );
+        ) + shooter_motion(&players, player_id(owner));
         launches.write(ProjectileLaunch {
             kind: ProjectileKind::Snowball,
             owner: Some((*uuid, player_id(owner))),
@@ -164,6 +169,7 @@ pub(crate) fn release_item_use(
     users: Users,
     stacks: Query<&Kind>,
     clock: Res<BirthClock>,
+    players: Res<PlayerIndex>,
     mut launches: MessageWriter<ProjectileLaunch>,
     mut commands: Commands,
 ) {
@@ -200,7 +206,7 @@ pub(crate) fn release_item_use(
             BOW_SPEED * f64::from(power),
             INACCURACY,
             &stream,
-        );
+        ) + shooter_motion(&players, player_id(owner));
         launches.write(ProjectileLaunch {
             kind: ProjectileKind::Arrow,
             owner: Some((*uuid, player_id(owner))),
@@ -242,4 +248,15 @@ fn arrow_stack(
         return Some(stack);
     }
     slots.occupied().find(|stack| holds_arrow(*stack))
+}
+
+/// The motion of a player that its projectile inherits (PRJ-LCH-004): the movement of the last
+/// movement packet, which the player index keeps, or zero for a player that the index lacks.
+fn shooter_motion(players: &PlayerIndex, player: EntityId) -> DVec3 {
+    players.find(player).map_or(DVec3::ZERO, |row| {
+        inherited_motion(
+            row.motion.as_dvec3(),
+            row.flags.contains(PlayerFlags::ON_GROUND),
+        )
+    })
 }

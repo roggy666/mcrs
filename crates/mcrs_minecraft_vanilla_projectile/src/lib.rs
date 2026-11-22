@@ -7,6 +7,7 @@ mod projectile;
 mod projectile_plugin;
 mod sounds;
 
+pub use aim::inherited_motion;
 pub use aim::launch_velocity;
 pub use aim::mob_shot;
 pub use bow::Drawing;

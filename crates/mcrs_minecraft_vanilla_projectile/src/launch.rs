@@ -38,6 +38,7 @@ use crate::Projectile;
 use crate::ProjectileKind;
 use crate::aim::Aimed;
 use crate::aim::Shooter;
+use crate::aim::inherited_motion;
 use crate::aim::mob_shot;
 use crate::projectile::Pickup;
 use crate::sounds::SoundAt;
@@ -92,11 +93,12 @@ pub(crate) fn aim_ranged_attacks(
             },
             ProjectileKind::Snowball => LaunchSound::Throw,
         };
+        let body = &state.0.body;
         launches.write(ProjectileLaunch {
             kind: shot.kind,
             owner: Some((state.0.key, attack.attacker)),
             position: shot.position,
-            velocity: shot.velocity,
+            velocity: shot.velocity + inherited_motion(body.velocity, body.flags.on_ground),
             critical: false,
             pickup: Pickup::Disallowed,
             sound: Some(sound),
