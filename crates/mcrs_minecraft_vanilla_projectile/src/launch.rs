@@ -4,13 +4,12 @@ use bevy_ecs::message::Message;
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::message::MessageWriter;
 use bevy_ecs::observer::On;
-use bevy_ecs::query::With;
 use bevy_ecs::system::Commands;
 use bevy_ecs::system::Local;
 use bevy_ecs::system::Query;
+use bevy_ecs::system::Res;
 use bevy_ecs::system::ResMut;
 use glam::DVec3;
-use mcrs_minecraft_engine::PlayerBody;
 use mcrs_minecraft_engine::column_change::ColumnChange;
 use mcrs_minecraft_engine::column_streams::ColumnStreams;
 use mcrs_minecraft_engine::network_id::player_network_id;
@@ -21,8 +20,7 @@ use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_entity_motion_replication::Appearance;
 use mcrs_minecraft_engine_physics::Mob;
 use mcrs_minecraft_engine_physics::MobIndex;
-use mcrs_minecraft_engine_world::entity::physics::Transform;
-use mcrs_minecraft_engine_world::entity::player::Player;
+use mcrs_minecraft_engine_physics::PlayerIndex;
 use mcrs_minecraft_engine_world::entity_births::EntityBirths;
 use mcrs_minecraft_engine_world::session::Owner;
 use mcrs_minecraft_entity_key::BirthSequences;
@@ -63,13 +61,11 @@ pub enum LaunchSound {
 }
 
 type Mobs<'w, 's> = Query<'w, 's, (&'static MotionId, &'static MotionState, &'static Mob)>;
-type Players<'w, 's> =
-    Query<'w, 's, (&'static Owner, &'static Transform, PlayerBody), With<Player>>;
 
 pub(crate) fn aim_ranged_attacks(
     mut attacks: MessageReader<RangedAttack>,
     mobs: Mobs,
-    players: Players,
+    players: Res<PlayerIndex>,
     births: EntityBirths,
     mut launches: MessageWriter<ProjectileLaunch>,
 ) {
@@ -108,7 +104,7 @@ pub(crate) fn aim_ranged_attacks(
     }
 }
 
-fn aimed(mobs: &Mobs<'_, '_>, players: &Players<'_, '_>, target: EntityId) -> Option<Aimed> {
+fn aimed(mobs: &Mobs<'_, '_>, players: &PlayerIndex, target: EntityId) -> Option<Aimed> {
     if let Some((_, state, mob)) = mobs.iter().find(|(id, ..)| id.0 == target) {
         return Some(Aimed {
             feet: state.0.body.position,
@@ -116,14 +112,11 @@ fn aimed(mobs: &Mobs<'_, '_>, players: &Players<'_, '_>, target: EntityId) -> Op
             eye_height: mob.kind.eye_height,
         });
     }
-    let (_, transform, body) = players
-        .iter()
-        .find(|(owner, ..)| player_id(owner) == target)?;
-    let dimensions = body.dimensions();
+    let row = players.find(target)?;
     Some(Aimed {
-        feet: transform.translation,
-        height: dimensions.height,
-        eye_height: dimensions.eye_height,
+        feet: row.position,
+        height: row.height,
+        eye_height: row.eye_height,
     })
 }
 

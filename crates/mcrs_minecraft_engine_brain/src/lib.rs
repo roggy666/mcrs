@@ -7,7 +7,6 @@ mod hit_queue;
 mod mob_ai;
 mod mob_brain_plugin;
 mod panic_causes_in;
-mod player_table;
 mod run_tiles;
 mod sensed;
 mod sight_blocks;

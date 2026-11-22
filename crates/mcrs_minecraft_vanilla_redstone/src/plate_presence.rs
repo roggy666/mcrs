@@ -3,22 +3,20 @@ use bevy_ecs::message::MessageReader;
 use bevy_ecs::query::With;
 use bevy_ecs::system::{Local, Query, Res, ResMut};
 use glam::DVec3;
-use mcrs_minecraft_engine::PlayerBody;
 use mcrs_minecraft_engine::block_simulation::{
     BlockMemory, BlockRules, BlockShared, BlockSimulation,
 };
 use mcrs_minecraft_engine::world_kinds::WorldKinds;
 use mcrs_minecraft_engine_entity_motion::MotionState;
-use mcrs_minecraft_engine_world::entity::physics::Transform;
-use mcrs_minecraft_engine_world::entity::player::Player;
+use mcrs_minecraft_engine_physics::PlayerIndex;
 use mcrs_minecraft_engine_world::world::dimension::Dimension;
 use mcrs_minecraft_engine_world::world::lifecycle::stage::SectionStageChanged;
 use mcrs_minecraft_engine_world::world::storage::section::SectionIndex;
 use mcrs_minecraft_engine_world::world::storage::view::WorldView;
-use mcrs_minecraft_game_mode::{GameMode, PlayerGameMode};
 use mcrs_minecraft_item_entity::ItemEntity;
 use mcrs_minecraft_physics::Aabb;
 use mcrs_minecraft_physics::BodyGrid;
+use mcrs_minecraft_player_index::PlayerFlags;
 use mcrs_minecraft_redstone::{
     HasRedstone, HasRedstoneMemory, HasRedstoneSnapshot, Kind, Presence, RedstoneTable, Sensor,
     plate_signal_for,
@@ -82,8 +80,6 @@ fn count(presence: &mut Presence, occupant: Occupant) {
     }
 }
 
-type PlayerItem<'a> = (&'a Transform, &'a PlayerGameMode, PlayerBody);
-
 #[expect(
     clippy::too_many_arguments,
     reason = "a Bevy system: each query, resource and local is its own parameter"
@@ -91,7 +87,7 @@ type PlayerItem<'a> = (&'a Transform, &'a PlayerGameMode, PlayerBody);
 pub(crate) fn publish_plate_presence<B>(
     bodies: Res<BodyGrid>,
     items: Query<&MotionState, With<ItemEntity>>,
-    players: Query<PlayerItem, With<Player>>,
+    players: Res<PlayerIndex>,
     dims: Query<Entity, With<Dimension>>,
     world: WorldView,
     rules: Res<BlockRules<B>>,
@@ -122,14 +118,13 @@ pub(crate) fn publish_plate_presence<B>(
         list.clear();
     }
     nearby.retain(|_, list| list.capacity() > 0);
-    for (transform, mode, body) in &players {
-        if mode.0 == GameMode::Spectator {
+    for row in players.rows() {
+        if row.flags.contains(PlayerFlags::SPECTATOR) {
             continue;
         }
-        let dimensions = body.dimensions();
-        let body = Aabb::of_body(transform.translation, dimensions.width, dimensions.height);
+        let body = Aabb::new(row.min(), row.max());
         nearby
-            .entry(column_of(transform.translation))
+            .entry(column_of(row.position))
             .or_default()
             .push((body, Occupant::Living));
     }

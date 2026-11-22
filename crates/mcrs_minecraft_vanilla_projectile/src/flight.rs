@@ -1,6 +1,5 @@
 use bevy_ecs::entity::Entity;
 use bevy_ecs::message::MessageWriter;
-use bevy_ecs::query::With;
 use bevy_ecs::resource::Resource;
 use bevy_ecs::system::Commands;
 use bevy_ecs::system::Query;
@@ -15,7 +14,6 @@ use mcrs_minecraft_damage::HitOutcome;
 use mcrs_minecraft_damage::HurtRules;
 use mcrs_minecraft_damage::Vitals;
 use mcrs_minecraft_damage::preview;
-use mcrs_minecraft_engine::PlayerBody;
 use mcrs_minecraft_engine::column_change::ColumnChange;
 use mcrs_minecraft_engine::column_streams::ColumnStreams;
 use mcrs_minecraft_engine_damage::DamageRequest;
@@ -26,21 +24,19 @@ use mcrs_minecraft_engine_physics::EntityEffect;
 use mcrs_minecraft_engine_physics::EntityWrite;
 use mcrs_minecraft_engine_physics::EntityWrites;
 use mcrs_minecraft_engine_physics::MobIndex;
+use mcrs_minecraft_engine_physics::PlayerIndex;
 use mcrs_minecraft_engine_world::birth_clock::BirthClock;
-use mcrs_minecraft_engine_world::entity::physics::Transform;
-use mcrs_minecraft_engine_world::entity::player::Player;
 use mcrs_minecraft_entity::damage_type_keys::ARROW;
 use mcrs_minecraft_entity::damage_type_keys::THROWN;
 use mcrs_minecraft_entity_key::Cause;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::KeyedStream;
 use mcrs_minecraft_entity_key::WriterKey;
-use mcrs_minecraft_game_mode::GameMode;
-use mcrs_minecraft_game_mode::PlayerGameMode;
 use mcrs_minecraft_physics::Aabb;
 use mcrs_minecraft_physics::BodyGrid;
 use mcrs_minecraft_physics::GridFlags;
 use mcrs_minecraft_physics::segment_meets;
+use mcrs_minecraft_player_index::PlayerFlags;
 use mcrs_minecraft_registries::CurrentRegistries;
 use mcrs_minecraft_resource::ResourceLocation;
 use mcrs_minecraft_resource::rl;
@@ -92,18 +88,8 @@ type Flying<'w, 's> = Query<
 
 type Targets<'w, 's> = Query<'w, 's, (&'static Vitals, Option<&'static Defence>)>;
 
-type Players<'w, 's> = Query<
-    'w,
-    's,
-    (
-        Entity,
-        &'static EntityUuid,
-        &'static Transform,
-        &'static PlayerGameMode,
-        PlayerBody,
-    ),
-    With<Player>,
->;
+/// The body of a player reaches at most this far out of the column of its position.
+const PLAYER_REACH: f64 = 4.0;
 
 #[derive(Clone, Copy, Debug)]
 struct Candidate {
@@ -120,9 +106,9 @@ struct EntityHit {
     candidate: Candidate,
 }
 
-struct FlightWorld<'w, 's, 'a> {
+struct FlightWorld<'a> {
     grid: &'a BodyGrid,
-    players: &'a Players<'w, 's>,
+    players: &'a PlayerIndex,
     index: &'a MobIndex,
 }
 
@@ -133,7 +119,7 @@ struct FlightWorld<'w, 's, 'a> {
 pub(crate) fn fly_projectiles(
     mut projectiles: Flying,
     targets: Targets,
-    players: Players,
+    players: Res<PlayerIndex>,
     grid: Res<BodyGrid>,
     index: Res<MobIndex>,
     clock: Res<BirthClock>,
@@ -247,7 +233,7 @@ fn sound_seed(key: &EntityUuid, tick: u64) -> u64 {
 }
 
 fn entity_hit(
-    world: &FlightWorld<'_, '_, '_>,
+    world: &FlightWorld<'_>,
     projectile: &mut Projectile,
     start: DVec3,
     delta: DVec3,
@@ -293,21 +279,15 @@ fn entity_hit(
             centre: row.position,
         });
     }
-    let query = Aabb::new(min, max);
-    for (entity, key, transform, mode, body) in world.players.iter() {
-        if mode.0 == GameMode::Spectator {
-            continue;
-        }
-        let dimensions = body.dimensions();
-        let bounds = Aabb::of_body(transform.translation, dimensions.width, dimensions.height);
-        if !query.intersects(&bounds) {
+    for row in world.players.table().bodies_in(min, max, PLAYER_REACH) {
+        if row.flags.contains(PlayerFlags::SPECTATOR) {
             continue;
         }
         consider(Candidate {
-            key: *key,
-            entity: Some(entity),
-            bounds,
-            centre: transform.translation,
+            key: row.key,
+            entity: world.players.entity_of(row.player),
+            bounds: Aabb::new(row.min(), row.max()),
+            centre: row.position,
         });
     }
     if !owner_near {

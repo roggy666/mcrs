@@ -5,6 +5,8 @@ use crate::PlayerRow;
 use glam::DVec3;
 use mcrs_minecraft_entity_key::EntityId;
 
+/// The rows of the players of a dimension, sorted by key, with a map from the column of each
+/// position to its rows. A column is 16 by 16 blocks.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerTable {
     rows: Vec<PlayerRow>,
@@ -27,7 +29,7 @@ impl PlayerTable {
             };
             by_id.push((row.player, index));
             columns
-                .entry(column(row.position.x, row.position.z))
+                .entry(column_of(row.position.x, row.position.z))
                 .or_default()
                 .push(index);
         }
@@ -71,8 +73,8 @@ impl PlayerTable {
         reach: f64,
         accept: impl Fn(&PlayerRow) -> bool,
     ) -> bool {
-        let (min_x, min_z) = column(position.x - reach, position.z - reach);
-        let (max_x, max_z) = column(position.x + reach, position.z + reach);
+        let (min_x, min_z) = column_of(position.x - reach, position.z - reach);
+        let (max_x, max_z) = column_of(position.x + reach, position.z + reach);
         let limit = reach * reach;
         (min_x..=max_x).any(|x| {
             self.columns
@@ -83,22 +85,39 @@ impl PlayerTable {
         })
     }
 
+    /// The rows whose position lies in the columns that the box `(min, max)` touches, in the
+    /// order of the columns and then of the keys. The box is in blocks; only `x` and `z` count.
+    pub fn in_columns(&self, min: DVec3, max: DVec3) -> impl Iterator<Item = &PlayerRow> {
+        let (min_x, min_z) = column_of(min.x, min.z);
+        let (max_x, max_z) = column_of(max.x, max.z);
+        (min_x..=max_x).flat_map(move |x| {
+            self.columns
+                .range((x, min_z)..=(x, max_z))
+                .flat_map(|(_, indices)| indices.iter())
+                .filter_map(|index| self.rows.get(*index as usize))
+        })
+    }
+
+    /// The rows whose body box meets the box `(min, max)`. The body of a player reaches at most
+    /// `reach` blocks out of its column; the search widens the columns by that much.
+    pub fn bodies_in(
+        &self,
+        min: DVec3,
+        max: DVec3,
+        reach: f64,
+    ) -> impl Iterator<Item = &PlayerRow> {
+        let margin = DVec3::new(reach, 0.0, reach);
+        self.in_columns(min - margin, max + margin)
+            .filter(move |row| row.meets(min, max))
+    }
+
     pub fn collect_in(&self, min: DVec3, max: DVec3, out: &mut Vec<PlayerRow>) {
         let start = out.len();
-        let (min_x, min_z) = column(min.x, min.z);
-        let (max_x, max_z) = column(max.x, max.z);
-        for x in min_x..=max_x {
-            for (_, indices) in self.columns.range((x, min_z)..=(x, max_z)) {
-                for &index in indices {
-                    let Some(row) = self.rows.get(index as usize) else {
-                        continue;
-                    };
-                    let inside = (min.x..=max.x).contains(&row.position.x)
-                        && (min.z..=max.z).contains(&row.position.z);
-                    if inside {
-                        out.push(*row);
-                    }
-                }
+        for row in self.in_columns(min, max) {
+            let inside = (min.x..=max.x).contains(&row.position.x)
+                && (min.z..=max.z).contains(&row.position.z);
+            if inside {
+                out.push(*row);
             }
         }
         if let Some(found) = out.get_mut(start..) {
@@ -107,7 +126,9 @@ impl PlayerTable {
     }
 }
 
-fn column(x: f64, z: f64) -> (i32, i32) {
+/// The column of a position: the floor of `x / 16` and of `z / 16`.
+#[must_use]
+pub fn column_of(x: f64, z: f64) -> (i32, i32) {
     (
         libm::floor(x / COLUMN) as i32,
         libm::floor(z / COLUMN) as i32,

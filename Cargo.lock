@@ -4307,6 +4307,7 @@ dependencies = [
  "hashbrown 0.16.1",
  "libm",
  "mcrs_minecraft_entity_key",
+ "mcrs_minecraft_player_index",
 ]
 
 [[package]]
@@ -5322,17 +5323,23 @@ dependencies = [
  "mcrs_minecraft_block",
  "mcrs_minecraft_collision_table",
  "mcrs_minecraft_damage",
+ "mcrs_minecraft_engine",
  "mcrs_minecraft_engine_damage",
  "mcrs_minecraft_engine_entity_motion",
+ "mcrs_minecraft_engine_item",
  "mcrs_minecraft_engine_physics",
  "mcrs_minecraft_engine_world",
  "mcrs_minecraft_entity",
  "mcrs_minecraft_entity_attribute",
  "mcrs_minecraft_entity_key",
  "mcrs_minecraft_fixtures",
+ "mcrs_minecraft_game_mode",
  "mcrs_minecraft_game_registries",
  "mcrs_minecraft_game_rule",
+ "mcrs_minecraft_inventory_player",
+ "mcrs_minecraft_item_stack",
  "mcrs_minecraft_physics",
+ "mcrs_minecraft_player_index",
  "mcrs_minecraft_pose",
  "mcrs_minecraft_protocol_game",
  "mcrs_minecraft_registries",
@@ -6567,6 +6574,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mcrs_minecraft_player_index"
+version = "0.5.8"
+dependencies = [
+ "glam",
+ "libm",
+ "mcrs_minecraft_entity_key",
+]
+
+[[package]]
 name = "mcrs_minecraft_pose"
 version = "0.5.8"
 dependencies = [
@@ -7455,6 +7471,7 @@ dependencies = [
  "mcrs_minecraft_item_key",
  "mcrs_minecraft_item_stack",
  "mcrs_minecraft_physics",
+ "mcrs_minecraft_player_index",
  "mcrs_minecraft_protocol",
  "mcrs_minecraft_protocol_game",
  "mcrs_minecraft_registries",
@@ -7494,6 +7511,7 @@ dependencies = [
  "mcrs_minecraft_item_table",
  "mcrs_minecraft_nbt",
  "mcrs_minecraft_physics",
+ "mcrs_minecraft_player_index",
  "mcrs_minecraft_pose",
  "mcrs_minecraft_random",
  "mcrs_minecraft_redstone",

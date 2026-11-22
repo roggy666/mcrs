@@ -1,7 +1,6 @@
 use bevy_ecs::entity::Entity;
 use bevy_ecs::lifecycle::Remove;
 use bevy_ecs::observer::On;
-use bevy_ecs::query::With;
 use bevy_ecs::resource::Resource;
 use bevy_ecs::system::Commands;
 use bevy_ecs::system::Query;
@@ -9,30 +8,25 @@ use bevy_ecs::system::Res;
 use bevy_ecs::system::ResMut;
 use glam::DVec3;
 use mcrs_engine_muxer::EntityEvent;
-use mcrs_minecraft_engine::PlayerBody;
 use mcrs_minecraft_engine::tile_events::TileEvents;
 use mcrs_minecraft_engine_entity_motion::MotionId;
 use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_entity_motion_replication::PublishedTile;
 use mcrs_minecraft_engine_item::HolderCommandsExt;
-use mcrs_minecraft_engine_world::entity::physics::Transform;
-use mcrs_minecraft_engine_world::entity::player::Player;
-use mcrs_minecraft_engine_world::session::Owner;
-use mcrs_minecraft_game_mode::GameMode;
-use mcrs_minecraft_game_mode::PlayerGameMode;
+use mcrs_minecraft_engine_physics::PlayerIndex;
 use mcrs_minecraft_item_key::item_keys::Item;
 use mcrs_minecraft_item_stack::Count;
 use mcrs_minecraft_item_stack::ItemStack;
 use mcrs_minecraft_item_stack::Kind;
 use mcrs_minecraft_physics::Aabb;
 use mcrs_minecraft_physics::block_at;
+use mcrs_minecraft_player_index::PlayerFlags;
 use mcrs_minecraft_replication::MobReport;
 use mcrs_minecraft_replication::MobSignal;
 use mcrs_voxel::ColumnPos;
 use rustc_hash::FxHashMap;
 
 use crate::Projectile;
-use crate::launch::player_id;
 use crate::projectile::Pickup;
 
 const PICKUP_REACH: DVec3 = DVec3::new(1.0, 0.5, 1.0);
@@ -91,19 +85,6 @@ pub(crate) fn has_resting_arrows(resting: Res<RestingArrows>) -> bool {
     !resting.is_empty()
 }
 
-type Collectors<'w, 's> = Query<
-    'w,
-    's,
-    (
-        Entity,
-        &'static Owner,
-        &'static Transform,
-        &'static PlayerGameMode,
-        PlayerBody,
-    ),
-    With<Player>,
->;
-
 type Arrows<'w, 's> = Query<
     'w,
     's,
@@ -116,7 +97,7 @@ type Arrows<'w, 's> = Query<
 >;
 
 pub(crate) fn pick_up_arrows(
-    collectors: Collectors,
+    collectors: Res<PlayerIndex>,
     arrows: Arrows,
     mut resting: ResMut<RestingArrows>,
     mut events: ResMut<TileEvents>,
@@ -124,14 +105,15 @@ pub(crate) fn pick_up_arrows(
 ) {
     let arrow_item = Kind(Item::Arrow.id().number());
     let mut taken: Vec<Entity> = Vec::new();
-    for (player, owner, transform, mode, body) in &collectors {
-        if mode.0 == GameMode::Spectator {
+    for collector in collectors.rows() {
+        if collector.flags.contains(PlayerFlags::SPECTATOR) {
             continue;
         }
-        let dimensions = body.dimensions();
-        let reach = Aabb::of_body(transform.translation, dimensions.width, dimensions.height)
-            .inflate(PICKUP_REACH);
-        let column = ColumnPos::from(block_at(transform.translation));
+        let Some(player) = collectors.entity_of(collector.player) else {
+            continue;
+        };
+        let reach = Aabb::new(collector.min(), collector.max()).inflate(PICKUP_REACH);
+        let column = ColumnPos::from(block_at(collector.position));
         for arrow in resting.around(column) {
             if taken.contains(&arrow) {
                 continue;
@@ -145,7 +127,7 @@ pub(crate) fn pick_up_arrows(
             let takes = match projectile.pickup {
                 Pickup::Disallowed => false,
                 Pickup::Allowed => true,
-                Pickup::CreativeOnly => mode.0 == GameMode::Creative,
+                Pickup::CreativeOnly => collector.flags.contains(PlayerFlags::CREATIVE),
             };
             if !takes {
                 continue;
@@ -167,7 +149,7 @@ pub(crate) fn pick_up_arrows(
                     id.0,
                     EntityEvent::Data(
                         MobReport::Signal(MobSignal::Taken {
-                            collector: player_id(owner),
+                            collector: collector.player,
                             amount: 1,
                         })
                         .into(),

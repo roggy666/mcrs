@@ -75,6 +75,7 @@ mod persistence;
 mod player_bundle;
 mod player_dimension_change;
 mod player_dimensions;
+pub mod player_motion;
 pub mod player_order;
 pub mod player_roster;
 pub mod player_signal;

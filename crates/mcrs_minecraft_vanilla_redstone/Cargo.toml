@@ -25,6 +25,7 @@ mcrs_minecraft_engine.workspace = true
 mcrs_minecraft_engine_entity_motion.workspace = true
 mcrs_minecraft_engine_item.workspace = true
 mcrs_minecraft_engine_physics.workspace = true
+mcrs_minecraft_player_index.workspace = true
 mcrs_minecraft_engine_world.workspace = true
 mcrs_minecraft_entity_key.workspace = true
 mcrs_minecraft_environment = { workspace = true, features = ["bevy"] }

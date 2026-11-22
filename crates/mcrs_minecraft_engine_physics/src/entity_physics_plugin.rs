@@ -35,6 +35,8 @@ use crate::mob_spawn::WaitingSpawns;
 use crate::mob_spawn::spawn_mob_entities;
 use crate::mob_spawn_request::MobSpawnRequest;
 use crate::physics_tables::build_tables;
+use crate::player_index::PlayerIndex;
+use crate::player_index::index_players;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct EntityPhysicsPlugin;
@@ -50,6 +52,7 @@ impl Plugin for EntityPhysicsPlugin {
         app.init_resource::<BirthClock>();
         app.init_resource::<CellEntityIds>();
         app.init_resource::<MobIndex>();
+        app.init_resource::<PlayerIndex>();
         app.init_resource::<MobChanges>();
         app.init_resource::<EntityWrites>();
         app.init_resource::<CrowdDamageType>();
@@ -64,6 +67,7 @@ impl Plugin for EntityPhysicsPlugin {
                         .and_then(resource_exists_and_changed::<CurrentRegistries>),
                 ),
                 find_crowd_damage_type.run_if(resource_exists_and_changed::<CurrentRegistries>),
+                index_players,
                 apply_entity_writes.run_if(has_writes),
                 spawn_mob_entities,
                 ApplyDeferred,

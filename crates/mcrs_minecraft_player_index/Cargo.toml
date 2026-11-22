@@ -1,0 +1,16 @@
+[package]
+name = "mcrs_minecraft_player_index"
+description = "The player index of a dimension without Bevy: one row per player with its position, box, flags, hands and last motion, and the column map that serves the brains, the projectiles, the redstone sensors and the spawner"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+glam = { workspace = true, features = ["nostd-libm"] }
+libm.workspace = true
+mcrs_minecraft_entity_key.workspace = true

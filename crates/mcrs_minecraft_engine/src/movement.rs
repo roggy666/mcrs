@@ -19,6 +19,7 @@ use mcrs_minecraft_protocol_game::serverbound::{
 use crate::bus::{OutboundPlayerPacket, PacketPayload};
 use crate::client_on_ground::ClientOnGround;
 use crate::coordinator::clock::GameTime;
+use crate::player_motion::{PlayerMotion, settle_player_motion};
 use crate::teleport::{
     AcceptOutcome, MAX_XZ, MAX_Y, TeleportState, landing, position_packet, teleport_to,
 };
@@ -40,7 +41,11 @@ impl Plugin for MovementPlugin {
         if let Err(error) = app.try_register_required_components::<Player, ClientOnGround>() {
             tracing::error!("a player does not require its on-ground flag: {error}");
         }
+        if let Err(error) = app.try_register_required_components::<Player, PlayerMotion>() {
+            tracing::error!("a player does not require its motion: {error}");
+        }
         app.add_systems(FixedUpdate, process_movement.in_set(TickSet::ClientInput));
+        app.add_systems(FixedUpdate, settle_player_motion.in_set(TickSet::Project));
         app.add_systems(
             FixedPostUpdate,
             teleport.before(VoxelUpdateSet::NetworkSync),
@@ -133,12 +138,14 @@ pub(crate) fn process_movement(
         Mut<TeleportState>,
         Mut<Transform>,
         Mut<ClientOnGround>,
+        Option<Mut<PlayerMotion>>,
     )>,
     time: Res<GameTime>,
     mut packets: MessageWriter<OutboundPlayerPacket>,
 ) {
     for movement in reader.read() {
-        let Ok((owner, mut state, mut transform, mut on_ground)) = query.get_mut(movement.entity)
+        let Ok((owner, mut state, mut transform, mut on_ground, motion)) =
+            query.get_mut(movement.entity)
         else {
             continue;
         };
@@ -149,8 +156,12 @@ pub(crate) fn process_movement(
             }
             continue;
         }
+        let before = transform.translation;
         if let Some(position) = movement.position {
             transform.set_if_neq(transform.with_translation(reachable(position)));
+        }
+        if let Some(mut motion) = motion {
+            motion.record(transform.translation - before);
         }
         if let Some(look) = movement.look {
             transform.set_if_neq(transform.with_rotation(look));

@@ -515,6 +515,13 @@ previous tick, spectator and alive flags; 32 B per player. A per-column reverse 
 players at fixed radii (technique) serves the despawn distances, the idle time, orb attraction,
 spawning, entity tracking and the player push.
 
+The row type and the table live in `mcrs_minecraft_player_index` (no Bevy): the row holds the
+position, the body box, the flags (alive, spectator, creative, sneaking, sprinting, on ground),
+the hands, the hurt-by mark and the motion of the last movement packet, within 128 bytes.
+`engine_physics` builds the `PlayerIndex` resource once per tick in `DomainInput`, before the
+client input; every reader of the tick (the brain stage, the projectiles, the redstone sensors,
+the spawner) reads it by reference and none of them queries the player components.
+
 ### 5.8 What the hot loop never waits for
 
 The light and generation stages, the data layer or the disk, the muxer, encryption, the sockets and

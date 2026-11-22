@@ -17,6 +17,7 @@ mod mob_spawn_request;
 mod mob_vitals;
 mod mobs;
 mod physics_tables;
+mod player_index;
 #[cfg(feature = "testing")]
 mod test_scene;
 
@@ -40,5 +41,7 @@ pub use mob_spawn_request::SpawnSetup;
 pub use mob_vitals::mob_vitals;
 pub use mobs::Mob;
 pub use physics_tables::PhysicsTables;
+pub use player_index::PlayerIndex;
+pub use player_index::player_id;
 #[cfg(feature = "testing")]
 pub use test_scene::TestScene;

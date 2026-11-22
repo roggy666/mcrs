@@ -37,6 +37,7 @@ use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_physics::Mob;
 use mcrs_minecraft_engine_physics::MobSpawnRequest;
 use mcrs_minecraft_engine_physics::PhysicsTables;
+use mcrs_minecraft_engine_physics::PlayerIndex;
 use mcrs_minecraft_engine_world::tick::TickSet;
 use mcrs_minecraft_engine_world::world::dimension::Dimension;
 use mcrs_minecraft_engine_world::world::storage::view::DimensionView;
@@ -63,10 +64,6 @@ use crate::mob_ai::BrainOut;
 use crate::mob_ai::Hitting;
 use crate::mob_ai::Thinking;
 use crate::panic_causes_in::panic_causes_in;
-use crate::player_table::Players;
-use crate::player_table::Stacks;
-use crate::player_table::player_entities;
-use crate::player_table::player_table;
 
 const DAMAGE_TYPE: ResourceLocation<'static> = rl!("minecraft:damage_type");
 
@@ -227,8 +224,7 @@ fn prepare<B>(
     dimension: Single<Entity, With<Dimension>>,
     world: WorldView,
     tables: Res<PhysicsTables>,
-    players: Players,
-    stacks: Stacks,
+    players: Res<PlayerIndex>,
     mut mobs: ParamSet<(Thinking, Hitting)>,
     mut pending: Option<ResMut<PendingHits>>,
     mut ai: ResMut<MobAi<B>>,
@@ -245,8 +241,8 @@ fn prepare<B>(
     let goal_world = BlockGoalWorld::new(&blocks, tables.collision());
     ai.prepare(
         &goal_world,
-        player_table(&players, &stacks),
-        &player_entities(&players),
+        players.table().clone(),
+        players.entities(),
         &mut mobs,
         pending.as_deref_mut(),
         &mut threads,
