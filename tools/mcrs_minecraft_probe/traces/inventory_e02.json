@@ -1,0 +1,1330 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve02probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "helmet_to_own_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "helmet_to_own_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "helmet_to_own_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "helmet_to_own_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {head: {count: 1, id: \"minecraft:iron_helmet\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chestplate_to_own_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "chestplate_to_own_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Chestplate]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_chestplate",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "chestplate_to_own_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 6,
+          "stack": {
+            "item": "minecraft:iron_chestplate",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "chestplate_to_own_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {chest: {count: 1, id: \"minecraft:iron_chestplate\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "leggings_to_own_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 6,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "leggings_to_own_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Leggings]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_leggings",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "leggings_to_own_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 7,
+          "stack": {
+            "item": "minecraft:iron_leggings",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "leggings_to_own_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {legs: {count: 1, id: \"minecraft:iron_leggings\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "boots_to_own_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 7,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "boots_to_own_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Boots]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_boots",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "boots_to_own_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 8,
+          "stack": {
+            "item": "minecraft:iron_boots",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "boots_to_own_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {feet: {count: 1, id: \"minecraft:iron_boots\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "helmet_to_chest_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 8,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "helmet_to_chest_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "helmet_to_chest_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "helmet_to_chest_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching equipment"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_head_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "stone_to_head_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone_to_head_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_head_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching equipment"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 10 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:equippable"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:equippable"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching equipment"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:equippable"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 18,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:equippable"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {head: {components: {\"minecraft:equippable\": {allowed_entities: [\"minecraft:zombie\", \"minecraft:player\"], slot: \"head\"}}, count: 1, id: \"minecraft:iron_helmet\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_helmets_to_head_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 19,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 20,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "two_helmets_to_head_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "minecraft:iron_helmet can only stack up to 1"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_helmets_to_head_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "two_helmets_to_head_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching equipment"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pumpkin_to_head_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve02probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 21,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "pumpkin_to_head_slot_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Carved Pumpkin]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:carved_pumpkin",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pumpkin_to_head_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 22,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:carved_pumpkin",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "pumpkin_to_head_slot_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {head: {count: 1, id: \"minecraft:carved_pumpkin\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pumpkins_quick_move_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 1 item(s) from player inve02probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve02probeplyr with [Carved Pumpkin]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 23,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 24,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 25,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:carved_pumpkin",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pumpkins_quick_move_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 26,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:carved_pumpkin",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 27,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 28,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:carved_pumpkin",
+            "count": 63,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pumpkins_quick_move_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {head: {count: 1, id: \"minecraft:carved_pumpkin\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pumpkins_quick_move_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: [{count: 63, Slot: 0b, id: \"minecraft:carved_pumpkin\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "binding_survival_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 64 item(s) from player inve02probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 29,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 30,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 31,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 32,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:enchantments"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "binding_survival_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "binding_survival_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve02probeplyr has the following entity data: {head: {components: {\"minecraft:enchantments\": {\"minecraft:binding_curse\": 1}}, count: 1, id: \"minecraft:iron_helmet\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "binding_creative_gamemode",
+      "observed": {
+        "console": {
+          "output": [
+            "Set inve02probeplyr's game mode to Creative Mode"
+          ],
+          "chat": [
+            {
+              "client": "inve02probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.creative"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "binding_creative_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 33,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:enchantments"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "binding_creative_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching equipment"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "binding_creative_clear_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve02probeplyr with [Air]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "stored_binding_survival_gamemode",
+      "observed": {
+        "console": {
+          "output": [
+            "Set inve02probeplyr's game mode to Survival Mode"
+          ],
+          "chat": [
+            {
+              "client": "inve02probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.survival"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stored_binding_survival_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve02probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve02probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 34,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 35,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:stored_enchantments"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stored_binding_survival_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 36,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:stored_enchantments"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stored_binding_survival_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching equipment"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

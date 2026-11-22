@@ -1,0 +1,862 @@
+{
+ "experiment": "E-FL4",
+ "name": "lava_falling",
+ "dimension": "minecraft:overworld",
+ "box": [
+  87,
+  -60,
+  55,
+  105,
+  -57,
+  73
+ ],
+ "setup": [
+  "setblock 96 -57 64 minecraft:lava"
+ ],
+ "events": [
+  {
+   "tick": 0,
+   "command": "setblock 96 -57 64 minecraft:lava",
+   "feedback": [
+    "System chat: Changed the block at 96, -57, 64"
+   ]
+  }
+ ],
+ "observations": [
+  {
+   "tick": 0,
+   "changes": [
+    [
+     96,
+     -57,
+     64,
+     "minecraft:lava"
+    ]
+   ],
+   "label": "after setblock",
+   "fluid_ticks": [
+    [
+     96,
+     -57,
+     64,
+     "minecraft:lava",
+     30
+    ]
+   ]
+  },
+  {
+   "tick": 5,
+   "changes": []
+  },
+  {
+   "tick": 10,
+   "changes": []
+  },
+  {
+   "tick": 15,
+   "changes": []
+  },
+  {
+   "tick": 20,
+   "changes": []
+  },
+  {
+   "tick": 25,
+   "changes": []
+  },
+  {
+   "tick": 30,
+   "changes": [
+    [
+     96,
+     -58,
+     64,
+     "minecraft:lava[level=8]"
+    ]
+   ]
+  },
+  {
+   "tick": 35,
+   "changes": []
+  },
+  {
+   "tick": 40,
+   "changes": []
+  },
+  {
+   "tick": 45,
+   "changes": []
+  },
+  {
+   "tick": 50,
+   "changes": []
+  },
+  {
+   "tick": 55,
+   "changes": []
+  },
+  {
+   "tick": 60,
+   "changes": [
+    [
+     95,
+     -57,
+     64,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     96,
+     -59,
+     64,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -57,
+     63,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     96,
+     -57,
+     65,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     97,
+     -57,
+     64,
+     "minecraft:lava[level=2]"
+    ]
+   ]
+  },
+  {
+   "tick": 65,
+   "changes": []
+  },
+  {
+   "tick": 70,
+   "changes": []
+  },
+  {
+   "tick": 75,
+   "changes": []
+  },
+  {
+   "tick": 80,
+   "changes": []
+  },
+  {
+   "tick": 85,
+   "changes": []
+  },
+  {
+   "tick": 90,
+   "changes": [
+    [
+     95,
+     -58,
+     64,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -60,
+     64,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -58,
+     63,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -58,
+     65,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     97,
+     -58,
+     64,
+     "minecraft:lava[level=8]"
+    ]
+   ]
+  },
+  {
+   "tick": 95,
+   "changes": []
+  },
+  {
+   "tick": 100,
+   "changes": []
+  },
+  {
+   "tick": 105,
+   "changes": []
+  },
+  {
+   "tick": 110,
+   "changes": []
+  },
+  {
+   "tick": 115,
+   "changes": []
+  },
+  {
+   "tick": 120,
+   "changes": [
+    [
+     95,
+     -60,
+     64,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     95,
+     -59,
+     64,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -60,
+     63,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     96,
+     -60,
+     65,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     96,
+     -59,
+     63,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -59,
+     65,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     97,
+     -60,
+     64,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     97,
+     -59,
+     64,
+     "minecraft:lava[level=8]"
+    ]
+   ]
+  },
+  {
+   "tick": 125,
+   "changes": []
+  },
+  {
+   "tick": 130,
+   "changes": []
+  },
+  {
+   "tick": 135,
+   "changes": []
+  },
+  {
+   "tick": 140,
+   "changes": []
+  },
+  {
+   "tick": 145,
+   "changes": []
+  },
+  {
+   "tick": 150,
+   "changes": [
+    [
+     94,
+     -60,
+     64,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     95,
+     -60,
+     63,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     95,
+     -60,
+     64,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     95,
+     -60,
+     65,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     96,
+     -60,
+     62,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     96,
+     -60,
+     63,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -60,
+     65,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     96,
+     -60,
+     66,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     97,
+     -60,
+     63,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     97,
+     -60,
+     64,
+     "minecraft:lava[level=8]"
+    ],
+    [
+     97,
+     -60,
+     65,
+     "minecraft:lava[level=2]"
+    ],
+    [
+     98,
+     -60,
+     64,
+     "minecraft:lava[level=2]"
+    ]
+   ]
+  },
+  {
+   "tick": 155,
+   "changes": []
+  },
+  {
+   "tick": 160,
+   "changes": []
+  },
+  {
+   "tick": 165,
+   "changes": []
+  },
+  {
+   "tick": 170,
+   "changes": []
+  },
+  {
+   "tick": 175,
+   "changes": []
+  },
+  {
+   "tick": 180,
+   "changes": [
+    [
+     93,
+     -60,
+     64,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     94,
+     -60,
+     63,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     94,
+     -60,
+     65,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     95,
+     -60,
+     62,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     95,
+     -60,
+     66,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     96,
+     -60,
+     61,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     96,
+     -60,
+     67,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     97,
+     -60,
+     62,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     97,
+     -60,
+     66,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     98,
+     -60,
+     63,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     98,
+     -60,
+     65,
+     "minecraft:lava[level=4]"
+    ],
+    [
+     99,
+     -60,
+     64,
+     "minecraft:lava[level=4]"
+    ]
+   ]
+  },
+  {
+   "tick": 185,
+   "changes": []
+  },
+  {
+   "tick": 190,
+   "changes": []
+  },
+  {
+   "tick": 195,
+   "changes": []
+  },
+  {
+   "tick": 200,
+   "changes": []
+  },
+  {
+   "tick": 200,
+   "changes": [],
+   "label": "ticks",
+   "fluid_ticks": [
+    [
+     93,
+     -60,
+     64,
+     "minecraft:lava",
+     10
+    ],
+    [
+     94,
+     -60,
+     63,
+     "minecraft:lava",
+     10
+    ],
+    [
+     94,
+     -60,
+     64,
+     "minecraft:lava",
+     10
+    ],
+    [
+     94,
+     -60,
+     65,
+     "minecraft:lava",
+     10
+    ],
+    [
+     95,
+     -60,
+     62,
+     "minecraft:lava",
+     10
+    ],
+    [
+     95,
+     -60,
+     63,
+     "minecraft:lava",
+     10
+    ],
+    [
+     95,
+     -60,
+     65,
+     "minecraft:lava",
+     10
+    ],
+    [
+     95,
+     -60,
+     66,
+     "minecraft:lava",
+     10
+    ],
+    [
+     96,
+     -60,
+     61,
+     "minecraft:lava",
+     10
+    ],
+    [
+     96,
+     -60,
+     62,
+     "minecraft:lava",
+     10
+    ],
+    [
+     96,
+     -60,
+     66,
+     "minecraft:lava",
+     10
+    ],
+    [
+     96,
+     -60,
+     67,
+     "minecraft:lava",
+     10
+    ],
+    [
+     97,
+     -60,
+     62,
+     "minecraft:lava",
+     10
+    ],
+    [
+     97,
+     -60,
+     63,
+     "minecraft:lava",
+     10
+    ],
+    [
+     97,
+     -60,
+     65,
+     "minecraft:lava",
+     10
+    ],
+    [
+     97,
+     -60,
+     66,
+     "minecraft:lava",
+     10
+    ],
+    [
+     98,
+     -60,
+     63,
+     "minecraft:lava",
+     10
+    ],
+    [
+     98,
+     -60,
+     64,
+     "minecraft:lava",
+     10
+    ],
+    [
+     98,
+     -60,
+     65,
+     "minecraft:lava",
+     10
+    ],
+    [
+     99,
+     -60,
+     64,
+     "minecraft:lava",
+     10
+    ]
+   ]
+  }
+ ],
+ "notes": [],
+ "final": [
+  [
+   93,
+   -60,
+   64,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   94,
+   -60,
+   63,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   94,
+   -60,
+   64,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   94,
+   -60,
+   65,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   95,
+   -60,
+   62,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   95,
+   -60,
+   63,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   95,
+   -60,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   95,
+   -60,
+   65,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   95,
+   -60,
+   66,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   95,
+   -59,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   95,
+   -58,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   95,
+   -57,
+   64,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   96,
+   -60,
+   61,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   96,
+   -60,
+   62,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   96,
+   -60,
+   63,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -60,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -60,
+   65,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -60,
+   66,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   96,
+   -60,
+   67,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   96,
+   -59,
+   63,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -59,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -59,
+   65,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -58,
+   63,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -58,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -58,
+   65,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   96,
+   -57,
+   63,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   96,
+   -57,
+   64,
+   "minecraft:lava"
+  ],
+  [
+   96,
+   -57,
+   65,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   97,
+   -60,
+   62,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   97,
+   -60,
+   63,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   97,
+   -60,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   97,
+   -60,
+   65,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   97,
+   -60,
+   66,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   97,
+   -59,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   97,
+   -58,
+   64,
+   "minecraft:lava[level=8]"
+  ],
+  [
+   97,
+   -57,
+   64,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   98,
+   -60,
+   63,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   98,
+   -60,
+   64,
+   "minecraft:lava[level=2]"
+  ],
+  [
+   98,
+   -60,
+   65,
+   "minecraft:lava[level=4]"
+  ],
+  [
+   99,
+   -60,
+   64,
+   "minecraft:lava[level=4]"
+  ]
+ ]
+}

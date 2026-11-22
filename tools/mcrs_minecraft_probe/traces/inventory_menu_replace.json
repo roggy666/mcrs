@@ -1,0 +1,482 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "invreplaceplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "invreplaceplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "command": {
+          "replies": [
+            {
+              "translate": "commands.difficulty.success",
+              "with": [
+                {
+                  "translate": "options.difficulty.peaceful"
+                }
+              ]
+            }
+          ],
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "command": {
+          "replies": [
+            {
+              "translate": "commands.teleport.success.location.single",
+              "with": [
+                {
+                  "text": "invreplaceplyr",
+                  "click_event": {
+                    "action": "suggest_command",
+                    "command": "/tell invreplaceplyr "
+                  },
+                  "hover_event": {
+                    "action": "show_entity",
+                    "id": "minecraft:player",
+                    "uuid": [
+                      1532983468,
+                      -1428932854,
+                      -1418050160,
+                      -1552489491
+                    ],
+                    "name": "invreplaceplyr"
+                  },
+                  "insertion": "invreplaceplyr"
+                },
+                "0.500000",
+                "-60.000000",
+                "0.500000"
+              ]
+            }
+          ],
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "command": {
+          "replies": [],
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_chest",
+      "observed": {
+        "command": {
+          "replies": [
+            {
+              "translate": "commands.setblock.success",
+              "with": [
+                1,
+                -60,
+                0
+              ]
+            }
+          ],
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_barrel",
+      "observed": {
+        "command": {
+          "replies": [
+            {
+              "translate": "commands.setblock.success",
+              "with": [
+                -1,
+                -60,
+                0
+              ]
+            }
+          ],
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_5_in_p1",
+      "observed": {
+        "command": {
+          "replies": [
+            {
+              "translate": "commands.item.entity.replace.success.single.known_item",
+              "with": [
+                1,
+                {
+                  "text": "invreplaceplyr",
+                  "click_event": {
+                    "action": "suggest_command",
+                    "command": "/tell invreplaceplyr "
+                  },
+                  "hover_event": {
+                    "action": "show_entity",
+                    "id": "minecraft:player",
+                    "uuid": [
+                      1532983468,
+                      -1428932854,
+                      -1418050160,
+                      -1552489491
+                    ],
+                    "name": "invreplaceplyr"
+                  },
+                  "insertion": "invreplaceplyr"
+                },
+                {
+                  "translate": "chat.square_brackets",
+                  "with": [
+                    {
+                      "text": "",
+                      "extra": [
+                        {
+                          "translate": "block.minecraft.stone"
+                        }
+                      ]
+                    }
+                  ],
+                  "color": "white",
+                  "hover_event": {
+                    "action": "show_item",
+                    "id": "minecraft:stone",
+                    "count": 5
+                  }
+                }
+              ]
+            }
+          ],
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "invreplaceplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "open_chest",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "invreplaceplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "invreplaceplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 5,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "chest_pick_up_p1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_barrel_over_chest",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "invreplaceplyr",
+          "kind": "container_close",
+          "container": 1
+        },
+        {
+          "client": "invreplaceplyr",
+          "kind": "set_player_inventory",
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "invreplaceplyr",
+          "kind": "open_screen",
+          "container": 2,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.barrel"
+          }
+        },
+        {
+          "client": "invreplaceplyr",
+          "kind": "container_set_content",
+          "container": 2,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 5,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "close_barrel",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

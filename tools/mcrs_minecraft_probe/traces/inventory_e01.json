@@ -1,0 +1,538 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve01probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_in_hotbar_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve01probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "dirt_in_inventory_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve01probeplyr with [Dirt]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 20,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "boots_in_feet",
+      "observed": {
+        "console": {
+          "output": [
+            "inve01probeplyr has made the advancement [Suit Up]",
+            "Replaced 1 slot(s) on inve01probeplyr with [Iron Boots]"
+          ],
+          "chat": [
+            {
+              "client": "inve01probeplyr",
+              "text": {
+                "translate": "chat.type.advancement.task",
+                "with": [
+                  {
+                    "text": "inve01probeplyr",
+                    "click_event": {
+                      "action": "suggest_command",
+                      "command": "/tell inve01probeplyr "
+                    },
+                    "hover_event": {
+                      "action": "show_entity",
+                      "id": "minecraft:player",
+                      "uuid": [
+                        -1501265787,
+                        -422036765,
+                        -2030985432,
+                        -241355372
+                      ],
+                      "name": "inve01probeplyr"
+                    },
+                    "insertion": "inve01probeplyr"
+                  },
+                  {
+                    "translate": "chat.square_brackets",
+                    "with": [
+                      {
+                        "translate": "advancements.story.obtain_armor.title",
+                        "hover_event": {
+                          "action": "show_text",
+                          "value": {
+                            "translate": "advancements.story.obtain_armor.title",
+                            "extra": [
+                              "\n",
+                              {
+                                "translate": "advancements.story.obtain_armor.description"
+                              }
+                            ],
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ],
+                    "color": "green"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 8,
+          "stack": {
+            "item": "minecraft:iron_boots",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "helmet_in_head",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve01probeplyr with [Iron Helmet]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "shield_in_off_hand",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve01probeplyr with [Shield]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:shield",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "select_slot_6",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_granite_7",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve01probeplyr with [Granite]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:granite",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "grid_andesite_3",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve01probeplyr with [Andesite]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:andesite",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "save_all",
+      "observed": {
+        "console": {
+          "output": [
+            "Saving the game (this may take a moment!)",
+            "Saved the game"
+          ]
+        }
+      },
+      "inventory": [],
+      "player_file": {
+        "Inventory": "[{Slot:0b,count:10,id:\"minecraft:stone\"},{Slot:9b,count:20,id:\"minecraft:dirt\"}]",
+        "SelectedItemSlot": "6",
+        "equipment": "{feet:{count:1,id:\"minecraft:iron_boots\"},head:{count:1,id:\"minecraft:iron_helmet\"},offhand:{count:1,id:\"minecraft:shield\"}}"
+      }
+    },
+    {
+      "id": "leave",
+      "observed": "left",
+      "inventory": [],
+      "player_file": {
+        "Inventory": "[{Slot:0b,count:10,id:\"minecraft:stone\"},{Slot:9b,count:20,id:\"minecraft:dirt\"}]",
+        "SelectedItemSlot": "6",
+        "equipment": "{feet:{count:1,id:\"minecraft:iron_boots\"},head:{count:1,id:\"minecraft:iron_helmet\"},offhand:{count:1,id:\"minecraft:shield\"}}"
+      }
+    },
+    {
+      "id": "join_again",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve01probeplyr",
+          "kind": "set_held_slot",
+          "slot": 6
+        },
+        {
+          "client": "inve01probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:iron_helmet",
+              "count": 1,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            {
+              "item": "minecraft:iron_boots",
+              "count": 1,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 20,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:shield",
+              "count": 1,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            }
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "after_rejoin_count_item_entities",
+      "observed": {
+        "console": {
+          "output": [
+            "Test passed. Count: 2"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_rejoin_reset_item_list",
+      "observed": {
+        "console": {
+          "output": [
+            "Nothing changed. The specified properties already have these values"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_rejoin_list_item_entities",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_rejoin_read_item_list",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching items"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

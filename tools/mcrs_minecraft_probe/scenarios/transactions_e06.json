@@ -1,0 +1,1539 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe06probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe06probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe06probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_0_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "pickup_button_0_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_1_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "pickup_button_1_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_2_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 2,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "pickup_button_2_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_40_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 40,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "pickup_button_40_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_9_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 9,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "pickup_button_9_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_0_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "quick_move_button_0_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_1_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "quick_move_button_1_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_2_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 2,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "quick_move_button_2_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_40_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 40,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "quick_move_button_40_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_9_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 9,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "quick_move_button_9_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_move_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_0_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_button_0_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_1_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_button_1_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_2_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 2,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_button_2_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_40_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 40,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_button_40_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_9_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 9,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_button_9_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "clone_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_0_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": 9,
+              "button": 0,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_1_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": 9,
+              "button": 1,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_2_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": 9,
+              "button": 2,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_40_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": 9,
+              "button": 40,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "throw_button_9_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": 9,
+              "button": 9,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_0_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "quick_craft_button_0_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_1_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "quick_craft_button_1_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_2_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 2,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "quick_craft_button_2_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_40_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 40,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "quick_craft_button_40_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_9_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 9,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "quick_craft_button_9_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "quick_craft_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_0_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "pickup_all"
+      }
+    },
+    {
+      "id": "pickup_all_button_0_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_1_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "pickup_all"
+      }
+    },
+    {
+      "id": "pickup_all_button_1_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_2_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 2,
+        "mode": "pickup_all"
+      }
+    },
+    {
+      "id": "pickup_all_button_2_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_40_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 40,
+        "mode": "pickup_all"
+      }
+    },
+    {
+      "id": "pickup_all_button_40_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_9_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 9,
+        "mode": "pickup_all"
+      }
+    },
+    {
+      "id": "pickup_all_button_9_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pickup_all_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_0_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_0_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "swap_button_0_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_1_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_1_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "swap_button_1_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_1_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_2_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_2_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 2,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "swap_button_2_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_2_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_40_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_40_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 40,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "swap_button_40_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_40_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_9_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_9_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": 9,
+        "button": 9,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "swap_button_9_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "swap_button_9_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "cursor_cases_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "cursor_pick_up_minus_1",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": -1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "cursor_quick_move_minus_1",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": -1,
+        "button": 0,
+        "mode": "quick_move",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "cursor_quick_move_minus_999_button_1",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": -999,
+              "button": 1,
+              "mode": "quick_move",
+              "carried": {
+                "item": "minecraft:stone",
+                "count": 10
+              }
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cursor_quick_move_minus_999_button_1_kill_item_entities",
+      "console": {
+        "lines": [
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "cursor_pick_up_minus_999_button_1",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": -999,
+              "button": 1,
+              "mode": "pickup",
+              "carried": {
+                "item": "minecraft:stone",
+                "count": 9
+              }
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cursor_pick_up_minus_999_button_1_kill_item_entities",
+      "console": {
+        "lines": [
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "cursor_pick_up_minus_999_button_0",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": -999,
+              "button": 0,
+              "mode": "pickup",
+              "carried": {
+                "item": "minecraft:stone",
+                "count": 8
+              }
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cursor_pick_up_minus_999_button_0_kill_item_entities",
+      "console": {
+        "lines": [
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "empty_cursor_pick_up_minus_999_button_0",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe06probeplyr",
+              "slot": -999,
+              "button": 0,
+              "mode": "pickup"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "swap_negative_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe06probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe06probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "swap_negative_slot_click",
+      "click": {
+        "client": "itxe06probeplyr",
+        "slot": -1,
+        "button": 0,
+        "mode": "swap"
+      }
+    }
+  ]
+}

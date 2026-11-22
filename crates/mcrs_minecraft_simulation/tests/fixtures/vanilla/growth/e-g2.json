@@ -1,0 +1,61 @@
+{
+ "experiment": "E-G2",
+ "version": "26.4-snapshot-7",
+ "input": [
+  "fill -12 -60 90 12 -55 230 stone",
+  "fill -11 -60 91 11 -57 229 air",
+  "setblock 0 -61 100 farmland[moisture=7]",
+  "setblock 0 -61 103 water",
+  "setblock 0 -60 100 wheat[age=0]",
+  "setblock 5 -60 100 torch",
+  "setblock 0 -61 130 farmland[moisture=7]",
+  "setblock 0 -61 133 water",
+  "setblock 0 -60 130 wheat[age=0]",
+  "setblock 6 -60 130 torch",
+  "setblock 0 -61 160 farmland[moisture=7]",
+  "setblock 0 -61 163 water",
+  "setblock 0 -60 160 wheat[age=0]",
+  "setblock 7 -60 160 torch",
+  "setblock 0 -61 190 farmland[moisture=7]",
+  "setblock 0 -61 193 water",
+  "setblock 0 -60 190 wheat[age=0]",
+  "setblock 0 -61 300 farmland[moisture=7]",
+  "setblock 0 -61 303 water",
+  "setblock 0 -60 300 wheat[age=0]",
+  "setblock 10 -60 300 oak_sapling"
+ ],
+ "random_tick_speed": 300,
+ "ticks": 2020,
+ "before": {
+  "light9": "wheat[age=0]",
+  "light8": "wheat[age=0]",
+  "light7": "wheat[age=0]",
+  "dark": "wheat[age=0]"
+ },
+ "dark_room": {
+  "light9": {
+   "after_ticks": "wheat[age=7]"
+  },
+  "light8": {
+   "after_ticks": "wheat[age=0]",
+   "after_shape_update": "wheat[age=0]"
+  },
+  "light7": {
+   "after_ticks": "wheat[age=0]",
+   "after_shape_update": "air"
+  },
+  "dark": {
+   "after_ticks": "wheat[age=0]",
+   "after_shape_update": "air"
+  }
+ },
+ "open_sky_midnight": {
+  "wheat": "wheat[age=7]",
+  "sapling": "oak_sapling",
+  "sapling_after_noon": "oak_log"
+ },
+ "noon_follow_up": {
+  "random_tick_speed": 1000,
+  "ticks": 412
+ }
+}
