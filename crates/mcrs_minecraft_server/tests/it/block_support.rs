@@ -339,3 +339,19 @@ fn sim_nbr_004_the_chain_limit_of_the_plugin_stops_a_support_cascade() {
         );
     }
 }
+
+#[test]
+fn con_run_002_a_fence_next_to_a_set_block_connects_in_the_same_tick() {
+    let mut world = World::new();
+    let stone = world.state("minecraft:stone", &[]);
+    let fence = world.state("minecraft:oak_fence", &[]);
+    let connected = world.state("minecraft:oak_fence", &[("east", "true")]);
+    let east = P + IVec3::X;
+    world.set(P, fence, BlockUpdateFlags::ALL);
+
+    world.set(east, stone, BlockUpdateFlags::ALL);
+    assert_eq!(world.block_at(P), connected, "the fence takes the stone");
+
+    world.set(east, BlockStateId::AIR, BlockUpdateFlags::ALL);
+    assert_eq!(world.block_at(P), fence, "the fence lets the stone go");
+}

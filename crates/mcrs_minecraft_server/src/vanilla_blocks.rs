@@ -5,7 +5,7 @@ use bevy_ecs::entity::Entity;
 use glam::DVec3;
 use mcrs_minecraft_block::block_keys::Block;
 use mcrs_minecraft_block::definition::Blocks;
-use mcrs_minecraft_block_support::BlockSupport;
+use mcrs_minecraft_block_support::{BlockConnections, BlockSupport};
 use mcrs_minecraft_core::Direction;
 use mcrs_minecraft_engine::block_simulation::{
     BlockSimulationConfig, BlockSimulationPlugin, DimensionBlockRules, InertBlocks,
@@ -65,6 +65,7 @@ pub struct VanillaBlocks {
     loot: LootTables,
     item_count: usize,
     support: BlockSupport,
+    connections: BlockConnections,
     blocks: Blocks,
     air: BlockStateId,
     void_air: BlockStateId,
@@ -78,17 +79,23 @@ impl BlockBehaviour<WorldKinds> for VanillaBlocks {
         state: BlockStateId,
         from: Direction,
         _neighbour: BlockPos,
-        _neighbour_state: BlockStateId,
+        neighbour_state: BlockStateId,
     ) -> BlockStateId {
         let mut unavailable = false;
-        let read = |pos| {
+        let mut read = |pos| {
             cx.state(pos).unwrap_or_else(|_| {
                 unavailable = true;
                 self.void_air
             })
         };
-        if self.support.stays_after_update(state, at, from, read) || unavailable {
+        let stays = self.support.stays_after_update(state, at, from, &mut read);
+        let connected = self
+            .connections
+            .after_update(state, at, from, neighbour_state, &mut read);
+        if unavailable {
             state
+        } else if stays {
+            connected
         } else {
             self.air
         }
@@ -385,10 +392,15 @@ fn add_loot_rules(sub_app: &mut SubApp) {
     for issue in &issues {
         tracing::warn!("{issue}");
     }
+    let (connections, issues) = BlockConnections::bake(blocks, registries);
+    for issue in &issues {
+        tracing::warn!("{issue}");
+    }
     let rules = VanillaBlocks {
         loot,
         item_count: registries.entries::<Item>().map_or(0, |items| items.len()),
         support: support.clone(),
+        connections,
         air: blocks.default_state_of(Block::Air.id()),
         void_air: blocks.default_state_of(Block::VoidAir.id()),
         blocks: blocks.clone(),
