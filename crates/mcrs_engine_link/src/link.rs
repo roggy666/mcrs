@@ -101,6 +101,19 @@ impl<S: Stage> Link<S> {
         self.held.drain(..)
     }
 
+    pub fn wait_output(&mut self) -> bool {
+        let FarEnd::Thread(link) = &self.far else {
+            let before = self.held.len();
+            self.take_in();
+            return self.held.len() > before;
+        };
+        let Ok(reply) = link.replies.recv() else {
+            return false;
+        };
+        hold(&mut self.held, &mut self.answered, reply);
+        true
+    }
+
     #[must_use]
     pub fn is_answered(&self) -> bool {
         self.answered == self.sent
@@ -204,6 +217,23 @@ mod tests {
         let mut outputs: Vec<Option<u8>> = link.outputs().collect();
         outputs.sort_unstable();
         outputs
+    }
+
+    #[test]
+    fn wait_output_blocks_for_one_reply_of_a_thread() {
+        let mut link = Link::new(Doubler::default(), Placement::Thread);
+        link.send(2);
+        let mut outputs = Vec::new();
+        while outputs.is_empty() {
+            assert!(link.wait_output(), "the stage thread is alive");
+            outputs.extend(link.outputs());
+        }
+        assert_eq!(outputs, [Some(4)]);
+        let mut inline = Link::new(Doubler::default(), Placement::Inline);
+        inline.send(2);
+        assert!(inline.wait_output(), "an inline stage runs in the call");
+        assert_eq!(inline.outputs().collect::<Vec<_>>(), [Some(4)]);
+        assert!(!inline.wait_output(), "nothing more arrives");
     }
 
     #[test]
