@@ -272,6 +272,11 @@ where
         self.collect_outputs();
     }
 
+    #[cfg(feature = "testing")]
+    pub fn slow_stage(&mut self, duration: std::time::Duration) {
+        self.link.send(AiInput::Slow(duration));
+    }
+
     #[must_use]
     pub fn inline_stage(&self) -> Option<&AiStage<B>> {
         self.link.inline_stage()
@@ -504,8 +509,14 @@ where
                 }
             }
         };
+        self.stats.lag_max = 0;
         for mut decisions in issued {
             self.due_paths.append(&mut decisions.paths);
+            let lag = tick.saturating_sub(decisions.tick);
+            if !decisions.is_empty() {
+                self.stats.lag_max = self.stats.lag_max.max(lag);
+                self.stats.lag_max_seen = self.stats.lag_max_seen.max(lag);
+            }
             for decision in decisions.tiles.into_values().flatten() {
                 if self.present.contains_key(&decision.mob) {
                     self.due.push(decision);

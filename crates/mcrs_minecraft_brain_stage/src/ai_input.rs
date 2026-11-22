@@ -77,4 +77,6 @@ impl<B> TickInput<B> {
 pub enum AiInput<B> {
     Tables(Box<StageTables>),
     Tick(Box<TickInput<B>>),
+    #[cfg(feature = "testing")]
+    Slow(core::time::Duration),
 }

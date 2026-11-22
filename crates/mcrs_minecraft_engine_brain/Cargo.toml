@@ -11,6 +11,9 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+testing = ["mcrs_minecraft_brain_stage/testing"]
+
 [dependencies]
 mcrs_minecraft_entity_key = { workspace = true, features = ["bevy"] }
 bevy_app.workspace = true
@@ -49,6 +52,7 @@ rustc-hash.workspace = true
 tracing.workspace = true
 
 [dev-dependencies]
+mcrs_minecraft_engine_brain = { path = ".", features = ["testing"] }
 bevy_tasks = { workspace = true, features = ["multi_threaded"] }
 mcrs_minecraft_engine_physics = { workspace = true, features = ["testing"] }
 mcrs_minecraft_physics = { workspace = true, features = ["testing"] }

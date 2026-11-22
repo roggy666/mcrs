@@ -3,6 +3,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
+use std::time::Duration;
 
 use bevy_ecs::entity::Entity;
 use bevy_ecs::query::With;
@@ -104,13 +105,17 @@ struct Setup {
     placement: Placement,
     delay: AiDelay,
     host_only: bool,
+    slow: Duration,
 }
 
 const INLINE: Setup = Setup {
     placement: Placement::Inline,
     delay: AiDelay::AtLeast(1),
     host_only: false,
+    slow: Duration::ZERO,
 };
+
+const SLOW_STAGE: Duration = Duration::from_millis(80);
 
 fn scene_height(
     dimension: Single<Entity, With<Dimension>>,
@@ -156,6 +161,9 @@ impl Run {
             0,
             height,
         );
+        if !setup.slow.is_zero() {
+            ai.slow_stage(setup.slow);
+        }
         world.insert_resource(ai);
         world.spawn((
             Player,
@@ -291,6 +299,8 @@ struct Crowd {
     hash: u64,
     walked: usize,
     evaluations: u64,
+    waits: u64,
+    lag_max: u64,
 }
 
 fn forward() -> Vec<u32> {
@@ -319,10 +329,13 @@ fn run_orders(ticks: u64, orders: &[Vec<u32>], setup: Setup) -> Crowd {
         .zip(&end)
         .filter(|(from, to)| from.with_y(0.0).distance(to.with_y(0.0)) > 1.0)
         .count();
+    let stats = *runs[0].ai().stats();
     Crowd {
         hash,
         walked,
-        evaluations: runs[0].ai().stats().evaluations_total,
+        evaluations: stats.evaluations_total,
+        waits: stats.waits,
+        lag_max: stats.lag_max_seen,
     }
 }
 
@@ -373,6 +386,7 @@ fn a_stage_on_its_own_thread_with_a_fixed_delay_ends_on_the_inline_state() {
             placement: Placement::Inline,
             delay: fixed,
             host_only: true,
+            slow: Duration::ZERO,
         },
     );
     let threaded = run_orders(
@@ -382,6 +396,7 @@ fn a_stage_on_its_own_thread_with_a_fixed_delay_ends_on_the_inline_state() {
             placement: Placement::Thread,
             delay: fixed,
             host_only: true,
+            slow: Duration::ZERO,
         },
     );
     assert_eq!(
@@ -405,6 +420,7 @@ fn a_stage_on_its_own_thread_with_the_default_delay_keeps_every_decision_in_the_
             placement: Placement::Thread,
             delay: AiDelay::AtLeast(1),
             host_only: true,
+            slow: Duration::ZERO,
         },
     );
     assert!(
@@ -417,6 +433,42 @@ fn a_stage_on_its_own_thread_with_the_default_delay_keeps_every_decision_in_the_
         "every pig is evaluated: {}",
         threaded.evaluations
     );
+}
+
+#[test]
+fn a_slow_stage_waits_only_at_the_lag_and_ends_on_the_state_of_the_fixed_delay() {
+    use_threads(4);
+    let fixed = run_orders(
+        SHORT_TICKS,
+        &[forward()],
+        Setup {
+            placement: Placement::Inline,
+            delay: AiDelay::Fixed(StageConfig::DEFAULT_MAX_LAG),
+            host_only: true,
+            slow: Duration::ZERO,
+        },
+    );
+    let slow = run_orders(
+        SHORT_TICKS,
+        &[forward()],
+        Setup {
+            placement: Placement::Thread,
+            delay: AiDelay::AtLeast(1),
+            host_only: true,
+            slow: SLOW_STAGE,
+        },
+    );
+    assert_eq!(
+        slow.hash, fixed.hash,
+        "a stage that is always late applies every decision at the lag, as the fixed delay does"
+    );
+    assert!(slow.waits > 0, "the tick waited for the late stage");
+    assert_eq!(
+        slow.lag_max,
+        u64::from(StageConfig::DEFAULT_MAX_LAG),
+        "no decision is older than the lag"
+    );
+    assert_eq!(fixed.lag_max, u64::from(StageConfig::DEFAULT_MAX_LAG));
 }
 
 mod exhaustive {

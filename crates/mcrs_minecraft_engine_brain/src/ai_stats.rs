@@ -14,6 +14,8 @@ pub struct AiStats {
     pub decisions: usize,
     pub applied: usize,
     pub waits: u64,
+    pub lag_max: u64,
+    pub lag_max_seen: u64,
     pub stage_lost: bool,
     pub without_tables: bool,
     pub blocks_sent: usize,

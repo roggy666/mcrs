@@ -35,6 +35,8 @@ pub struct AiStage<B> {
     tables: Option<Box<StageTables>>,
     pool: TaskPool,
     lowered: bool,
+    #[cfg(feature = "testing")]
+    slow: std::time::Duration,
 }
 
 impl<B> AiStage<B> {
@@ -48,6 +50,8 @@ impl<B> AiStage<B> {
             tables: None,
             pool,
             lowered: false,
+            #[cfg(feature = "testing")]
+            slow: std::time::Duration::ZERO,
         }
     }
 
@@ -138,6 +142,10 @@ where
 {
     fn run_tick(&mut self, mut input: TickInput<B>) -> AiOutput {
         let started = Instant::now();
+        #[cfg(feature = "testing")]
+        if !self.slow.is_zero() {
+            std::thread::sleep(self.slow);
+        }
         let tick = input.tick;
         self.follow_life_cycle(&mut input);
         self.publish(&mut input);
@@ -214,6 +222,8 @@ where
                 let output = self.run_tick(*tick);
                 step.emit(output);
             }
+            #[cfg(feature = "testing")]
+            AiInput::Slow(duration) => self.slow = duration,
         }
     }
 
