@@ -6,7 +6,7 @@ This document states the item stack as data: its parts, its component patch, its
 format that carries it. It states the meaning of four component types, and it lists each component
 type of this game version.
 
-Sections 8.1 to 8.6 state the shape of 40 component types. For
+Sections 8.1 to 8.7 state the shape of 73 component types. For
 each other component type that section 7 does not state, this document gives only the row of
 section 8.
 
@@ -67,6 +67,7 @@ section 8.
   (STK-SHP-034).
 - **Dye colour**: one of the 16 names of STK-SHP-048.
 - **Entity data**: an entity type and a compound of free NBT (STK-SHP-049).
+- **Filterable value**: a value with a raw form and an optional filtered form (STK-SHP-065).
 - **NBT depth**: the number of levels of the saved form of a stack in NBT (STK-TPL-009).
 
 ### 0.2 Provenance
@@ -111,7 +112,7 @@ section 8.
 | `STK-DMG` | damage of a stack |
 | `STK-VAL` | strict validation |
 | `STK-TYP` | the list of component types |
-| `STK-SHP` | the shapes of the component types of sections 8.1 to 8.6, and the colour of a potion contents value (STK-SHP-063) |
+| `STK-SHP` | the shapes of the component types of sections 8.1 to 8.7, and the colour of a potion contents value (STK-SHP-063) |
 
 ### 0.5 Notation
 
@@ -1133,7 +1134,7 @@ This section states the shape of 15 component types. The counts of prototypes co
 files of `assets/mcrs/item_definition/`.
 
 **STK-SHP-001** (`source_suggested_black_box_confirmed`, wire). Each rule from STK-SHP-006 to
-STK-SHP-020, and each rule of sections 8.2 to 8.6 that names a component type, states it in a table. The
+STK-SHP-020, and each rule of sections 8.2 to 8.7 that names a component type, states it in a table. The
 columns are:
 
 - "Field": the key of the field in the saved form. `(value)` means that the component is one
@@ -1227,7 +1228,7 @@ size is not specified. Two texts are equal when their content, their style and t
 equal (STK-PAT-007).
 
 **STK-SHP-005** (`design`, unspecified). A server must not send a component of sections 8.1 to
-8.6 with a value out of the range of its saved form. Reason: the client cannot save or hash that component.
+8.7 with a value out of the range of its saved form. Reason: the client cannot save or hash that component.
 For an id that is not in a list of names, the reference reader of the wire form gives the name
 with the id 0. A reader of this project can give a decode error instead. Reason: no vanilla writer
 writes such an id.
@@ -2560,6 +2561,209 @@ VarInt 0 starts an inline painting variant, and such a value has no saved form (
 Reason: a reader must not accept a value that the writer of the saved form and the hash cannot
 write. Deviation D14 records the reference behaviour.
 
+### 8.7 Shapes of the enchantable, book, jukebox and entity variant types
+
+This section states the shape of 33 more component types. STK-SHP-001 to STK-SHP-005 apply to each
+rule of this section. STK-SHP-029, STK-SHP-033 and STK-SHP-048 state the forms that more than one
+rule uses. The fixture `item_plain` has the cases of experiment E32, and the cases of
+`minecraft:enchantable`, of the 9 types of STK-SHP-071 and of the 7 types of STK-SHP-072. Each case
+has the JSON, the NBT, the wire form and the hash that the game wrote. The fixture `item_holders`
+has the cases `jukebox_playable_*`. The fixture `item_registry_refs` has one sample of each type of
+STK-SHP-070.
+
+**STK-SHP-064** (`source_suggested_black_box_confirmed`, wire). `minecraft:enchantable`:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `value` | int | `1..2147483647` | necessary | VarInt |
+
+The reader of the wire form checks the range. A value of 0 or less is a decode error. This is an
+exception to STK-SHP-001. Limits: none. Equality: the two values are equal. The value is the
+enchantment value of the item. Another document states how an enchanting table uses it.
+
+For example, `{"value":15}` has the wire form `0F` and the hash -199463215. `{"value":1}` has the
+wire form `01`. `{"value":128}` has the wire form `80 01`. The inputs `{"value":0}`, `{}`, `5`,
+`[5]`, `[]` and `{"value":null}` are not valid saved forms. The wire forms `00` and `FF FF FF FF 0F`
+are decode errors. Prototypes: 77 prototypes have this component, with 11 different values from 1
+to 25. The value is 15 for 21 of them. The other 1609 prototypes do not have it.
+
+**STK-SHP-065** (`source_suggested`, wire). A filterable value is a value with a raw form and an
+optional filtered form. The rule of a component states the form of the two values: a string or a
+text. A filterable value has these fields:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `raw` | the form of the value | the range of the rule | necessary | the wire form of the value |
+| `filtered` | the form of the value | the range of the rule | no value | one boolean byte, then the wire form of the value when the byte is `01` |
+
+The reader of the saved form accepts two forms:
+
+- a map with the key `raw`: the fields of the table;
+- each other saved form of the value: the raw form, with no filtered form. Thus the string
+  `"page"` and the text `{"text":"page"}` are each a filterable value with no filtered form.
+
+The writer of the saved form always writes the map. It omits `filtered` when `filtered` has no
+value. The hash node is the map node of that map. Equality: two filterable values are equal when
+the raw forms are equal, and the filtered forms are equal or absent in both.
+
+**STK-SHP-066** (`source_suggested`, wire). `minecraft:writable_book_content`:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `pages` | a list of filterable strings (STK-SHP-065) | 0 to 100 elements; each string has at most 1024 UTF-16 code units | the empty list | the number of elements, then each page |
+
+Each page is a filterable value whose raw and filtered forms are strings. On the wire, each string
+is a String (1024). The reader of the wire form gives a decode error for more than 100 pages and
+for a page longer than 1024 UTF-16 code units. A code point above `U+FFFF` is 2 code units. Limits:
+100 pages of 1024 code units. Equality: the two lists have equal pages in the same order. The
+writer omits `pages` when the list is empty. Thus the empty component has the saved form `{}`, the
+wire form `00` and the hash -982207288. Prototypes: 1 prototype has this component. It is
+`minecraft:writable_book`, with the empty map `{}`. The other 1685 prototypes do not have it.
+
+**STK-SHP-067** (`source_suggested`, wire). `minecraft:written_book_content`:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `title` | a filterable string (STK-SHP-065) | each string has at most 32 UTF-16 code units | necessary | the raw string as String (32), then the optional filtered string |
+| `author` | string | each string | necessary | String (32767) |
+| `generation` | int | `0..3` | 0 | VarInt |
+| `pages` | a list of filterable texts (STK-SHP-065) | no limit on the number of elements; each text has at most 32767 UTF-16 code units in its compact JSON | the empty list | the number of elements, then each page |
+| `resolved` | boolean | `false`, `true` | `false` | one byte |
+
+Each page is a filterable value whose raw and filtered forms are texts (STK-SHP-004). The
+compact JSON of a text is the JSON of its saved form with no space, as `text-component.md` states
+the escapes. A plain text thus counts its characters and the two quotes. The count takes the
+decoded text, not the input. Thus `{"text":"abc"}` counts as `"abc"`, which is 5 code units. The
+reader of the wire form checks the range of `generation`: a value out of `0..3` is a decode error.
+This is an exception to STK-SHP-001. The reader of the wire form gives a decode error for a title
+longer than 32 UTF-16 code units.
+
+Limits: those of the table. Equality: each field is equal. Two titles and two pages are equal as
+STK-SHP-065 states. Two texts are equal as STK-SHP-004 states. Prototypes: no prototype has this
+component. The generation 0 is an original, 1 is a copy of an original, 2 is a copy of a copy and
+3 is tattered. Another document states how a player reads, signs and copies a book.
+
+For example, `{"title":"t","author":"a"}` has the saved form `{"title":{"raw":"t"},"author":"a"}`
+and the wire form `01 74 00 01 61 00 00 00`.
+
+**STK-SHP-068** (`source_suggested_black_box_confirmed`, wire). `minecraft:jukebox_playable`:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `(value)` | entry of the registry `minecraft:jukebox_song` | each entry | necessary | VarInt: the numeric id of the entry plus 1 |
+
+`minecraft:jukebox_song` is a data-pack registry. The numeric id is the id that the server sent for
+this connection (`registry.md`). The saved form is one String tag: the identifier of the entry. The
+reader accepts an identifier without a namespace. The saved form has no inline jukebox song. Thus a
+map is an error, also a map with the fields of a jukebox song. A number is an error. An identifier
+that names no entry is an error. The hash node is a string node with the namespace.
+
+The wire form is the wire form of a reference of STK-SHP-033: the numeric id plus 1. The inline
+value of STK-SHP-033 is a jukebox song with these fields, in this order:
+
+| Field | Wire form |
+|-------|-----------|
+| `sound_event` | a sound event (STK-SHP-029) |
+| `description` | text: one network NBT |
+| `length_in_seconds` | float: 4 bytes |
+| `comparator_output` | VarInt |
+
+STK-SHP-069 states what a reader does with the VarInt 0. For example, `"minecraft:pigstep"` has
+the numeric id 15 in the vanilla registry. It has the wire form `10` and the hash -1338710766.
+The vanilla writer writes an inline jukebox song with the sound event `minecraft:entity.item.break`
+(id 653), the description `"Song"`, the length 12.5 and the output 7 as
+`00 8E05 08 0004 536F6E67 41480000 07`. Limits: none. Equality: the two values name the same entry.
+Prototypes: 23 prototypes have this component. Each is a reference, and the 23 songs are different.
+The other 1663 prototypes do not have it.
+
+**STK-SHP-069** (`design`, deviation). The reader of the wire form of `minecraft:jukebox_playable`
+gives a decode error for the VarInt 0. A writer must not write the VarInt 0. In the reference, the
+VarInt 0 starts an inline jukebox song, and such a value has no saved form (STK-SHP-068). Reason: a
+reader must not accept a value that the writer of the saved form and the hash cannot write.
+Deviation D16 records the reference behaviour.
+
+**STK-SHP-070** (`source_suggested_black_box_confirmed`, wire). Each component type of this table
+is an entry of a registry:
+
+| Component type | Registry |
+|----------------|----------|
+| `villager/variant` | `minecraft:villager_type` |
+| `wolf/variant` | `minecraft:wolf_variant` |
+| `wolf/sound_variant` | `minecraft:wolf_sound_variant` |
+| `pig/variant` | `minecraft:pig_variant` |
+| `pig/sound_variant` | `minecraft:pig_sound_variant` |
+| `cow/variant` | `minecraft:cow_variant` |
+| `cow/sound_variant` | `minecraft:cow_sound_variant` |
+| `chicken/variant` | `minecraft:chicken_variant` |
+| `chicken/sound_variant` | `minecraft:chicken_sound_variant` |
+| `zombie_nautilus/variant` | `minecraft:zombie_nautilus_variant` |
+| `frog/variant` | `minecraft:frog_variant` |
+| `cat/variant` | `minecraft:cat_variant` |
+| `cat/sound_variant` | `minecraft:cat_sound_variant` |
+
+Each has this shape:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `(value)` | entry of the registry of the table | each entry | necessary | VarInt: the numeric id of the entry |
+
+`minecraft:villager_type` is a static registry. `assets/mcrs/reports/registries.json` gives its
+numeric ids. Each other registry of the table is a data-pack registry. Its numeric id is the id that
+the server sent for this connection (`registry.md`). The numeric id has no offset of 1, and the wire
+form has no inline value. This is different from a referenced value (STK-SHP-033) and from
+`minecraft:painting/variant` (STK-SHP-061). The saved form is one String tag: the identifier of the
+entry. The reader accepts an identifier without a namespace. A map and a number are errors. An
+identifier or a numeric id that names no entry is an error in each format. The hash node is a string
+node with the namespace.
+
+For example, `villager/variant` with `"minecraft:desert"` (id 0) has the wire form `00` and the hash
+1867638223. `"plains"` gives `"minecraft:plains"` and the wire form `02`. `cat/variant` with
+`"minecraft:jellie"` (id 4 in the vanilla registry) has the wire form `04`. Limits: none. Equality:
+the two values name the same entry. Prototypes: 3 prototypes have `chicken/variant`: `minecraft:egg`
+with `minecraft:temperate`, `minecraft:blue_egg` with `minecraft:cold` and `minecraft:brown_egg`
+with `minecraft:warm`. No prototype has one of the other 12 types.
+
+**STK-SHP-071** (`source_suggested_black_box_confirmed`, wire). Each component type of this table
+is a name of a list (STK-SHP-003). The table gives the names and the ids of each list:
+
+| Component type | Names and ids |
+|----------------|---------------|
+| `fox/variant` | `red` 0, `snow` 1 |
+| `salmon/size` | `small` 0, `medium` 1, `large` 2 |
+| `parrot/variant` | `red_blue` 0, `blue` 1, `green` 2, `yellow_blue` 3, `gray` 4 |
+| `tropical_fish/pattern` | `kob` 0, `sunstreak` 256, `snooper` 512, `dasher` 768, `brinely` 1024, `spotty` 1280, `flopper` 1, `stripey` 257, `glitter` 513, `blockfish` 769, `betty` 1025, `clayfish` 1281 |
+| `mooshroom/variant` | `red` 0, `brown` 1 |
+| `rabbit/variant` | `brown` 0, `white` 1, `black` 2, `white_splotched` 3, `gold` 4, `salt` 5, `evil` 99 |
+| `horse/variant` | `white` 0, `creamy` 1, `chestnut` 2, `brown` 3, `black` 4, `gray` 5, `dark_brown` 6 |
+| `llama/variant` | `creamy` 0, `white` 1, `brown` 2, `gray` 3 |
+| `axolotl/variant` | `lucy` 0, `wild` 1, `gold` 2, `cyan` 3, `blue` 4 |
+
+Each has this shape:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `(value)` | name of the list of the table | the names of the table | necessary | VarInt: the id |
+
+The ids of `tropical_fish/pattern` and `rabbit/variant` are not consecutive. A writer must write
+the id of the table. The reader of the wire form gives a decode error for an id that is not in the
+table. The reference reader gives a name of the list for each id. Deviation D17 records that
+behaviour. For example, `tropical_fish/pattern` with `"sunstreak"` has the wire form `80 02` and the
+hash 2123295629. `rabbit/variant` with `"evil"` has the wire form `63`. Limits: none. Equality: the
+two names are equal. Prototypes: no prototype has one of these 9 component types.
+
+**STK-SHP-072** (`source_suggested_black_box_confirmed`, wire). Each of the component types
+`wolf/collar`, `tropical_fish/base_color`, `tropical_fish/pattern_color`, `cat/collar`,
+`sheep/color`, `shulker/color` and `cushion/color` has this shape:
+
+| Field | Saved form | Range | Absent | Wire form |
+|-------|------------|-------|--------|-----------|
+| `(value)` | dye colour (STK-SHP-048) | the 16 names | necessary | VarInt: the id |
+
+STK-SHP-005 states the reader of an id out of `0..15`. For example, `"light_blue"` has the wire
+form `03` and the hash -2058146727 for each of the 7 types. `"pinkish"` is not a valid saved form.
+Limits: none. Equality: the two names are equal. Prototypes: 16 prototypes have `cushion/color`, the
+16 cushions, one for each dye colour. No prototype has one of the other 6 types.
+
 ## 9. Intentional deviations
 
 **D1.**
@@ -2759,6 +2963,45 @@ write. Deviation D14 records the reference behaviour.
 - **Test**: a differential test does not compare a value whose sums are out of the range of a
   signed 32-bit integer.
 
+**D16.**
+
+- **Rule**: STK-SHP-069.
+- **Reference**: the reference reader of the wire form of `minecraft:jukebox_playable` reads the
+  VarInt 0, then an inline jukebox song with the fields of STK-SHP-068. That value has no saved
+  form and no hash. In the wire stack with length prefix, the check of STK-NET-009 then refuses the
+  stack. In each other packet, the vanilla client keeps the value and plays the song.
+- **mcrs**: the reader of the wire form gives a decode error for the VarInt 0 in each format that
+  carries the component. Reason: a reader must not accept a value that the writer of the saved form
+  and the hash cannot write.
+- **Visible to the client**: no. The vanilla client and the vanilla server make a jukebox playable
+  value of an item only from its saved form, which has no inline form. Thus they write no VarInt 0.
+- **Bug reference**: none.
+- **Test**: a wire form `00` of `minecraft:jukebox_playable` gives a decode error. A differential
+  test does not compare a wire form with the VarInt 0.
+
+**D17.**
+
+- **Rule**: STK-SHP-071.
+- **Reference**: the reference reader of the wire form of a component type of STK-SHP-071 gives a
+  name of the list for each id. The name depends on the list:
+
+  | Component types | Name for an id that is not in the table |
+  |-----------------|------------------------------------------|
+  | `fox/variant`, `tropical_fish/pattern`, `rabbit/variant`, `axolotl/variant` | the name with the id 0 |
+  | `salmon/size`, `parrot/variant`, `mooshroom/variant`, `llama/variant` | the name with the nearest id: the last name for an id above the table, the first name for a negative id |
+  | `horse/variant` | the name with the id `n mod 7`, where `mod` gives a result in `0..6` for each sign of `n` |
+
+  The fixture `item_plain` shows each row: `fox/variant` reads `02` as `red`; `salmon/size` reads
+  `05` as `large` and `FF FF FF FF 0F` as `small`; `horse/variant` reads `07` as `white`, `0D` as
+  `dark_brown` and `FF FF FF FF 0F` as `dark_brown`.
+- **mcrs**: the reader of the wire form gives a decode error for an id that is not in the table.
+  Reason: no vanilla writer writes such an id, and the three fallbacks are accidents of three
+  different readers.
+- **Visible to the client**: no. The vanilla server writes only an id of the table.
+- **Bug reference**: none.
+- **Test**: the wire form `02` of `fox/variant` gives a decode error. A differential test does not
+  compare a wire form whose id is not in the table.
+
 ## 10. Unresolved
 
 - **Q1**: STK-SAV-006. Which callers keep a stack whose patch has a bad key, and which drop the
@@ -2771,9 +3014,9 @@ write. Deviation D14 records the reference behaviour.
 - **Q4**: STK-HSH-008. A stack with `minecraft:map_post_processing` can be in a result slot when
   the client clicks. Which hash does the client send, or does the client fail?
 - **Q7**: STK-TYP-003. The wire form of each `own` component type needs a specification. Which
-  document owns each group of types? Sections 8.1 to 8.6 state 40 types, with `map_id`,
+  document owns each group of types? Sections 8.1 to 8.7 state 73 types, with `map_id`,
   `map_decorations`, `profile`, `equippable`, the 11 types of section 8.4, the 8 types of
-  section 8.5 and the 2 types of section 8.6.
+  section 8.5, the 2 types of section 8.6 and the 33 types of section 8.7.
 - **Q9**: STK-SHP-002. The four integer component types are signed 32-bit integers in the game.
   Does this project keep 32 bits, or use a smaller type with a deviation as D3?
 - **U2**: STK-CMD-003. If `[]` is valid in the command form.
@@ -2784,6 +3027,10 @@ write. Deviation D14 records the reference behaviour.
   player or in a block entity of a chunk. The NBT reader of the file counts from the root of the
   file. Thus it can refuse a file with a stack that STK-TPL-010 accepts. What does the writer of
   such a file do with that stack? The document of each file decides.
+- **U6**: STK-SHP-067. The limit of `author` on the wire. The rule states String (32767), the
+  limit of each wire string.
+- **U7**: STK-SHP-065. What the reader of the saved form does with a map that has the key `raw`
+  and a key that the table does not list: it ignores the key, or it gives an error.
 
 ## 11. Experiments
 
@@ -3168,3 +3415,72 @@ Results:
   `strong_turtle_master` have different amplifiers and thus different colours.
 - The effect instances of `potion` and of `custom_effects` mix into one colour.
 - A colour from the effects has the alpha 255.
+
+**E32.** Rules: STK-SHP-064 to STK-SHP-070.
+
+Steps:
+
+1. Add each case of the table below to the input of the fixture `item_plain` of
+   `tools/fixtures.json`. The kinds "value", "error", "decode" and "decode error" are those of E26.
+2. Write the fixture again with `tools/vanilla-oracle`.
+3. For a case of the kind "value", read the JSON, the NBT, the wire form and the hash.
+4. For a case of the kind "error", read the rejection.
+5. For a case of the kind "decode", give the wire form to the reader. Read the JSON of the result.
+6. For a case of the kind "decode error", give the wire form to the reader. Read the decode error.
+
+| Component type | Kind | Input | Rule |
+|----------------|------|-------|------|
+| `enchantable` | value | `{"value":128}` | STK-SHP-064 |
+| `enchantable` | value | `{"value":2147483647}` | STK-SHP-064 |
+| `enchantable` | decode | `80 01` | STK-SHP-064 |
+| `writable_book_content` | value | `{}` | STK-SHP-066 |
+| `writable_book_content` | value | `{"pages":[]}` | STK-SHP-066 |
+| `writable_book_content` | value | `{"pages":["a","b"]}` | STK-SHP-065 |
+| `writable_book_content` | value | `{"pages":[{"raw":"r","filtered":"f"},{"raw":"only"}]}` | STK-SHP-065 |
+| `writable_book_content` | value | a list with one page of 1024 characters `a` | STK-SHP-066 |
+| `writable_book_content` | value | a list with 100 pages `"p"` | STK-SHP-066 |
+| `writable_book_content` | error | `[]` | STK-SHP-066 |
+| `writable_book_content` | error | `{"pages":"a"}` | STK-SHP-066 |
+| `writable_book_content` | error | `{"pages":[1]}` | STK-SHP-065 |
+| `writable_book_content` | error | `{"pages":[{"filtered":"f"}]}` | STK-SHP-065 |
+| `writable_book_content` | error | a list with one page of 1025 characters `a` | STK-SHP-066 |
+| `writable_book_content` | error | a list with 101 pages `"p"` | STK-SHP-066 |
+| `writable_book_content` | decode | `01 01 61 00` | STK-SHP-066 |
+| `writable_book_content` | decode | `01 01 61 01 01 62` | STK-SHP-065 |
+| `writable_book_content` | decode error | `65`, then 101 times `01 70 00` | STK-SHP-066 |
+| `writable_book_content` | decode error | `01 81 08`, then 1025 times `61`, then `00` | STK-SHP-066 |
+| `written_book_content` | value | `{"title":"t","author":"a"}` | STK-SHP-067 |
+| `written_book_content` | value | `{"title":{"raw":"T","filtered":"F"},"author":"me","generation":2,"pages":["p",{"raw":"r","filtered":{"text":"f","bold":true}}],"resolved":true}` | STK-SHP-067 |
+| `written_book_content` | value | `{"title":"t","author":"a","pages":[{"text":"x"}]}` | STK-SHP-065 |
+| `written_book_content` | value | `{"title":"t","author":"a","generation":0,"pages":[],"resolved":false}` | STK-SHP-067 |
+| `written_book_content` | value | a title of 32 characters `a`, with the author `"a"` | STK-SHP-067 |
+| `written_book_content` | error | `{}` | STK-SHP-067 |
+| `written_book_content` | error | `{"author":"a"}` | STK-SHP-067 |
+| `written_book_content` | error | `{"title":"t"}` | STK-SHP-067 |
+| `written_book_content` | error | `{"title":"t","author":"a","generation":4}` | STK-SHP-067 |
+| `written_book_content` | error | `{"title":"t","author":"a","generation":-1}` | STK-SHP-067 |
+| `written_book_content` | error | `{"title":"t","author":"a","pages":"p"}` | STK-SHP-067 |
+| `written_book_content` | error | a title of 33 characters `a`, with the author `"a"` | STK-SHP-067 |
+| `written_book_content` | error | one page of 32766 characters `a`, with the title `"t"` and the author `"a"` | STK-SHP-067 |
+| `written_book_content` | decode | `01 74 00 01 61 00 00 00` | STK-SHP-067 |
+| `written_book_content` | decode | `01 74 01 01 75 01 61 02 01 08 0001 70 00 01` | STK-SHP-067 |
+| `written_book_content` | decode error | `01 74 00 01 61 04 00 00` | STK-SHP-067 |
+| `written_book_content` | decode error | `21`, then 33 times `61`, then `00 01 61 00 00 00` | STK-SHP-067 |
+| `jukebox_playable` | value | `"minecraft:pigstep"` | STK-SHP-068 |
+| `jukebox_playable` | value | `"13"` | STK-SHP-068 |
+| `jukebox_playable` | error | `"minecraft:no_such_song"` | STK-SHP-068 |
+| `jukebox_playable` | error | `{"sound_event":"minecraft:entity.item.break","description":"S","length_in_seconds":1.0,"comparator_output":1}` | STK-SHP-068 |
+| `jukebox_playable` | error | `5` | STK-SHP-068 |
+| `jukebox_playable` | decode | `10` | STK-SHP-068 |
+| `jukebox_playable` | decode error | `FF 01` | STK-SHP-068 |
+| `villager/variant` | value | `"plains"` | STK-SHP-070 |
+| `villager/variant` | value | `"minecraft:desert"` | STK-SHP-070 |
+| `villager/variant` | error | `"minecraft:no_such_type"` | STK-SHP-070 |
+| `villager/variant` | error | `5` | STK-SHP-070 |
+| `villager/variant` | error | `{"a":1}` | STK-SHP-070 |
+| `villager/variant` | decode | `02` | STK-SHP-070 |
+| `villager/variant` | decode error | `63` | STK-SHP-070 |
+| `wolf/variant` | value | `"pale"` | STK-SHP-070 |
+| `wolf/variant` | error | `"minecraft:no_such_variant"` | STK-SHP-070 |
+| `cat/variant` | decode | `04` | STK-SHP-070 |
+
