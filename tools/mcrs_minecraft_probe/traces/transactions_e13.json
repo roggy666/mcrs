@@ -1,0 +1,493 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe13probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_one_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player itxe13probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe13probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "throw_one_click",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{count: 1, id: \"minecraft:stone\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 9,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "throw_one_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe13probeplyr has the following entity data: [{count: 9, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_one_kill_item_entities",
+      "observed": {
+        "console": {
+          "output": [
+            "Killed Stone"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_all_click",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Modified storage mcrs:probe",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{count: 9, id: \"minecraft:stone\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 9,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "throw_all_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe13probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_with_cursor_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player itxe13probeplyr",
+            "Killed Stone",
+            "Replaced 1 slot(s) on itxe13probeplyr with [Stone]",
+            "Replaced 1 slot(s) on itxe13probeplyr with [Dirt]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "throw_with_cursor_click",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Modified storage mcrs:probe",
+            "Found no elements matching items",
+            "Test failed"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_with_cursor_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe13probeplyr has the following entity data: [{count: 10, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_empty_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 15 item(s) from player itxe13probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "throw_empty_slot_click",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Found no elements matching items",
+            "Test failed"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "throw_result_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player itxe13probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe13probeplyr with [Oak Log]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:oak_log",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "throw_result_click",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{count: 12, id: \"minecraft:oak_planks\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe13probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 1,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "throw_result_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe13probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

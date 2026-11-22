@@ -1,0 +1,1061 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe07probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_empty_button_0_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_empty_button_0_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_empty_button_0_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 40, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_empty_button_1_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 40 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_empty_button_1_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 39,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_empty_button_1_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 1, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_stone_30_button_0_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 40 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 30,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_stone_30_button_0_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 6,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_stone_30_button_0_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 64, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_stone_30_button_1_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 70 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 30,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_stone_30_button_1_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 31,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 39,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_stone_30_button_1_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 31, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_stone_64_button_0_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 70 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_stone_64_button_0_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_stone_64_button_0_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 64, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_stone_64_button_1_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 104 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 18,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 19,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 20,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_stone_64_button_1_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_stone_64_button_1_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 64, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_dirt_10_button_0_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 104 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Dirt]",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 21,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 22,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 23,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_dirt_10_button_0_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 24,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_dirt_10_button_0_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 40, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_40_on_dirt_10_button_1_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 50 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Dirt]",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 25,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 26,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 27,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_dirt_10_button_1_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 28,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cursor_40_on_dirt_10_button_1_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 40, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_cursor_on_stone_7_button_0_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 50 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 29,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 30,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 31,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty_cursor_on_stone_7_button_0_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 32,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty_cursor_on_stone_7_button_0_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_cursor_on_stone_7_button_1_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 7 item(s) from player itxe07probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe07probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 33,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 34,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty_cursor_on_stone_7_button_1_click",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe07probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 35,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe07probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty_cursor_on_stone_7_button_1_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe07probeplyr has the following entity data: [{count: 3, Slot: 9b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

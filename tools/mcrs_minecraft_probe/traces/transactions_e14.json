@@ -1,0 +1,1745 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe14probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "plain_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "plain_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "plain_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "plain_03_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "plain_04_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "plain_05_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 11,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "plain_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: [{count: 1, Slot: 9b, id: \"minecraft:stone\"}, {count: 1, Slot: 10b, id: \"minecraft:stone\"}, {count: 1, Slot: 11b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "no_start_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 10,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 11,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "no_start_01_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "no_start_02_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "no_start_03_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "no_start_04_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "no_start_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "two_starts_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_03_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_04_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_05_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_06_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_starts_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pick_up_between_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_03_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_04_pickup_slot_20_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_05_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_06_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "pick_up_between_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "seven_slots_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_03_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_04_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_05_quick_craft_slot_12_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_06_quick_craft_slot_13_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_07_quick_craft_slot_14_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_08_quick_craft_slot_15_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "seven_slots_09_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 11,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 12,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 13,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "seven_slots_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: [{count: 1, Slot: 9b, id: \"minecraft:stone\"}, {count: 1, Slot: 10b, id: \"minecraft:stone\"}, {count: 1, Slot: 11b, id: \"minecraft:stone\"}, {count: 1, Slot: 12b, id: \"minecraft:stone\"}, {count: 1, Slot: 13b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_twice_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 18,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 19,
+          "slot": 10,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 20,
+          "slot": 11,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 21,
+          "slot": 12,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 22,
+          "slot": 13,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 23,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "slot_twice_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_twice_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_twice_03_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_twice_04_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_twice_05_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 24,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 25,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "slot_twice_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: [{count: 2, Slot: 9b, id: \"minecraft:stone\"}, {count: 2, Slot: 10b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_dirt_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Dirt]",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 26,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 27,
+          "slot": 10,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 28,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 29,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "slot_with_dirt_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_dirt_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_dirt_03_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_dirt_04_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_dirt_05_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 30,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 31,
+          "slot": 11,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "slot_with_dirt_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: [{count: 2, Slot: 9b, id: \"minecraft:stone\"}, {count: 1, Slot: 10b, id: \"minecraft:dirt\"}, {count: 2, Slot: 11b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_stone_64_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 6 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 32,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 33,
+          "slot": 10,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 34,
+          "slot": 11,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 35,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 36,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "slot_with_stone_64_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_stone_64_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_stone_64_03_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_stone_64_04_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "slot_with_stone_64_05_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 37,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 38,
+          "slot": 11,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "slot_with_stone_64_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: [{count: 1, Slot: 9b, id: \"minecraft:stone\"}, {count: 64, Slot: 10b, id: \"minecraft:stone\"}, {count: 1, Slot: 11b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 69 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 39,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 40,
+          "slot": 10,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 41,
+          "slot": 11,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 42,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stage_3_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_03_quick_craft_slot_10_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_04_quick_craft_slot_m999_button_3",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_05_quick_craft_slot_11_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_06_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stage_3_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_2_in_survival_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 43,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kind_2_in_survival_01_quick_craft_slot_m999_button_8",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_2_in_survival_02_quick_craft_slot_9_button_9",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_2_in_survival_03_quick_craft_slot_10_button_9",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_2_in_survival_04_quick_craft_slot_m999_button_10",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_2_in_survival_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_3_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 44,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kind_3_01_quick_craft_slot_m999_button_12",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_3_02_quick_craft_slot_9_button_13",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_3_03_quick_craft_slot_10_button_13",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_3_04_quick_craft_slot_m999_button_14",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "kind_3_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "end_without_slots_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 45,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "end_without_slots_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "end_without_slots_02_quick_craft_slot_m999_button_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "end_without_slots_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe14probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "add_negative_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 5 item(s) from player itxe14probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe14probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 46,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe14probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "add_negative_slot_01_quick_craft_slot_m999_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "add_negative_slot_02_quick_craft_slot_9_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "add_negative_slot_03_quick_craft_slot_m1_button_1",
+      "observed": {
+        "sent": {
+          "disconnects": [
+            {
+              "client": "itxe14probeplyr",
+              "reason": {
+                "translate": "disconnect.packetError"
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

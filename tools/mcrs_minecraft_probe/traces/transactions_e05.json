@@ -1,0 +1,313 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe05probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_10_in_hotbar_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe05probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pick_up_with_wrong_changed_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 36,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "put_back_with_wrong_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "pick_up_with_wrong_changed_count",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "itxe05probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "put_back_with_future_state_id",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 5,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "pick_up_with_unlisted_changed_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "itxe05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 37,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "put_back_correct",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "end_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe05probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

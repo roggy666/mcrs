@@ -1,0 +1,407 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve04probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve04probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve04probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "join_peer",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve04probepeer",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve04probepeer",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "teleport_peer",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve04probepeer to 2.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_in_hotbar_3",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve04probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve04probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 39,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "dirt_in_hotbar_4",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve04probeplyr with [Dirt]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve04probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 40,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "select_3",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [],
+      "packets": [
+        {
+          "client": "inve04probepeer",
+          "packet": "set_equipment"
+        }
+      ]
+    },
+    {
+      "id": "after_select_3_read_selected",
+      "observed": {
+        "console": {
+          "output": [
+            "inve04probeplyr has the following entity data: 3"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "select_9",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [],
+      "packets": []
+    },
+    {
+      "id": "after_select_9_read_selected",
+      "observed": {
+        "console": {
+          "output": [
+            "inve04probeplyr has the following entity data: 3"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "select_minus_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [],
+      "packets": []
+    },
+    {
+      "id": "after_select_minus_1_read_selected",
+      "observed": {
+        "console": {
+          "output": [
+            "inve04probeplyr has the following entity data: 3"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "apples_in_hotbar_3",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve04probeplyr with [Golden Apple]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve04probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 39,
+          "stack": {
+            "item": "minecraft:golden_apple",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "eat_whole",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve04probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 39,
+          "stack": {
+            "item": "minecraft:golden_apple",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "eat_whole_wait",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "eat_whole_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve04probeplyr has the following entity data: [{count: 1, Slot: 3b, id: \"minecraft:golden_apple\"}, {count: 5, Slot: 4b, id: \"minecraft:dirt\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "eat_then_select_4",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "eat_then_select_4_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve04probeplyr has the following entity data: [{count: 1, Slot: 3b, id: \"minecraft:golden_apple\"}, {count: 5, Slot: 4b, id: \"minecraft:dirt\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_eat_read_selected",
+      "observed": {
+        "console": {
+          "output": [
+            "inve04probeplyr has the following entity data: 4"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

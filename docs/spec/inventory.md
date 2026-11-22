@@ -99,7 +99,7 @@ left. The craft result has the slot 0. The slot limit of each of these six slots
 that states "each slot of the player" applies to each slot of the four holders. Reason: issue 521
 decides that the cursor stack is a slot of the player.
 
-**INV-SLT-003** (`source_suggested`, semantic). The place filter of an armour slot permits a stack
+**INV-SLT-003** (`source_suggested_black_box_confirmed`, semantic). The place filter of an armour slot permits a stack
 when each of these conditions is true:
 
 - the stack has the `minecraft:equippable` component;
@@ -123,7 +123,7 @@ an armour slot.
 For example, `minecraft:carved_pumpkin` has the slot `head` and no `allowed_entities`, so it can go
 into `P[39]`. `minecraft:shield` has the slot `offhand`, so it does not go into an armour slot.
 
-**INV-SLT-004** (`source_suggested`, semantic). The take filter of an armour slot refuses when
+**INV-SLT-004** (`source_suggested_black_box_confirmed`, semantic). The take filter of an armour slot refuses when
 these two conditions are true:
 
 - the stack of the slot has an enchantment with the effect `minecraft:prevent_armor_change`;
@@ -192,7 +192,7 @@ the join of the player until the player leaves. No packet opens it. The open men
 menu when the player has no other menu open. The inventory menu is always valid for the player
 (ITX-JAV-001, check 3).
 
-**INV-MNU-003** (`source_suggested`, semantic). The button of the swap click names a slot of the
+**INV-MNU-003** (`source_suggested_black_box_confirmed`, semantic). The button of the swap click names a slot of the
 player inventory (ITX-JAV-010). The buttons `0..8` name `P[0]` through `P[8]`. The button 40 names
 `P[40]`. This rule applies to each menu.
 
@@ -227,12 +227,12 @@ this menu.
 all cannot take from `M[0]` (ITX-JAV-011). The inventory menu permits a drag to each entry
 (ITX-JAV-017).
 
-**INV-MNU-006** (`source_suggested`, semantic). A player on the server can always drop items. Thus
+**INV-MNU-006** (`source_suggested_black_box_confirmed`, semantic). A player on the server can always drop items. Thus
 the last condition of ITX-JAV-013 is always true.
 
 ### 2.1 The open of another menu
 
-**INV-MNU-007** (`source_suggested`, semantic). The server opens a menu other than the inventory
+**INV-MNU-007** (`source_suggested_black_box_confirmed`, semantic). The server opens a menu other than the inventory
 menu for a player in these steps:
 
 1. When the open menu is not the inventory menu, the server closes it as INV-CLS-002 states. It
@@ -255,14 +255,14 @@ The vanilla client also accepts `open_screen` without `container_close` before i
 then shows the new screen and puts the mouse pointer at the centre of the window. INV-MNU-011
 states the cursor when the inventory menu is the open menu.
 
-**INV-MNU-008** (`source_suggested`, semantic). Each player has a menu counter. The counter is
+**INV-MNU-008** (`source_suggested_black_box_confirmed`, semantic). Each player has a menu counter. The counter is
 0 when the player joins. Step 2 of INV-MNU-007 sets the counter to `(counter mod 100) + 1`. The new
 menu gets this value as its container id. Thus the first menu after the join has the container id
 1, and the container ids are 1 through 100 in turn.
 
 A new menu never has the container id of the menu that it replaces. Thus a `container_click` for
-the replaced menu fails check 1 of ITX-JAV-001. The vanilla server sets the counter to 0 again at a
-respawn. A parity test must not compare a container id after a respawn.
+the replaced menu fails check 1 of ITX-JAV-001. A parity test must not compare a container id after
+a respawn or a dimension change.
 
 **INV-MNU-009** (`source_suggested_black_box_confirmed`, wire). The `open_screen` packet has these
 fields, in this order:
@@ -295,7 +295,7 @@ slot, a number in the range `0..8`. The main hand of the player is the stack of 
 is the selected slot. A change of the selected slot moves no stack. The selected slot of a new
 player is 0.
 
-**INV-SEL-002** (`source_suggested`, semantic). The serverbound `set_carried_item` packet has one
+**INV-SEL-002** (`source_suggested_black_box_confirmed`, semantic). The serverbound `set_carried_item` packet has one
 short. When the value is in the range `0..8`, it becomes the selected slot. When the value changes
 the selected slot and the player uses the item of the main hand, that use stops. The server
 ignores each other value and keeps the connection.
@@ -320,8 +320,9 @@ stack that the server holds. ITX-JAV-022 states the result when a plugin denies 
 **INV-SEL-005** (`design`, semantic). The `player_action` packet with the status 7 gives the
 request `swap(P[n], P[40])`, where `n` is the selected slot. When the two slots hold the empty
 stack, the server does nothing. When the request applies and the player uses an item, that use
-stops. The server ignores the packet of a spectator. Reason: a request is the only path that
-changes a slot, so the filters of the two slots apply with no other rule.
+stops. The server ignores the packet of a spectator. After the swap, the comparison of INV-SYN-003
+sends `P[n]` and `P[40]`, because the client changes neither slot (ITX-JAV-025). Reason: a request
+is the only path that changes a slot, so the filters of the two slots apply with no other rule.
 
 **INV-SEL-006** (`design`, client agreement). When the request of INV-SEL-005 has a rejection or
 a denial (ITX-JAV-022), the client view of `P[n]` and of `P[40]` becomes not known. The
@@ -398,7 +399,7 @@ INV-CRE-005 make items. This rule answers question Q1 of `inventory-transactions
 `set_creative_mode_slot` packet has a short, the slot number, and a wire stack with length prefix
 (STK-NET-007). STK-NET-009 applies to the stack.
 
-**INV-CRE-003** (`source_suggested`, semantic). The server does these checks on the packet, in
+**INV-CRE-003** (`source_suggested_black_box_confirmed`, semantic). The server does these checks on the packet, in
 this order. The first check that fails ends the work on the packet. The server then changes no
 slot, and INV-CRE-006 applies.
 
@@ -408,13 +409,15 @@ slot, and INV-CRE-006 applies.
 4. The slot number is in the range `1..45`, or it is negative.
 
 A negative slot number is a creative drop. IEN-SPN-007 states one more check for it, the
-counter of the connection, after check 4.
+counter of the connection, after check 4. Experiment E6 observes the checks 1, 3 and 4. Section 11,
+U5, states why it does not observe check 2.
 
-**INV-CRE-004** (`source_suggested`, semantic). A packet that passes the checks with a slot number
+**INV-CRE-004** (`source_suggested_black_box_confirmed`, semantic). A packet that passes the checks with a slot number
 `i` in the range `1..45` gives the request `set(M[i], stack)`. `M[i]` is an entry of the
 inventory menu, also when the player has another menu open. The client view of `M[i]` becomes
 that stack. Thus the server sends no packet for the slot when the request applies. An armour slot
-can hold a stack that its place filter refuses, with a count above 1.
+can hold a stack that its place filter refuses, with a count above 1. When another menu is open and
+has the slot of `M[i]`, the comparison of INV-SYN-003 sends the entry of that menu.
 
 **INV-CRE-005** (`design`, semantic). Two clicks make items with the `set` operation:
 
@@ -435,13 +438,18 @@ that the server does not hold. A denial of the request of INV-CRE-004 has the sa
 
 ## 6. The state id and the client view
 
-**INV-SYN-001** (`source_suggested`, wire). Each menu has a state id. It starts at 0 when the menu
+**INV-SYN-001** (`source_suggested_black_box_confirmed`, wire). Each menu has a state id. It starts at 0 when the menu
 starts to exist. Before the server sends a `container_set_content` packet or a
-`container_set_slot` packet for the menu, it sets the state id to `(state id + 1) & 32767`. The
-packet carries the new value. No other packet changes the state id. The `container_click` packet
-carries the last state id that the client received for the menu.
+`container_set_slot` packet for the menu, it increases the state id by 1. The packet carries the
+new value. No other packet changes the state id. The `container_click` packet carries the last
+state id that the client received for the menu. INV-SYN-010 states the bound of the value.
 
-**INV-SYN-002** (`source_suggested`, client agreement). For each entry of the open menu and for
+**INV-SYN-010** (`design`, unspecified). The state id is a VarInt. The server keeps it in 15 bits:
+the value after 32767 is 0. A parity test must not compare a state id above 32767. Reason: the
+vanilla client returns the value that it received and computes nothing from it. Thus the bound
+has no observer, and each bound gives the same result to the client.
+
+**INV-SYN-002** (`source_suggested_black_box_confirmed`, client agreement). For each entry of the open menu and for
 the cursor, the server keeps a client view. A client view is one of these:
 
 - not known;
@@ -456,13 +464,20 @@ The server holds a stack that matches a client view when one of these conditions
 
 A client view that is not known matches no stack.
 
-**INV-SYN-003** (`source_suggested`, client agreement). The server compares one time in each tick
+**INV-SYN-003** (`source_suggested_black_box_confirmed`, client agreement). The server compares one time in each tick
 of the player. It also compares after each `container_click` packet that passes the checks of
 ITX-JAV-001 and has the state id of the server. Row 1 of ITX-JAV-004 states the other case.
 For each entry of the open menu that does not match its client view, the server sends the stack
 in a `container_set_slot` packet. When the cursor stack does not match its client view, the server
 sends it in a `set_cursor_item` packet. The client view of each slot that the server sends becomes
-the sent stack. ITX-JAV-004 states the same comparison after a click.
+the sent stack. ITX-JAV-004 states the same comparison after a click. INV-SYN-011 states the place
+of the comparison in the tick.
+
+**INV-SYN-011** (`design`, unspecified). The comparison of one tick runs after each change of that
+tick. Thus a pickup, a command and the use of an item in one tick reach the client in one
+comparison. Each slot gets one packet. The order of these slot packets relative to the
+packets of other domains in the same tick is not specified. A parity test must not compare that
+order. Reason: the client shows the same result in each order.
 
 **INV-SYN-004** (`design`, client agreement). Outside the cases of INV-SYN-005, a change of an
 entry of the open menu or of the cursor reaches the client by the comparison of INV-SYN-003. This
@@ -470,7 +485,7 @@ does not depend on the cause of the change: a request, a pickup, a command, the 
 another plugin. Reason: one path gives the
 same result for each writer of a slot, and issue 409 decides it for a refused click.
 
-**INV-SYN-005** (`source_suggested`, wire). A `container_set_content` packet has the container id,
+**INV-SYN-005** (`source_suggested_black_box_confirmed`, wire). A `container_set_content` packet has the container id,
 the state id, the stack of each entry of the menu and the cursor stack. The entries are in the
 order of the menu index. The server sends it for the inventory menu in each of these cases:
 
@@ -480,7 +495,8 @@ order of the menu index. The server sends it for the inventory menu in each of t
 - for the open menu, in the cases of ITX-JAV-001, check 2, and ITX-JAV-004, row 1.
 
 After the packet, the client view of each entry and of the cursor is the sent stack. The first
-packet after the join has the state id 1 and 46 stacks.
+packet after the join has the state id 1 and 46 stacks. The state id of the inventory menu does not
+start again at a dimension change. Section 11, U6, states the case of the respawn.
 
 **INV-SYN-006** (`source_suggested_black_box_confirmed`, client agreement). The server compares
 only the open menu. While another menu is open, a change of an entry of the inventory menu that
@@ -494,7 +510,7 @@ inventory menu takes the client view of each slot that the two menus share. Thus
 not send the main slots again after a close. The state id of the inventory menu does not change at
 a close.
 
-**INV-SYN-009** (`source_suggested`, client agreement). At the close of a menu other than the
+**INV-SYN-009** (`source_suggested_black_box_confirmed`, client agreement). At the close of a menu other than the
 inventory menu, in each of the two directions, the client view of the cursor becomes the empty
 stack. Thus the comparison sends no `set_cursor_item` for the cursor that step 1 of INV-CLS-001
 empties. At the close of the inventory menu, the client view of the cursor does not change.
@@ -596,8 +612,203 @@ the stack that the file gives for it. A `SelectedItemSlot` outside the range `0.
 Reason: a file that an earlier run wrote must load, and the reference gives an internal error for
 such a selected slot.
 
-**INV-SAV-003** (`source_suggested`, semantic). A player that joins again has the stacks and the
-selected slot that the file holds. The server sends them as INV-SEL-003 and INV-SYN-005 state. See.
+**INV-SAV-003** (`source_suggested_black_box_confirmed`, semantic). A player that joins again has the stacks and the
+selected slot that the file holds. The server sends them as INV-SEL-003 and INV-SYN-005 state.
+
+## 9. Experiments
+
+Each experiment of this document runs against the vanilla server with `tools/mcrs_minecraft_probe`.
+The scenario `tools/mcrs_minecraft_probe/scenarios/<name>.json` gives the steps. The trace
+`tools/mcrs_minecraft_probe/traces/<name>.json` holds the menu packets and the command output of
+each step. One scripted client joins; the server console runs the commands. The command
+`item replace entity <player> player.cursor` fills the cursor, and
+`item replace entity <player> player.crafting.<n>` fills the craft grid. `M[i]` and `P[i]` are as
+section 0.5 states. A prediction of the scripted client carries no components. Thus the server
+sends the cursor again after each click with a stack that has components. This is the correction of
+ITX-JAV-004, not a change of a slot.
+
+- **E1** (probe, run; `inventory_e01`). Rules: INV-SLT-001, INV-MNU-001, INV-SAV-001, INV-SAV-003,
+  INV-SEL-003, INV-SYN-005, deviation D4.
+  1. Put 10 stone in `hotbar.0`, 20 dirt in `inventory.0`, boots in `armor.feet`, a helmet in
+     `armor.head` and a shield in `weapon.offhand`.
+  2. Select the slot 6.
+  3. Put 7 granite in the cursor and 3 andesite in the slot 0 of the craft grid.
+  4. Run `save-all flush` and read the player file. Leave, and read the player file again.
+  5. Join again.
+
+  Results: the player file holds `Inventory` with the `Slot` values 0 and 9, the keys
+  `equipment.feet`, `equipment.head` and `equipment.offhand`, and `SelectedItemSlot` 6. It holds
+  neither the granite nor the andesite. After the leave, two item entities exist. After the join,
+  the server sends `set_held_slot` 6 and `container_set_content` with the state id 1 and 46 stacks.
+  The stacks are at the menu indices 5, 8, 9, 36 and 45.
+
+- **E2** (probe, run; `inventory_e02`). Rules: INV-SLT-003, INV-SLT-004, INV-MNU-004, ITX-JAV-026.
+  1. In survival mode, click a helmet, a chestplate, leggings and boots from the cursor into
+     `M[5]`, `M[6]`, `M[7]` and `M[8]`. Use the primary button and one piece at a time.
+  2. Click a helmet into `M[6]` and 10 stone into `M[5]`. Click a helmet with `allowed_entities`
+     `minecraft:zombie` into `M[5]`, then a helmet with `allowed_entities`
+     `["minecraft:zombie", "minecraft:player"]` into `M[5]`. Click a carved pumpkin into `M[5]`.
+  3. Put 64 carved pumpkins in `M[9]` with an empty head slot. Send a quick move on `M[9]`.
+  4. Put a helmet with `minecraft:binding_curse` in `M[5]`. Click it with an empty cursor in survival
+     mode, then in creative mode.
+  5. In survival mode, put a helmet with `stored_enchantments` of `minecraft:binding_curse` in
+     `M[5]` and click it.
+
+  Results: each piece of armour enters its own slot. The helmet in `M[6]`, the stone and the zombie
+  helmet move nothing. The helmet with the list that contains `minecraft:player` and the pumpkin
+  enter `M[5]`. The quick move puts 1 pumpkin in `M[5]` and 63 pumpkins in `M[36]`. The binding
+  helmet stays in survival mode and goes to the cursor in creative mode. The helmet with
+  `stored_enchantments` goes to the cursor. A command cannot make a stack of 2 helmets, so the trace
+  has no click with such a stack.
+
+- **E3** (probe, run; `inventory_e03`). Rules: INV-SLT-004, INV-SLT-006, INV-MNU-004, INV-MNU-005,
+  ITX-JAV-009, ITX-JAV-011, ITX-JAV-017.
+  1. In survival mode, click `M[0]` with 10 stone in the cursor.
+  2. Before each quick move, put 40 stone in `M[10]` and in `M[40]`. Send a quick move on 4 oak
+     planks in `M[0]`. Send a quick move on a helmet in `M[9]` with an empty head slot, then with a
+     golden helmet in `M[5]`. Send a quick move on a shield in `M[36]`. Send a quick move on 64
+     stone in `M[9]`, in `M[36]`, in `M[1]` and in `M[45]`. Send a quick move on a helmet in
+     `M[5]`, and on a helmet with `allowed_entities` `minecraft:zombie` in `M[9]`.
+  3. With 4 oak planks in `M[0]`, 10 oak planks in `M[9]` and 3 oak planks in the cursor, send
+     pick up all on `M[20]`.
+  4. With 8 stone in the cursor, send a drag over `M[0]`, `M[2]`, `M[5]`, `M[11]` and `M[45]`.
+  5. Put a helmet with `minecraft:binding_curse` in `M[5]` and send a quick move on it.
+  6. Send a quick move on the empty `M[20]`.
+
+  Results: the click on `M[0]` moves nothing. The planks of `M[0]` go to `M[44]`. The helmet of
+  `M[9]` goes to `M[5]`, and to `M[36]` when `M[5]` holds a helmet. The shield goes to `M[45]`.
+  The stone of `M[9]` fills `M[40]` to 64 and puts 40 in `M[36]`. The stone of `M[36]` fills
+  `M[10]` to 64 and puts 40 in `M[9]`. The stone of `M[1]` and of `M[45]` fills `M[10]` and
+  `M[40]` to 64 and puts 16 in `M[9]`. The helmet of `M[5]` goes to `M[9]`. The zombie helmet
+  moves nothing. Pick up all takes the 10 planks of `M[9]` and not the planks of `M[0]`; the cursor
+  holds 13. The drag puts 2 stone in each of `M[2]`, `M[11]` and `M[45]`, nothing in `M[0]` and
+  `M[5]`, and leaves 2 stone in the cursor. The quick moves of the binding helmet and of the empty
+  slot move nothing.
+
+- **E4** (probe, run; `inventory_e04`). Rules: INV-SEL-002, INV-SEL-003.
+  1. Join a second client 2 blocks away.
+  2. Put 5 stone in `hotbar.3` and 5 dirt in `hotbar.4`.
+  3. Send `set_carried_item` with 3, then with 9, then with -1. Read `SelectedItemSlot` after each.
+  4. Put 2 golden apples in `hotbar.3`.
+  5. Send `use_item` with the main hand and wait 2.5 seconds.
+  6. Send `use_item`, wait 0.3 seconds, send `set_carried_item` with 4 and wait 2.5 seconds.
+
+  Results: after the value 3, the second client gets `set_equipment`, and the server sends no
+  `set_held_slot`. After 9 and after -1, the selected slot stays 3 and the connection stays. Step 5
+  uses one apple, and the server sends `M[39]` with 1 apple. Step 6 uses no apple, and the selected
+  slot becomes 4.
+
+- **E5** (probe, run; `inventory_e05`). Rules: INV-SEL-004, INV-SEL-005, INV-MNU-006. Do the steps
+  in survival mode, then as a spectator. Read the item entities 150 milliseconds after each packet.
+  1. With 10 stone in `P[0]`, send `player_action` with the status 5.
+  2. With 10 stone in `P[0]`, send the status 4.
+  3. With the empty `P[0]`, send the status 5.
+  4. With a helmet in `P[0]` and a shield in `P[40]`, send the status 7.
+  5. With the empty `P[0]` and `P[40]`, send the status 7.
+
+  Results in survival mode: the status 5 leaves 9 stone and makes an item entity of 1 stone. The
+  status 4 empties `P[0]` and makes an item entity of 10 stone. The server sends no packet for
+  `P[0]` in these two cases. The empty slot makes no item entity. The status 7 exchanges the two
+  slots, and the server sends `M[36]` and `M[45]`. Two empty slots change nothing. As a spectator,
+  no packet changes a slot, and no item entity appears.
+
+- **E6** (probe, run; `inventory_e06`). Rules: INV-CRE-003, INV-CRE-004, deviation D3.
+  1. In creative mode, run `datapack list available`.
+  2. Send `set_creative_mode_slot` with 3 stone to the slots 0, 1, 5, 36, 45 and 46.
+  3. Send 65 stone to the slot 36, then the empty stack to the slot 36, then 2 helmets to the slot
+     5.
+  4. Send 4 stone to the slot -1.
+  5. In survival mode, send 3 stone to the slot 36.
+  6. In creative mode, open a chest. Send 3 stone to the slot 36 and 3 dirt to the slot 5.
+
+  Results: no data pack with a feature flag is available. The slots 1, 5, 36 and 45 take the stack,
+  and the head slot holds 3 stone. The slots 0 and 46, the 65 stone, the 2 helmets and the packet
+  in survival mode change nothing. The server sends nothing for them. The empty stack empties
+  the slot. The slot -1 makes an item entity of 4 stone. With the chest open, the packet for the slot
+  36 changes `P[0]`, and the server sends the entry 54 of the chest menu. The packet for the slot 5
+  changes the head slot.
+
+- **E7** (probe, run; `inventory_e07`). Rules: INV-SYN-001, INV-SYN-005, INV-MNU-007, INV-MNU-008,
+  INV-SEL-003, ITX-JAV-002, ITX-JAV-004.
+  1. Join. Run `give` with 1 stone three times.
+  2. Send a pick up click on `M[36]` with the state id of the last packet and a correct prediction.
+     Send the same click with that state id minus 1, then plus 1, then with the state id of the last
+     packet.
+  3. Place a stonecutter and use it 101 times.
+  4. In creative mode, teleport to the Nether and back.
+
+  Results: the state id is 1 at the join and 2, 3 and 4 after the three `give`. The click with the
+  current state id gets no packet. The click with the stale state id and the click with the future
+  state id each get `container_set_content`. The packet has the next state id, 5 and then 6. Each use of the
+  stonecutter sends `container_close` for the open menu, `open_screen`, `container_set_content`
+  with the state id 1 and one `container_set_data`. The container ids are 1 through 100 and then
+  1. Each dimension change sends `container_set_content` for the inventory menu with the next state
+  id, 7 and then 8, and `set_held_slot`.
+
+- **E8** (probe, run; `inventory_e08`). Rules: INV-SYN-002, INV-SYN-003, INV-SYN-006, INV-SYN-007,
+  ITX-JAV-004.
+  1. Put 5 stone in `hotbar.1`. Open a chest.
+  2. Run `item replace entity` for `armor.head`, `weapon.offhand`, `player.crafting.0` and
+     `hotbar.0`.
+  3. Close the chest.
+  4. Send a pick up click on `M[36]` with a correct prediction, and the click that puts the stack
+     back. Repeat the two clicks with no prediction.
+
+  Results: while the chest is open, the server sends the entry 54 of the chest menu for `hotbar.0`
+  and nothing for the other three slots. After the close, it sends `M[1]`, `M[5]` and `M[45]`, and
+  nothing for the main slots. The clicks with a correct prediction get no packet. The clicks with no
+  prediction get `M[36]` and `set_cursor_item`.
+
+- **E9** (probe, run; `inventory_e09`). Rules: INV-CLS-001, INV-CLS-002, INV-CLS-004, INV-INS-001,
+  INV-SYN-009.
+  1. With 5 stone in `P[7]` and 10 stone in the cursor, send `container_close`.
+  2. With 64 dirt in each main slot and 10 stone in the cursor, send `container_close`.
+  3. Put 5 stone in `P[7]`, 3 stone in the slot 0 and 2 dirt in the slot 2 of the craft grid. Put
+     4 stone in the cursor and send `container_close`.
+  4. With 64 dirt in each main slot, 3 andesite and 1 granite in the craft grid, and 4 stone in the
+     cursor, send `container_close`.
+  5. With 2 stone in the cursor, send `container_close` with the container id 7.
+  6. Open a chest, put 6 stone in the cursor, and remove the chest with `setblock`.
+  7. Open a chest, put 3 stone in the cursor, and send `container_close` with the container id 9.
+
+  Results: step 1 gives `P[7]` 15 stone; the server sends `set_player_inventory`, `M[43]` and
+  `set_cursor_item` with the empty stack. Step 2 makes one item entity of 10 stone. Step 3 gives
+  `P[7]` 12 stone and `P[0]` 2 dirt. Step 4 makes three item entities. Step 5 puts the 2 stone in
+  `P[0]`. Step 6 sends `container_close` with the container id 1, and the 6 stone go to `P[0]`.
+  Step 7 closes the chest, and the 3 stone go to `P[0]`. At the close of a chest, the server sends
+  no `set_cursor_item`.
+
+- **E10** (probe, run; `inventory_e10`). Rules: INV-SAV-001, INV-SAV-003, INV-SEL-003, deviation
+  D4.
+  1. Put 64 dirt in each main slot, a helmet in `armor.head`, boots in `armor.feet` and a shield in
+     `weapon.offhand`.
+  2. Select the slot 5. Put 10 stone in the cursor and 3 granite in the slot 0 of the craft grid.
+  3. Stop the server and read the player file. Start the server and join.
+
+  Results: the player file holds the 36 dirt stacks, the three equipment keys and
+  `SelectedItemSlot` 5. After the join, the server sends `set_held_slot` 5 and
+  `container_set_content` with the state id 1 and these stacks. Two item entities exist.
+
+- **E11** (probe, run; `inventory_e11`). Rules: INV-INS-001, INV-CLS-004, INV-SLT-005.
+  1. Put 64 dirt in each main slot. Keep the armour slots and `P[40]` empty.
+  2. Hold a helmet in the cursor and send `container_close`. Then put a helmet in the slot 0 of the
+     craft grid and send `container_close`.
+  3. Put 10 stone in `P[40]`, hold 60 stone and send `container_close`.
+  4. Put 10 stone in `P[0]`, `P[5]` and `P[40]`, select `P[5]`, hold 60 stone and send
+     `container_close`.
+
+  Results: each helmet becomes an item entity, and the head slot stays empty. Step 3 gives `P[40]`
+  64 stone and an item entity of 6 stone. Step 4 gives `P[5]` 64 stone and `P[40]` 16 stone, and
+  `P[0]` keeps 10 stone.
+
+- **E12** (probe, run; `inventory_menu_replace`). Rules: INV-MNU-007, INV-MNU-008, INV-CLS-002.
+  1. Place a chest and a barrel. Put 5 stone in `hotbar.1`.
+  2. Open the chest and pick the 5 stone up into the cursor.
+  3. Use the barrel while the chest is open.
+
+  Results: the server sends `container_close` with the container id 1 and `set_player_inventory`
+  with the 5 stone in `P[0]`. It then sends `open_screen` with the container id 2 and
+  `container_set_content` with the state id 1 and the empty cursor.
 
 ## 10. Intentional deviations
 
@@ -672,11 +883,14 @@ selected slot that the file holds. The server sends them as INV-SEL-003 and INV-
 
 ## 11. Unresolved
 
-- **U2**: INV-SYN-003. The place of the comparison in the tick of the player, relative to the
-  pickup and to the packets of other domains.
-
 - **U4**: INV-MNU-004, rows 3 and 4. A quick move of a helmet with `allowed_entities` of
   `minecraft:zombie` from `M[9]` moves no item, also when `M[36]` holds the empty stack. A player can expect the
   helmet to go to the hotbar by row 5. Is this result a quirk that mcrs keeps, or a deviation? Until
   the owner decides, the rule
   states the vanilla result.
+
+- **U5**: INV-CRE-003, check 2. The vanilla data pack of this version has no item behind a feature
+  flag, and no experimental data pack is available (E6). Thus no experiment can observe the check.
+
+- **U6**: INV-SYN-005. A respawn in the same dimension. The scripted client of the probe does not
+  respawn, so no experiment of this document observes the packets after such a respawn.

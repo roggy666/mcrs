@@ -1,0 +1,165 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve01probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve01probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival inve01probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "stone_in_hotbar_0",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "dirt_in_inventory_0",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr inventory.0 with dirt 20"
+        ]
+      }
+    },
+    {
+      "id": "boots_in_feet",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr armor.feet with iron_boots"
+        ]
+      }
+    },
+    {
+      "id": "helmet_in_head",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr armor.head with iron_helmet"
+        ]
+      }
+    },
+    {
+      "id": "shield_in_off_hand",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr weapon.offhand with shield"
+        ]
+      }
+    },
+    {
+      "id": "select_slot_6",
+      "select_slot": {
+        "client": "inve01probeplyr",
+        "slot": 6
+      }
+    },
+    {
+      "id": "cursor_granite_7",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr player.cursor with granite 7"
+        ]
+      }
+    },
+    {
+      "id": "grid_andesite_3",
+      "console": {
+        "lines": [
+          "item replace entity inve01probeplyr player.crafting.0 with andesite 3"
+        ]
+      }
+    },
+    {
+      "id": "save_all",
+      "console": {
+        "lines": [
+          "save-all flush"
+        ]
+      },
+      "read_player_file": {
+        "client": "inve01probeplyr",
+        "fields": [
+          "Inventory",
+          "equipment",
+          "SelectedItemSlot"
+        ]
+      }
+    },
+    {
+      "id": "leave",
+      "leave": "inve01probeplyr",
+      "read_player_file": {
+        "client": "inve01probeplyr",
+        "fields": [
+          "Inventory",
+          "equipment",
+          "SelectedItemSlot"
+        ]
+      }
+    },
+    {
+      "id": "join_again",
+      "join": "inve01probeplyr"
+    },
+    {
+      "id": "after_rejoin_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "after_rejoin_reset_item_list",
+      "console": {
+        "lines": [
+          "data remove storage mcrs:probe items"
+        ]
+      }
+    },
+    {
+      "id": "after_rejoin_list_item_entities",
+      "console": {
+        "lines": [
+          "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity inve01probeplyr Item"
+        ]
+      }
+    },
+    {
+      "id": "after_rejoin_read_item_list",
+      "console": {
+        "lines": [
+          "data get storage mcrs:probe items"
+        ]
+      }
+    }
+  ]
+}

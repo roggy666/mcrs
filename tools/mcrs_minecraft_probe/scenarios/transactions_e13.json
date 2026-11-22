@@ -1,0 +1,272 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe13probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe13probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe13probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "throw_one_reset",
+      "console": {
+        "lines": [
+          "clear itxe13probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe13probeplyr inventory.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "throw_one_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe13probeplyr",
+              "slot": 9,
+              "button": 0,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_one_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe13probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_one_kill_item_entities",
+      "console": {
+        "lines": [
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "throw_all_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe13probeplyr",
+              "slot": 9,
+              "button": 1,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_all_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe13probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_with_cursor_reset",
+      "console": {
+        "lines": [
+          "clear itxe13probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe13probeplyr inventory.0 with stone 10",
+          "item replace entity itxe13probeplyr player.cursor with dirt 5"
+        ]
+      }
+    },
+    {
+      "id": "throw_with_cursor_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe13probeplyr",
+              "slot": 9,
+              "button": 0,
+              "mode": "throw",
+              "carried": {
+                "item": "minecraft:dirt",
+                "count": 5
+              }
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_with_cursor_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe13probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "throw_empty_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe13probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "throw_empty_slot_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe13probeplyr",
+              "slot": 9,
+              "button": 0,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_result_reset",
+      "console": {
+        "lines": [
+          "clear itxe13probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe13probeplyr player.crafting.0 with oak_log 3"
+        ]
+      }
+    },
+    {
+      "id": "throw_result_click",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe13probeplyr",
+              "slot": 0,
+              "button": 1,
+              "mode": "throw"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "throw_result_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe13probeplyr Inventory"
+        ]
+      }
+    }
+  ]
+}
