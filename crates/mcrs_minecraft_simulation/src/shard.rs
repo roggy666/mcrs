@@ -7,6 +7,7 @@ use crate::policy::CollectScratch;
 use crate::precipitation::PrecipitationHit;
 use crate::scalar::{GameTick, ShardId};
 use crate::sequence::SequenceClock;
+use crate::stream::StreamSeed;
 use crate::tick_queue::{Collected, Kinds, TickQueue};
 use mcrs_minecraft_volume::PaletteBuffer;
 use mcrs_voxel::BlockPos;
@@ -85,6 +86,7 @@ pub struct KernelConfig {
     pub chain_limit: ChainLimit,
     pub hot_ticks: i64,
     pub tile_threshold: usize,
+    pub seed: StreamSeed,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -107,6 +109,7 @@ impl Default for KernelConfig {
             chain_limit: ChainLimit::Limited(1_000_000),
             hot_ticks: 40,
             tile_threshold: 16,
+            seed: StreamSeed::new(0, ""),
         }
     }
 }

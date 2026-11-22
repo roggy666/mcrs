@@ -6,6 +6,7 @@ use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Drops, Kinds, SimulationVolume, TickPriority,
     neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
 use crate::component::Kind;
@@ -13,6 +14,7 @@ use crate::memory::{Carried, HasRedstoneMemory, HasRedstoneSnapshot, MovePhase, 
 use crate::power::{has_signal_from, neighbour_state, offset_by, state_at};
 use crate::push_set::{Destroy, Move, is_pushable, push_direction, resolve};
 use crate::rules::RedstoneRules;
+use crate::sound;
 use crate::table::RedstoneTable;
 use crate::wire::LIMIT;
 
@@ -111,7 +113,7 @@ pub(crate) fn check_extend<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -150,7 +152,7 @@ fn start_moving<K, V, F, B>(
     moving: BlockStateId,
     payload: MovingPayload,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -196,7 +198,7 @@ fn move_blocks<K, V, F, B>(
     movement: Move,
 ) -> bool
 where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -308,7 +310,7 @@ pub(crate) fn block_event<K, V, F, B>(
     facing_index: i32,
 ) -> bool
 where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -340,6 +342,7 @@ where
         if let Some(extended) = table.with_extended(state, true) {
             cx.set(pos, extended, EXTENDED_FLAGS, LIMIT);
         }
+        sound::play(cx, pos, sound::piston(true));
         return true;
     }
     let Some(front) = neighbour(pos, facing) else {
@@ -366,6 +369,7 @@ where
         },
     );
     cx.set(pos, moving_base, RETRACTING_BASE_FLAGS, LIMIT);
+    sound::play(cx, pos, sound::piston(false));
     let moving_block = table.block_of(moving_base);
     cx.schedule_block_tick(pos, moving_block, MOVE_TICKS, TickPriority::Normal);
     cx.update_neighbours(pos, moving_block, None);
@@ -419,7 +423,7 @@ pub(crate) fn tick_complete<K, V, F, B>(
     table: &RedstoneTable,
     pos: BlockPos,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -442,7 +446,7 @@ pub(crate) fn complete_move<K, V, F, B>(
     table: &RedstoneTable,
     pos: BlockPos,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -467,7 +471,7 @@ pub(crate) fn moving_neighbour_changed<K, V, F, B>(
     table: &RedstoneTable,
     pos: BlockPos,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -530,7 +534,7 @@ pub(crate) fn head_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,

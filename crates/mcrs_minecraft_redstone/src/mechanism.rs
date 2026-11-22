@@ -6,12 +6,14 @@ use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume, TickPriority,
     neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
 use crate::component::{Kind, Trigger};
 use crate::memory::{HasRedstoneMemory, HasRedstoneSnapshot};
 use crate::power::{is_powered, neighbour_state};
 use crate::rules::RedstoneRules;
+use crate::sound;
 use crate::table::RedstoneTable;
 use crate::wire::LIMIT;
 
@@ -84,8 +86,9 @@ fn follow_power<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
     powered: bool,
+    sounds: bool,
 ) where
-    K: Kinds,
+    K: Kinds<Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -93,7 +96,14 @@ fn follow_power<K, V, F, B>(
     let next = table
         .with_powered(state, powered)
         .and_then(|next| table.with_open(next, powered));
-    set_if_changed(cx, pos, state, next, BlockUpdateFlags::CLIENTS);
+    if set_if_changed(cx, pos, state, next, BlockUpdateFlags::CLIENTS)
+        && sounds
+        && table.open(state) != powered
+        && let Some(kind) = table.kind(state)
+        && let Some(click) = sound::open_sound(kind, table.sound_set(state), powered)
+    {
+        sound::play(cx, pos, click);
+    }
 }
 
 pub(crate) fn door_neighbour_changed<K, V, F, B>(
@@ -102,7 +112,7 @@ pub(crate) fn door_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -113,9 +123,9 @@ pub(crate) fn door_neighbour_changed<K, V, F, B>(
     if powered == table.powered(state) {
         return;
     }
-    follow_power(cx, table, pos, state, powered);
+    follow_power(cx, table, pos, state, powered, true);
     if let Some((other, other_state)) = other_half(cx, table, pos, state) {
-        follow_power(cx, table, other, other_state, powered);
+        follow_power(cx, table, other, other_state, powered, false);
     }
 }
 
@@ -126,7 +136,7 @@ pub(crate) fn door_placed<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -152,7 +162,7 @@ pub(crate) fn gate_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -161,7 +171,7 @@ pub(crate) fn gate_neighbour_changed<K, V, F, B>(
 {
     let powered = is_powered(cx, table, pos);
     if powered != table.powered(state) {
-        follow_power(cx, table, pos, state, powered);
+        follow_power(cx, table, pos, state, powered, true);
     }
 }
 
@@ -171,7 +181,7 @@ pub(crate) fn hopper_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -217,7 +227,7 @@ pub(crate) fn trigger_neighbour_changed<K, V, F, B>(
     state: BlockStateId,
     trigger: Trigger,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -248,7 +258,7 @@ pub(crate) fn bulb_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -263,7 +273,9 @@ pub(crate) fn bulb_neighbour_changed<K, V, F, B>(
     if powered {
         next = next.and_then(|next| table.with_lit(next, !table.lit(state)));
     }
-    set_if_changed(cx, pos, state, next, BlockUpdateFlags::ALL);
+    if set_if_changed(cx, pos, state, next, BlockUpdateFlags::ALL) && powered {
+        sound::play(cx, pos, sound::copper_bulb(!table.lit(state)));
+    }
 }
 
 fn instrument_around<K, V, F, B>(
@@ -294,7 +306,7 @@ pub(crate) fn note_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -324,7 +336,7 @@ pub(crate) fn note_placed<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -365,7 +377,7 @@ pub(crate) fn placed_powered<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,

@@ -25,6 +25,7 @@ mcrs_minecraft_protocol::extend_packet_table! {
         "hurt_animation" => ClientboundHurtAnimation,
         "level_chunk_with_light" => ClientboundLevelChunkWithLight<'a>,
         "level_event" => ClientboundLevelEvent,
+        "sound" => ClientboundSound,
         "level_particles" => ClientboundLevelParticles,
         "light_update" => ClientboundLightUpdate<'a>,
         "login" => ClientboundLogin,

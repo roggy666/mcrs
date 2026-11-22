@@ -88,6 +88,7 @@ Each rule states its kind, as `docs/spec/README.md` defines it.
 | `RS-CMP` | the comparator |
 | `RS-OBS` | the observer |
 | `RS-PST` | the pistons, the piston head and the moving block |
+| `RS-SND` | the sounds of the mechanisms |
 | `RS-RUL` | the world rules of this domain |
 
 ### 0.5 Directions
@@ -432,7 +433,7 @@ Provenance: `documentation`. Kind: semantic. Confidence: high.
     burnout (RS-SRC-005) schedules no tick here; its tick of delay 160 lights it.
   - Tick: let `off` = "must be off". If the torch is lit and `off`: the torch sets `lit` to false
     with the flags 3 and records a toggle (RS-SRC-005). If the toggle record shows a burnout, the
-    torch schedules a tick at P with delay 160 and plays the level event `1502` at P. If the
+    torch schedules a tick at P with delay 160 and records the burnout sound (RS-SND-002) at P. If the
     torch is not lit, not `off`, and the toggle record shows no burnout: the torch sets `lit` to
     true with the flags 3.
   - Placement side effect: a neighbor request at each of the six neighbors of P. Removal side
@@ -454,7 +455,7 @@ Provenance: `documentation`. Kind: semantic. Confidence: high.
 - **Edge cases:** the record belongs to the dimension. A partition of a dimension that runs
   alone keeps its own record (`block-simulation.md`, B.3).
 - **Conformance tests:** make a clock of one torch and one wire that toggles each 2 ticks.
-  Result: the torch fizzes (level event `1502`) and stays dark for about 160 ticks, then runs
+  Result: the torch fizzes (the burnout sound of RS-SND-002) and stays dark for about 160 ticks, then runs
   again.
 
 Provenance: `documentation`. Kind: semantic. Confidence: medium.
@@ -481,7 +482,7 @@ Provenance: `documentation`. Kind: semantic. Confidence: high.
   plate. Items are entities. The server reports the entities on each plate every tick. The
   server knows the plates of a section from the moment the section loads, so a saved plate
   senses entities as a placed plate does. A player that another cell owns is not reported to
-  the plates of this cell (section 13).
+  the plates of this cell (section 14).
 
 Provenance: `documentation`. Kind: semantic. Confidence: high.
 
@@ -787,8 +788,9 @@ Provenance: `documentation`. Kind: semantic. Confidence: medium.
   5. Each moving block schedules a tick at its position with delay 2 (RS-PST-007).
   6. A neighbor request at P and at each position of the destroy list and of the push set
      (the old and the new positions).
-  7. The level event of the extension plays at P (sound).
-- **Postconditions:** the event is delivered to the clients (SIM-BEV-003).
+  7. The extension sound of RS-SND-002 is recorded at P.
+- **Postconditions:** the event is delivered to the clients (SIM-BEV-003), and the sound
+  effect reaches them (SIM-EFX-003).
 
 Provenance: `documentation`. Kind: semantic. Confidence: medium.
 
@@ -809,7 +811,7 @@ Provenance: `documentation`. Kind: semantic. Confidence: medium.
   4. A piston that is not sticky, or a sticky piston with `a` = 2, removes the head at P + F with
      the flags 3 and no drops.
   5. A neighbor request at P.
-  6. The level event of the retraction plays at P.
+  6. The retraction sound of RS-SND-002 is recorded at P.
 - **Edge cases:** a sticky piston that receives a 1-tick pulse (extension and retraction in
   consecutive ticks) leaves the pushed block at its new position when the world rule
   `mcrs:sticky_piston_short_pulse` is on (the default). This is RS-PST-003 with `a` = 2.
@@ -951,7 +953,7 @@ Provenance: `documentation`. Kind: semantic. Confidence: high.
   `triggered` to true with the flags 2 and schedules a tick at P with the delay 4. When not
   powered and `triggered`, it sets `triggered` to false with the flags 2. The tick is the moment
   of the **dispense** or the **craft**: the item logic of these blocks is not part of this
-  document (section 13).
+  document (section 14).
 - **Conformance tests:** a block of redstone beside a dispenser. Result: `triggered` is true
   and stays true. Remove the block. Result: `triggered` is false.
 
@@ -1027,7 +1029,85 @@ documentation of the daylight cycle gives. Kind: semantic. Confidence: medium.
 
 ---
 
-## 11. World rules
+## 11. Sounds of the mechanisms
+
+### RS-SND-001: A sound is a client effect
+
+- **Inputs:** a mechanism of Table 3 changes its state as the row states, by a use, a power
+  change, a tick or a block event.
+- **Behavior:** the mechanism records one sound effect (SIM-EFX-001) at its position P with the
+  sound event, the volume and the pitch range of its row. The pitch is the draw of SIM-EFX-002. A
+  set that leaves the state as it was records no sound. A use that the block refuses records no
+  sound.
+- **Ordering constraints:** the sound is an effect of the item that changes the state, so it
+  keeps the collection order of that item. A use by a player is not an item of the step: the
+  server records its sound when it writes the set of the use, with the same key for the pitch
+  (SIM-EFX-002, the tick of the use and the index 0).
+- **Edge cases:** a lever that two uses toggle in one tick records two sounds, one for each
+  toggle. A door whose two halves follow the power records one sound, at the half that reacts to
+  the power (RS-MEC-001); the other half records none.
+- **Conformance tests:** pull a lever. Result: one `sound` packet with `block.lever.click`, pitch
+  0.6. Pull it again. Result: one packet with pitch 0.5. Power a lamp. Result: no sound.
+
+Provenance: `documentation` for the events of each row, `design` for the effect. Kind:
+semantic. Confidence: high.
+
+### RS-SND-002: The sounds of each mechanism
+
+Table 3. The volume and the pitch come from the public documentation of the sound events. A
+pitch range is a uniform draw (SIM-EFX-002). The material of a door, a trapdoor, a fence gate, a
+button or a plate is the sound set of its block definition.
+
+| Mechanism and change | Sound event | Volume | Pitch |
+|----------------------|-------------|--------|-------|
+| lever on | `block.lever.click` | 0.3 | 0.6 |
+| lever off | `block.lever.click` | 0.3 | 0.5 |
+| stone button on / off | `block.stone_button.click_on` / `click_off` | 0.3 | 0.6 / 0.5 |
+| wooden button on / off | `block.wooden_button.click_on` / `click_off` | 0.3 | 0.6 / 0.5 |
+| cherry, bamboo or Nether wood button on / off | `block.<set>_button.click_on` / `click_off` | 0.3 | 0.6 / 0.5 |
+| stone plate on / off (the signal becomes more than 0 / becomes 0) | `block.stone_pressure_plate.click_on` / `click_off` | 0.3 | 0.6 / 0.5 |
+| wooden plate on / off | `block.wooden_pressure_plate.click_on` / `click_off` | 0.3 | 0.8 / 0.7 |
+| cherry, bamboo or Nether wood plate on / off | `block.<set>_pressure_plate.click_on` / `click_off` | 0.3 | 0.8 / 0.7 |
+| wooden door opens / closes | `block.wooden_door.open` / `close` | 0.9 | 0.9–1.0 |
+| cherry, bamboo or Nether wood door opens / closes | `block.<set>_door.open` / `close` | 0.9 (Nether wood 1.0) | 0.9–1.0 |
+| iron door opens / closes | `block.iron_door.open` / `close` | 0.9 | 0.9–1.0 |
+| copper door opens / closes | `block.copper_door.open` / `close` | 1.0 | 0.9–1.0 |
+| wooden trapdoor opens / closes | `block.wooden_trapdoor.open` / `close` | 0.9 | 0.9–1.0 |
+| cherry, bamboo or Nether wood trapdoor opens / closes | `block.<set>_trapdoor.open` / `close` | 1.0 | 0.9–1.0 |
+| iron trapdoor opens / closes | `block.iron_trapdoor.open` / `close` | 0.9 | 0.9–1.0 |
+| copper trapdoor opens / closes | `block.copper_trapdoor.open` / `close` | 1.0 | 0.9–1.0 |
+| fence gate opens / closes | `block.fence_gate.open` / `close` | 0.9 | 0.9–1.0 |
+| cherry or bamboo wood fence gate opens / closes | `block.<set>_fence_gate.open` / `close` | 0.9 | 0.99–1.1 |
+| Nether wood fence gate opens / closes | `block.nether_wood_fence_gate.open` / `close` | 1.0 | 0.9–1.0 |
+| piston extends (RS-PST-005) | `block.piston.extend` | 0.5 | 0.6–0.85 |
+| piston retracts (RS-PST-006) | `block.piston.contract` | 0.5 | 0.6–0.8 |
+| redstone torch burns out (RS-SRC-004) | `block.redstone_torch.burnout` | 0.5 | 1.8–3.4 |
+| comparator set to subtraction / to comparison (a use) | `block.comparator.click` | 0.3 | 0.55 / 0.5 |
+| tripwire line activates / deactivates (RS-MEC-007) | `block.tripwire.click_on` / `click_off` | 0.4 | 0.6 / 0.5 |
+| tripwire hook attaches (the line becomes complete) | `block.tripwire.attach` | 0.4 | 0.7 |
+| tripwire hook detaches (a hook of a complete line is removed) | `block.tripwire.detach` | 0.4 | 1.0909–1.3333 |
+| copper bulb turns on / off (RS-MEC-006) | `block.copper_bulb.turn_on` / `turn_off` | 1.0 | 1.0 / 0.75 |
+
+`<set>` is `cherry_wood`, `bamboo_wood` or `nether_wood`. A repeater makes no sound. A note block
+plays through its block event (RS-MEC-003); it has no row here. The dispenser, the dropper and
+the crafter get their rows with their item logic (RS-MEC-005, hook). A plate whose signal changes
+between two values above 0 records no sound.
+
+Provenance: `documentation`. Kind: semantic. Confidence: medium (the volume of the cherry wood
+button is 0.4 in the documentation; this table uses 0.3 for every wooden button, a stated
+simplification).
+
+### RS-SND-003: Level events
+
+- **Inputs:** a mechanism whose documentation states a level event.
+- **Behavior:** the mechanism records a level event effect (SIM-EFX-001) at P with the event id
+  and the data. No mechanism of this document records one on this server: the torch burnout and the
+  piston moves are sound rows of Table 3, and the dispenser events wait for the item logic.
+- **Conformance tests:** none.
+
+Provenance: `design`. Kind: semantic. Confidence: high.
+
+## 12. World rules
 
 ### RS-RUL-001: World rules of this domain
 
@@ -1053,7 +1133,7 @@ semantic. Confidence: high.
 
 ---
 
-## 12. Intentional deviations
+## 13. Intentional deviations
 
 - **Rule:** RS-PST-007. **Reference:** a moving block completes its move in the block entity
   phase of the tick. **Reason:** this project completes it in a scheduled tick of the moving
@@ -1064,7 +1144,7 @@ semantic. Confidence: high.
   partition keeps its own record, as the threaded instance of `block-simulation.md` does.
   **Visible to the client:** no. **Bug reference:** none. **Test:** none.
 
-## 13. Unresolved
+## 14. Unresolved
 
 - Projectiles (RS-SRC-003) and item frames (RS-CMP-002): the block rules are stated, and no
   projectile or item frame entity exists in this version, so the server has nothing to report

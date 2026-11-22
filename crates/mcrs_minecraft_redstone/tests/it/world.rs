@@ -18,6 +18,7 @@ use mcrs_minecraft_simulation::{
     PhaseInput, SectionProperties, ShardId, SimulatedSections, SimulationVolume, Spread, StepAt,
     StepOutput, SubTick, UpdateRequest, VanillaOrder, step, step_tiled,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_minecraft_volume::{
     Access, BlockVolume, BlockVolumeMut, Denied, PalettedSection, PalettedSectionMut, SparseVolume,
     Unavailable, Volume,
@@ -30,6 +31,7 @@ pub struct TestKinds;
 impl Kinds for TestKinds {
     type Block = Id<Block>;
     type Fluid = Id<Fluid>;
+    type Sound = Id<SoundEvent>;
 }
 
 static DEFINITIONS: LazyLock<BlockDefinitions> = LazyLock::new(|| {

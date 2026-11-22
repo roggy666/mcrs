@@ -31,6 +31,7 @@ mcrs_minecraft_dimension_environment = { workspace = true, features = ["bevy"] }
 mcrs_minecraft_nbt.workspace = true
 mcrs_minecraft_anvil.workspace = true
 mcrs_minecraft_simulation.workspace = true
+mcrs_minecraft_sound.workspace = true
 mcrs_minecraft_volume.workspace = true
 mcrs_minecraft_game_registries.workspace = true
 bevy_asset.workspace = true

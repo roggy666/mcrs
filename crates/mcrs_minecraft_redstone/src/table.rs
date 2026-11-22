@@ -1,5 +1,6 @@
 use mcrs_minecraft_block::block_keys::Block;
 use mcrs_minecraft_block::block_tag_keys;
+use mcrs_minecraft_block::definition::SoundSetId;
 use mcrs_minecraft_block::definition::placement_filter::FaceTest;
 use mcrs_minecraft_block::definition::schema::NoteBlockInstrument;
 use mcrs_minecraft_block::definition::{BlockDefinitions, BlockStateFlags, ShapeId};
@@ -7,7 +8,10 @@ use mcrs_minecraft_block::material::PushReaction;
 use mcrs_minecraft_block_support::face_passes;
 use mcrs_minecraft_core::Direction;
 use mcrs_minecraft_core::voxel_shape::Aabb;
+use mcrs_minecraft_resource::ResourceKey;
 use mcrs_minecraft_resource::{Id, TagKey};
+use mcrs_minecraft_sound::BlockSoundSet;
+use mcrs_minecraft_sound::block_sound_set_keys as sets;
 use mcrs_voxel::BlockStateId;
 use rustc_hash::FxHashMap;
 
@@ -15,6 +19,7 @@ use crate::component::{
     Connection, DiodeMode, Face, Half, Kind, PlateKind, RailShape, Stickiness, Trigger,
 };
 use crate::layout::BlockLayout;
+use crate::sound::SoundSet;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[non_exhaustive]
@@ -32,6 +37,7 @@ pub struct StateInfo {
     pub stickiness: Stickiness,
     pub faces: SupportFaces,
     pub instrument: NoteBlockInstrument,
+    pub sound_set: SoundSet,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -72,6 +78,30 @@ pub struct RedstoneTable {
     moving_piston: Option<BlockStateId>,
     piston: Option<BlockStateId>,
     sticky_piston: Option<BlockStateId>,
+}
+
+fn sound_set_of(definitions: &BlockDefinitions, id: Option<SoundSetId>) -> SoundSet {
+    let Some(name) = id.and_then(|id| definitions.sound_set(id)) else {
+        return SoundSet::Other;
+    };
+    let is = |key: ResourceKey<'static, BlockSoundSet>| *name == key;
+    if is(sets::WOOD) {
+        SoundSet::Wood
+    } else if is(sets::CHERRY_WOOD) {
+        SoundSet::CherryWood
+    } else if is(sets::BAMBOO_WOOD) {
+        SoundSet::BambooWood
+    } else if is(sets::NETHER_WOOD) {
+        SoundSet::NetherWood
+    } else if is(sets::STONE) {
+        SoundSet::Stone
+    } else if is(sets::METAL) {
+        SoundSet::Metal
+    } else if is(sets::COPPER) || is(sets::COPPER_BULB) || is(sets::COPPER_GRATE) {
+        SoundSet::Copper
+    } else {
+        SoundSet::Other
+    }
 }
 
 fn kind_of(
@@ -218,6 +248,7 @@ impl RedstoneTable {
                     stickiness: stickiness_of(block),
                     faces,
                     instrument: data.instrument,
+                    sound_set: sound_set_of(definitions, data.sound_set),
                 }
             })
             .collect();
@@ -267,6 +298,7 @@ impl RedstoneTable {
                 stickiness: Stickiness::None,
                 faces: SupportFaces::default(),
                 instrument: NoteBlockInstrument::Harp,
+                sound_set: SoundSet::Other,
             })
     }
 
@@ -284,6 +316,11 @@ impl RedstoneTable {
     #[must_use]
     pub fn full_face(&self, state: BlockStateId, direction: Direction) -> bool {
         self.info(state).faces.is_full(direction)
+    }
+
+    #[must_use]
+    pub fn sound_set(&self, state: BlockStateId) -> SoundSet {
+        self.info(state).sound_set
     }
 
     #[must_use]

@@ -5,6 +5,7 @@ use mcrs_minecraft_block::fluid_keys::Fluid;
 use mcrs_minecraft_core::Direction;
 use mcrs_minecraft_resource::Id;
 use mcrs_minecraft_simulation::{BlockFacts, Kinds};
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::BlockStateId;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -13,6 +14,7 @@ pub struct WorldKinds;
 impl Kinds for WorldKinds {
     type Block = Id<Block>;
     type Fluid = Id<Fluid>;
+    type Sound = Id<SoundEvent>;
 }
 
 const RAILS: [Block; 4] = [

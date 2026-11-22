@@ -28,6 +28,10 @@ pub enum StreamKey {
     Precipitation {
         tile: ColumnPos,
     },
+    Effect {
+        pos: BlockPos,
+        index: u32,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -62,6 +66,10 @@ impl StreamSeed {
             StreamKey::Section { section } => return self.sections(now).stream(section),
             StreamKey::Visit { anchor } => mix_all(seed, 5, section_words(anchor)),
             StreamKey::Precipitation { tile } => mix_all(seed, 6, words(tile.x, 0, tile.z)),
+            StreamKey::Effect { pos, index } => {
+                let [xz, y] = pos_words(pos);
+                mix_all(seed, 7, [xz, y, u64::from(index)])
+            }
         };
         LegacyRandom::new(seed)
     }

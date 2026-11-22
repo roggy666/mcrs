@@ -22,6 +22,7 @@ pub mod position_delta;
 pub mod recipe;
 pub mod section;
 pub mod serverbound;
+pub mod sound;
 pub mod table;
 mod teleport_flags;
 pub mod text;

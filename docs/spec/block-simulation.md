@@ -198,6 +198,7 @@ reference implementation, not from an experiment.
 | `SIM-SHP` | shape updates |
 | `SIM-SCH` | scheduled block ticks and scheduled fluid ticks |
 | `SIM-BEV` | block events |
+| `SIM-EFX` | client effects: the sounds and the level events that an item asks the clients to play |
 | `SIM-RND` | random ticks and precipitation picks |
 | `SIM-RNG` | random sources |
 | `SIM-FIRE` | the behavior of fire and soul fire (section 12) |
@@ -2605,6 +2606,82 @@ Provenance: `source_suggested`. Confidence: high. A block event is a plain recor
   - Open a chest. In the same tick, before the drain, break the chest. Result: there is no `block_event` for the chest.
 
 Provenance: `source_suggested`, and the packet id is `black_box_confirmed` by `../../assets/mcrs/reports/packets.json`. Confidence: high.
+
+## 6A. Client effects
+
+A client effect is a sound or a level event that an item of the step asks the clients to play.
+An effect changes no block, no tick and no memory. It is an output of the step, as a delivered
+block event is, and it reaches the clients in the same way.
+
+### SIM-EFX-001: The effect record
+
+- **Inputs:** a request of an item for a sound (P, S, v, pitch range [a, b]) or for a level event
+  (P, e, d). P is a block position, S a sound event of the registry `minecraft:sound_event`, v the
+  volume, e the level event id and d its data.
+- **Relevant state:** the output of the step.
+- **Preconditions:** none.
+- **Behavior:** the step appends the effect to the effect output of the step, after the effects
+  that the items before it produced. A sound effect records the pitch that SIM-EFX-002 gives. The
+  record holds no reference to the item; it holds P, S, v and the pitch, or P, e and d.
+- **Ordering constraints:** the effects of the step are in the collection order of the items
+  (P-SEQ), and inside one item in the order of the requests. A tiled instance (SIM-MODEL-102) keeps
+  this order: an item that is undone or that runs again drops the effects of its earlier run, and
+  the commit copies the effects of each item in the collection order, as it copies the delivered
+  block events.
+- **Numeric semantics:** v and the pitch are 32-bit floats. The sound event is a registry id.
+- **Postconditions:** the effects of a step reach the clients once (SIM-EFX-003).
+- **Edge cases:** an item that changes no block can still record an effect. Two equal effects are
+  two effects; nothing de-duplicates them.
+- **Invariants:** the effect output of a step does not depend on the number of threads or on the
+  partition of the items into tiles. The test `tiled` of the simulation crate compares the
+  effects of the serial step with the effects of the tiled step.
+- **Conformance tests:** run a step in which one item records two sounds and a second item records
+  one level event, on one thread and on eight. Result: three effects, in that order, equal in
+  both runs.
+
+Provenance: `design`. Confidence: high.
+
+### SIM-EFX-002: The pitch draw
+
+- **Inputs:** a sound request with the pitch range [a, b] of an item at P in the step of the tick
+  T; this is the n-th effect of the item, counted from 0.
+- **Behavior:** when a = b, the pitch is a. Else the pitch is a + u · (b − a), where u is the
+  first value of the keyed stream (SIM-RNG-001) with the key `Effect { pos: P, index: n }` of the
+  tick T. The stream is derived from the stream seed of the dimension, the tick, P and n only.
+- **Ordering constraints:** none: the key names no thread, no task and no place of the item in
+  the phase, so a replay of the item draws the same pitch.
+- **Numeric semantics:** u is the 64-bit float in [0, 1) of the stream, narrowed to a 32-bit
+  float after the scaling.
+- **Edge cases:** two items at the same P in the same tick share the keys; their pitches are equal
+  when their ranges are equal. This is not observable as an order.
+- **Conformance tests:** a piston extends at P in the tick T on a serial step and on a tiled
+  step. Result: the two sound effects are equal, pitch included.
+
+Provenance: `design`. Confidence: high.
+
+### SIM-EFX-003: Delivery and the packets
+
+- **Inputs:** the effect output of a step.
+- **Relevant state:** the players that hold the column of P.
+- **Behavior:** after the step, the server sends each effect to each player that holds the column
+  of P, in the order of the output. A sound effect becomes a `sound` packet: the sound event as
+  its registry id, the source `block`, the position of the centre of the block at P, the volume, the
+  pitch, and a seed that is a function of P and the tick. A level event becomes a `level_event`
+  packet (e, P, d, not global).
+- **Ordering constraints:** the effects of a step go out after the block changes of the same step
+  are marked for the client sync (SIM-SET-005) and before the next step.
+- **Numeric semantics:** the `sound` packet holds the position as three 32-bit integers in eighths
+  of a block (the centre of the block: 8 · P + 4 on each axis). The sound event id goes as its
+  registry id plus one (0 means an inline sound event, which this server does not send).
+- **Postconditions:** none.
+- **Edge cases:** a column that no player holds gets nothing; the effect is dropped.
+- **Invariants:** the server sends no effect twice.
+- **Conformance tests:** a player holds the column of a piston; the piston extends. Result: the
+  player receives one `sound` packet with the sound event of RS-SND-002 after the block changes of
+  the extension. A second player in another dimension receives nothing.
+
+Provenance: `design`, and the packet layout is `documentation` (the public protocol
+documentation). Confidence: medium.
 
 ---
 

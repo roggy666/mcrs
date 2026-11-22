@@ -1,14 +1,19 @@
+use mcrs_minecraft_random::Random;
+
 use crate::access::{PartitionKind, SectionProperties};
 use crate::behaviour::{BlockBehaviour, BlockFacts, MemoryPartition};
 use crate::event_queue::{BlockEvent, QueuedEvent};
 use crate::footprints::Footprints;
 use crate::message::{ChainOrigin, Message, MessageBody};
+use crate::output::ClientEffect;
+use crate::output::PitchRange;
 use crate::output::{BlockWrite, Destroyed, OutputMark, StepOutput};
 use crate::policy::{ChainOrder, OrderingPolicy};
 use crate::region::{Region, Touch, cell_key};
 use crate::scalar::{GameTick, ShardId, TickPriority};
 use crate::sequence::{SubTick, TickKey};
 use crate::shard::{BlockShard, Env, KernelConfig};
+use crate::stream::StreamKey;
 use crate::tick_queue::{Collected, Kinds, ScheduledTick};
 use crate::tile_task::Produced;
 use crate::{BlockUpdateFlags, SimulationVolume};
@@ -73,6 +78,7 @@ pub struct Cx<'a, K: Kinds, V, F, B: BlockBehaviour<K>> {
     pub(crate) task: Option<TileCx<'a, K>>,
     pub(crate) task_cells: FxHashMap<u64, B::Memory>,
     item_cells: FxHashMap<u64, B::Memory>,
+    effects_in_item: u32,
 }
 
 pub(crate) struct TileCx<'a, K: Kinds> {
@@ -117,6 +123,7 @@ where
             task: None,
             task_cells: FxHashMap::default(),
             item_cells: FxHashMap::default(),
+            effects_in_item: 0,
         }
     }
 
@@ -139,6 +146,38 @@ where
                 true
             }
         }
+    }
+
+    pub fn play_sound(&mut self, pos: BlockPos, sound: K::Sound, volume: f32, pitch: PitchRange) {
+        let index = self.effects_in_item;
+        self.effects_in_item = index.saturating_add(1);
+        let pitch = if pitch.min == pitch.max {
+            pitch.min
+        } else {
+            let unit = self
+                .config
+                .seed
+                .stream(self.now, StreamKey::Effect { pos, index })
+                .next_f64();
+            (f64::from(pitch.min) + unit * f64::from(pitch.max - pitch.min)) as f32
+        };
+        self.out.effects.push(ClientEffect::Sound {
+            pos,
+            sound,
+            volume,
+            pitch,
+        });
+    }
+
+    pub fn level_event(&mut self, pos: BlockPos, event: i32, data: i32) {
+        self.effects_in_item = self.effects_in_item.saturating_add(1);
+        self.out
+            .effects
+            .push(ClientEffect::LevelEvent { pos, event, data });
+    }
+
+    fn begin_item(&mut self) {
+        self.effects_in_item = 0;
     }
 
     pub fn now(&self) -> GameTick {
@@ -505,6 +544,7 @@ where
     }
 
     pub(crate) fn apply(&mut self, message: Message<K>) {
+        self.begin_item();
         self.shard.clock.observe(message.stamp);
         let sequence = message.stamp;
         match message.body {
@@ -568,6 +608,7 @@ where
     }
 
     pub(crate) fn run_block_tick(&mut self, tick: Collected<K::Block>) {
+        self.begin_item();
         match self.task.as_mut() {
             Some(task) => {
                 task.consumed.push((tick.pos, tick.kind));
@@ -587,6 +628,7 @@ where
     }
 
     pub(crate) fn run_fluid_tick(&mut self, tick: Collected<K::Fluid>) {
+        self.begin_item();
         let behaviour = self.behaviour;
         if let Ok(state) = self.state(tick.pos)
             && self.facts.fluid_of(state) == Some(tick.kind)
@@ -597,6 +639,7 @@ where
     }
 
     pub(crate) fn deliver(&mut self, event: BlockEvent<K::Block>) {
+        self.begin_item();
         let behaviour = self.behaviour;
         if let Ok(state) = self.state(event.pos)
             && self.facts.block_of(state) == event.block
@@ -666,6 +709,7 @@ where
             blocks: mark.writes..self.out.writes.len(),
             outbound: mark.outbound..self.out.outbound.len(),
             delivered: mark.delivered..self.out.delivered.len(),
+            effects: mark.effects..self.out.effects.len(),
             destroyed: mark.destroyed..self.out.destroyed.len(),
             chains: mark.chains..self.out.chains.len(),
         });

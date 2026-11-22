@@ -5,11 +5,13 @@ use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume, TickPriority,
     neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
 use crate::component::Kind;
 use crate::memory::{HasRedstoneMemory, HasRedstoneSnapshot, Sensor};
 use crate::power::{attached_of, offset_by, state_at};
+use crate::sound;
 use crate::table::RedstoneTable;
 use crate::wire::LIMIT;
 
@@ -76,7 +78,7 @@ fn set_hook<K, V, F, B>(
     attached: bool,
     powered: bool,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -90,7 +92,16 @@ fn set_hook<K, V, F, B>(
     if next != state {
         cx.set(pos, next, BlockUpdateFlags::ALL, LIMIT);
     }
+    if attached != table.attached(state) {
+        let click = if attached {
+            sound::tripwire_attach()
+        } else {
+            sound::tripwire_detach()
+        };
+        sound::play(cx, pos, click);
+    }
     if powered != table.powered(state) {
+        sound::play(cx, pos, sound::tripwire(powered));
         let block = table.block_of(state);
         cx.update_neighbours(pos, block, None);
         if let Some(attached_to) = attached_of(table, state).and_then(|side| neighbour(pos, side)) {
@@ -105,7 +116,7 @@ pub(crate) fn hook_check<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -177,7 +188,7 @@ where
 
 fn update_hooks<K, V, F, B>(cx: &mut Cx<'_, K, V, F, B>, table: &RedstoneTable, pos: BlockPos)
 where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -196,7 +207,7 @@ pub(crate) fn string_placed<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -218,7 +229,7 @@ pub(crate) fn string_removed<K, V, F, B>(
     pos: BlockPos,
     moved_by_piston: bool,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -239,7 +250,7 @@ pub(crate) fn string_neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -266,7 +277,7 @@ pub(crate) fn string_tick<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -286,7 +297,7 @@ pub(crate) fn hook_placed<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -305,7 +316,7 @@ pub(crate) fn hook_removed<K, V, F, B>(
     old: BlockStateId,
     moved_by_piston: bool,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -347,7 +358,7 @@ pub(crate) fn hook_tick<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
