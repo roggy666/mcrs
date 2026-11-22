@@ -18,11 +18,11 @@ impl MobIndex {
         self.0.get(&uuid).copied()
     }
 
-    pub(crate) fn insert(&mut self, uuid: EntityUuid, entity: Entity) {
+    pub fn insert(&mut self, uuid: EntityUuid, entity: Entity) {
         self.0.insert(uuid, entity);
     }
 
-    pub(crate) fn remove(&mut self, uuid: EntityUuid, entity: Entity) {
+    pub fn remove(&mut self, uuid: EntityUuid, entity: Entity) {
         if self.get(uuid) == Some(entity) {
             self.0.remove(&uuid);
         }

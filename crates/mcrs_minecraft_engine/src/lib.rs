@@ -96,6 +96,7 @@ pub mod tile_events;
 pub mod to_coordinator;
 pub mod to_muxer;
 pub mod use_item_on_request;
+pub mod use_item_request;
 pub mod view_radius;
 mod wanted_column;
 pub mod whitelist;

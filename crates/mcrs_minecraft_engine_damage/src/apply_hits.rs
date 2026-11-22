@@ -1,9 +1,11 @@
 use bevy_ecs::change_detection::DetectChangesMut;
 use bevy_ecs::message::MessageWriter;
+use bevy_ecs::query::AnyOf;
 use bevy_ecs::system::Local;
 use bevy_ecs::system::Query;
 use bevy_ecs::system::Res;
 use bevy_ecs::system::ResMut;
+use glam::DVec3;
 use mcrs_minecraft_damage::DamageTypeRules;
 use mcrs_minecraft_damage::Defence;
 use mcrs_minecraft_damage::HitOutcome;
@@ -14,6 +16,7 @@ use mcrs_minecraft_engine_entity_motion::GridSlot;
 use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_entity_motion::StepOutcome;
 use mcrs_minecraft_engine_world::birth_clock::BirthClock;
+use mcrs_minecraft_engine_world::entity::physics::Transform;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::WriterKey;
 use mcrs_minecraft_physics::GridRow;
@@ -37,7 +40,10 @@ type Targets<'w, 's> = Query<
     'w,
     's,
     (
-        &'static MotionState,
+        AnyOf<(
+            &'static MotionState,
+            (&'static EntityUuid, &'static Transform),
+        )>,
         &'static mut Vitals,
         &'static mut HitRecord,
         Option<&'static Defence>,
@@ -77,11 +83,14 @@ pub(crate) fn apply_hits(
     order.clear();
     dead.clear();
     for (index, request) in pending.requests.iter().enumerate() {
-        let Ok((state, ..)) = targets.get(request.target) else {
+        let Ok((identity, ..)) = targets.get(request.target) else {
+            continue;
+        };
+        let Some((key, _)) = identity_of(identity) else {
             continue;
         };
         order.push(HitOrder {
-            target: state.0.key,
+            target: key,
             writer: request.writer,
             tick: request.tick,
             sequence: request.sequence,
@@ -132,9 +141,12 @@ fn apply_group(
         if request.crowd.is_some_and(|crowd| !crowd.overcrowded(dead)) {
             continue;
         }
-        let Ok((state, mut vitals, mut record, defence, slot, outcome)) =
+        let Ok((identity, mut vitals, mut record, defence, slot, outcome)) =
             targets.get_mut(request.target)
         else {
+            continue;
+        };
+        let Some((_, position)) = identity_of((identity.0.as_deref(), identity.1)) else {
             continue;
         };
         let mut next_vitals = *vitals;
@@ -163,7 +175,7 @@ fn apply_group(
         if report.died {
             reports.died.write(Died {
                 target: request.target,
-                position: state.0.body.position,
+                position,
                 source,
             });
             if let Some(row) = crowd_row.or_else(|| counted_row(slot, outcome, tick)) {
@@ -189,4 +201,17 @@ fn counted_row(
         },
         _ => row,
     })
+}
+
+type Identity<'a> = (
+    Option<&'a MotionState>,
+    Option<(&'a EntityUuid, &'a Transform)>,
+);
+
+fn identity_of(identity: Identity<'_>) -> Option<(EntityUuid, DVec3)> {
+    match identity {
+        (Some(state), _) => Some((state.0.key, state.0.body.position)),
+        (None, Some((key, transform))) => Some((*key, transform.translation)),
+        (None, None) => None,
+    }
 }

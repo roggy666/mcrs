@@ -121,3 +121,30 @@ fn prj_blk_001_an_arrow_inside_a_collider_at_the_start_of_a_tick_stops() {
     assert_eq!(arrow.body.position, DVec3::new(0.5, 10.5, 0.5));
     assert_eq!(arrow.body.velocity, DVec3::ZERO);
 }
+
+#[test]
+fn prj_flt_001_an_arrow_in_water_uses_the_water_drag_before_its_move() {
+    let mut fixture = TestFixture::new();
+    let water = fixture.blocks.water;
+    fixture
+        .world
+        .fill(BlockPos::new(-2, 9, -2), BlockPos::new(4, 11, 2), water);
+    let mut arrow = projectile(DVec3::new(0.5, 10.0, 0.5), DVec3::new(1.0, 0.0, 0.0));
+    tick(&mut fixture, &MotionRow::arrow(), &mut arrow);
+    let drag = f64::from(0.6_f32);
+    assert_eq!(arrow.body.position.x, 0.5 + drag);
+    assert_eq!(arrow.body.velocity, DVec3::new(drag, -0.05, 0.0));
+}
+
+#[test]
+fn prj_flt_002_a_snowball_in_water_uses_the_water_drag() {
+    let mut fixture = TestFixture::new();
+    let water = fixture.blocks.water;
+    fixture
+        .world
+        .fill(BlockPos::new(-2, 9, -2), BlockPos::new(4, 11, 2), water);
+    let mut snowball = projectile(DVec3::new(0.5, 10.0, 0.5), DVec3::new(1.0, 0.0, 0.0));
+    tick(&mut fixture, &MotionRow::snowball(), &mut snowball);
+    let drag = f64::from(0.8_f32);
+    assert_eq!(snowball.body.velocity, DVec3::new(drag, -0.03 * drag, 0.0));
+}

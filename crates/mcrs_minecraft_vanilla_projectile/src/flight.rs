@@ -1,4 +1,6 @@
 use bevy_ecs::entity::Entity;
+use bevy_ecs::message::MessageWriter;
+use bevy_ecs::query::With;
 use bevy_ecs::resource::Resource;
 use bevy_ecs::system::Commands;
 use bevy_ecs::system::Query;
@@ -13,22 +15,31 @@ use mcrs_minecraft_damage::HitOutcome;
 use mcrs_minecraft_damage::HurtRules;
 use mcrs_minecraft_damage::Vitals;
 use mcrs_minecraft_damage::preview;
+use mcrs_minecraft_engine::PlayerBody;
+use mcrs_minecraft_engine::column_change::ColumnChange;
+use mcrs_minecraft_engine::column_streams::ColumnStreams;
 use mcrs_minecraft_engine_damage::DamageRequest;
 use mcrs_minecraft_engine_damage::PendingHits;
 use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_entity_motion::StepOutcome;
+use mcrs_minecraft_engine_physics::EntityEffect;
+use mcrs_minecraft_engine_physics::EntityWrite;
+use mcrs_minecraft_engine_physics::EntityWrites;
 use mcrs_minecraft_engine_physics::MobIndex;
 use mcrs_minecraft_engine_world::birth_clock::BirthClock;
+use mcrs_minecraft_engine_world::entity::physics::Transform;
+use mcrs_minecraft_engine_world::entity::player::Player;
 use mcrs_minecraft_entity::damage_type_keys::ARROW;
 use mcrs_minecraft_entity::damage_type_keys::THROWN;
 use mcrs_minecraft_entity_key::Cause;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::KeyedStream;
 use mcrs_minecraft_entity_key::WriterKey;
+use mcrs_minecraft_game_mode::GameMode;
+use mcrs_minecraft_game_mode::PlayerGameMode;
 use mcrs_minecraft_physics::Aabb;
 use mcrs_minecraft_physics::BodyGrid;
 use mcrs_minecraft_physics::GridFlags;
-use mcrs_minecraft_physics::GridRow;
 use mcrs_minecraft_physics::segment_meets;
 use mcrs_minecraft_registries::CurrentRegistries;
 use mcrs_minecraft_resource::ResourceLocation;
@@ -36,11 +47,15 @@ use mcrs_minecraft_resource::rl;
 
 use crate::Projectile;
 use crate::ProjectileKind;
+use crate::pickup::RestingArrows;
+use crate::sounds::SoundAt;
+use crate::sounds::play;
 
 const DAMAGE_TYPE: ResourceLocation<'static> = rl!("minecraft:damage_type");
 const BOUNCE: f64 = -0.1;
 const OWNER_REACH: f64 = 1.0;
 const SNOWBALL_AMOUNT: f32 = 0.0;
+const KNOCKBACK_POWER: f64 = 0.4;
 
 #[derive(Resource, Clone, Copy, Debug, Default)]
 pub(crate) struct ProjectileDamageTypes {
@@ -77,11 +92,38 @@ type Flying<'w, 's> = Query<
 
 type Targets<'w, 's> = Query<'w, 's, (&'static Vitals, Option<&'static Defence>)>;
 
+type Players<'w, 's> = Query<
+    'w,
+    's,
+    (
+        Entity,
+        &'static EntityUuid,
+        &'static Transform,
+        &'static PlayerGameMode,
+        PlayerBody,
+    ),
+    With<Player>,
+>;
+
+#[derive(Clone, Copy, Debug)]
+struct Candidate {
+    key: EntityUuid,
+    entity: Option<Entity>,
+    bounds: Aabb,
+    centre: DVec3,
+}
+
 #[derive(Clone, Copy, Debug)]
 struct EntityHit {
     rank: f64,
     entry: f64,
-    row: GridRow,
+    candidate: Candidate,
+}
+
+struct FlightWorld<'w, 's, 'a> {
+    grid: &'a BodyGrid,
+    players: &'a Players<'w, 's>,
+    index: &'a MobIndex,
 }
 
 #[expect(
@@ -91,15 +133,26 @@ struct EntityHit {
 pub(crate) fn fly_projectiles(
     mut projectiles: Flying,
     targets: Targets,
+    players: Players,
     grid: Res<BodyGrid>,
     index: Res<MobIndex>,
     clock: Res<BirthClock>,
     types: Res<ProjectileDamageTypes>,
     rules: Res<DamageTypeRules>,
+    streams: Query<&ColumnStreams>,
     mut pending: ResMut<PendingHits>,
+    mut writes: ResMut<EntityWrites>,
+    mut resting: ResMut<RestingArrows>,
+    mut changes: MessageWriter<ColumnChange>,
     mut commands: Commands,
 ) {
     let tick = clock.0;
+    let streams = streams.single().ok();
+    let world = FlightWorld {
+        grid: &grid,
+        players: &players,
+        index: &index,
+    };
     for (entity, motion, outcome, mut projectile) in &mut projectiles {
         if !outcome.is_of(tick) {
             continue;
@@ -118,36 +171,52 @@ pub(crate) fn fly_projectiles(
             }
             projectile.in_ground = false;
             projectile.despawn = 0;
+            resting.leave(entity);
         }
         let delta = end - start;
         let margin = Projectile::margin(state.age);
-        let hit = entity_hit(&grid, &mut projectile, start, delta, margin);
-        match hit {
+        let stream = KeyedStream::new(&state.key, tick);
+        match entity_hit(&world, &mut projectile, start, delta, margin) {
             Some(hit) => {
                 let point = start + delta * hit.entry;
                 let struck = Struck {
                     key: state.key,
-                    target: &hit.row,
+                    candidate: hit.candidate,
+                    velocity: delta,
                     tick,
                 };
                 let ends = strike(
                     &struck,
                     &mut projectile,
                     &targets,
-                    &index,
                     &types,
                     &rules,
                     &mut pending,
+                    &mut writes,
                 );
+                if projectile.kind == ProjectileKind::Arrow {
+                    play(
+                        SoundAt::arrow_hit(point, &stream),
+                        sound_seed(&state.key, tick),
+                        streams,
+                        &mut changes,
+                    );
+                }
                 if ends {
                     commands.entity(entity).despawn();
                     continue;
                 }
-                let mut bounced = motion.0;
-                bounced.body.position = point;
-                bounced.body.velocity = delta * BOUNCE;
-                commands.entity(entity).insert(MotionState(bounced));
-                projectile.speed = bounced.body.velocity.length();
+                let velocity = delta * BOUNCE;
+                writes.push(EntityWrite {
+                    target: state.key,
+                    writer: WriterKey::Entity { key: state.key },
+                    sequence: 0,
+                    effect: EntityEffect::Place {
+                        position: point,
+                        velocity,
+                    },
+                });
+                projectile.speed = velocity.length();
                 continue;
             }
             None if outcome.kernel.landed || outcome.kernel.stuck_in_block => {
@@ -155,18 +224,30 @@ pub(crate) fn fly_projectiles(
                     commands.entity(entity).despawn();
                     continue;
                 }
+                play(
+                    SoundAt::arrow_hit(end, &stream),
+                    sound_seed(&state.key, tick),
+                    streams,
+                    &mut changes,
+                );
                 projectile.in_ground = true;
                 projectile.shake = Projectile::SHAKE;
                 projectile.despawn = 0;
+                projectile.critical = false;
+                resting.rest(entity, end);
             }
             None => {}
         }
-        projectile.speed = motion.0.body.velocity.length();
+        projectile.speed = state.body.velocity.length();
     }
 }
 
+fn sound_seed(key: &EntityUuid, tick: u64) -> u64 {
+    (key.as_u128() as u64) ^ tick.wrapping_mul(0x9E37_79B9_7F4A_7C15)
+}
+
 fn entity_hit(
-    grid: &BodyGrid,
+    world: &FlightWorld<'_, '_, '_>,
     projectile: &mut Projectile,
     start: DVec3,
     delta: DVec3,
@@ -175,36 +256,59 @@ fn entity_hit(
     let end = start + delta;
     let reach = DVec3::splat(margin + OWNER_REACH);
     let (min, max) = (start.min(end) - reach, start.max(end) + reach);
+    let around = Aabb::new(start.min(end), start.max(end)).inflate(DVec3::splat(OWNER_REACH));
     let mut owner_near = false;
     let mut best: Option<EntityHit> = None;
-    for row in grid.in_box(min, max) {
-        if row.flags.contains(GridFlags::SPECTATOR) {
-            continue;
-        }
-        let bounds = Aabb::of_body(row.position, row.half_width * 2.0, row.height);
-        if projectile.owner == Some(row.key) && !projectile.left_owner {
-            let around =
-                Aabb::new(start.min(end), start.max(end)).inflate(DVec3::splat(OWNER_REACH));
-            if around.intersects(&bounds) {
+    let mut consider = |candidate: Candidate| {
+        if projectile.owner == Some(candidate.key) && !projectile.left_owner {
+            if around.intersects(&candidate.bounds) {
                 owner_near = true;
             }
-            continue;
+            return;
         }
-        let larger = bounds.inflate(DVec3::splat(margin));
+        let larger = candidate.bounds.inflate(DVec3::splat(margin));
         let Some(entry) = segment_meets(start, delta, larger.min, larger.max) else {
-            continue;
+            return;
         };
         let rank = match projectile.kind {
             ProjectileKind::Snowball => entry,
-            ProjectileKind::Arrow => start.distance_squared(row.position),
+            ProjectileKind::Arrow => start.distance_squared(candidate.centre),
         };
         if best.is_none_or(|best| rank < best.rank) {
             best = Some(EntityHit {
                 rank,
                 entry,
-                row: *row,
+                candidate,
             });
         }
+    };
+    for row in world.grid.in_box(min, max) {
+        if row.flags.contains(GridFlags::SPECTATOR) {
+            continue;
+        }
+        consider(Candidate {
+            key: row.key,
+            entity: world.index.get(row.key),
+            bounds: Aabb::of_body(row.position, row.half_width * 2.0, row.height),
+            centre: row.position,
+        });
+    }
+    let query = Aabb::new(min, max);
+    for (entity, key, transform, mode, body) in world.players.iter() {
+        if mode.0 == GameMode::Spectator {
+            continue;
+        }
+        let dimensions = body.dimensions();
+        let bounds = Aabb::of_body(transform.translation, dimensions.width, dimensions.height);
+        if !query.intersects(&bounds) {
+            continue;
+        }
+        consider(Candidate {
+            key: *key,
+            entity: Some(entity),
+            bounds,
+            centre: transform.translation,
+        });
     }
     if !owner_near {
         projectile.left_owner = true;
@@ -212,22 +316,23 @@ fn entity_hit(
     best
 }
 
-struct Struck<'a> {
+struct Struck {
     key: EntityUuid,
-    target: &'a GridRow,
+    candidate: Candidate,
+    velocity: DVec3,
     tick: u64,
 }
 
 fn strike(
-    struck: &Struck<'_>,
+    struck: &Struck,
     projectile: &mut Projectile,
     targets: &Targets<'_, '_>,
-    index: &MobIndex,
     types: &ProjectileDamageTypes,
     rules: &DamageTypeRules,
     pending: &mut PendingHits,
+    writes: &mut EntityWrites,
 ) -> bool {
-    let Some(target) = index.get(struck.target.key) else {
+    let Some(target) = struck.candidate.entity else {
         return projectile.kind == ProjectileKind::Snowball;
     };
     let (damage_type, amount) = match projectile.kind {
@@ -247,19 +352,19 @@ fn strike(
         direct: Some(struck.key),
     };
     let hit = Hit::new(amount, source);
-    if projectile.kind == ProjectileKind::Arrow
-        && let Ok((vitals, defence)) = targets.get(target)
-    {
-        let report = preview(
+    let report = targets.get(target).ok().map(|(vitals, defence)| {
+        preview(
             vitals,
             &defence.copied().unwrap_or_default(),
             rules,
             &HurtRules::default(),
             hit,
-        );
-        if report.outcome == HitOutcome::Rejected {
-            return false;
-        }
+        )
+    });
+    if projectile.kind == ProjectileKind::Arrow
+        && report.is_some_and(|report| report.outcome == HitOutcome::Rejected)
+    {
+        return false;
     }
     pending.push(DamageRequest::new(
         target,
@@ -268,6 +373,17 @@ fn strike(
         struck.tick,
         0,
     ));
+    if report.is_some_and(|report| report.outcome == HitOutcome::Full) {
+        writes.push(EntityWrite {
+            target: struck.candidate.key,
+            writer: WriterKey::Entity { key: struck.key },
+            sequence: 0,
+            effect: EntityEffect::Knockback {
+                power: KNOCKBACK_POWER,
+                direction: DVec3::new(-struck.velocity.x, 0.0, -struck.velocity.z),
+            },
+        });
+    }
     true
 }
 
@@ -275,10 +391,8 @@ fn arrow_amount(projectile: &Projectile, key: &EntityUuid, tick: u64) -> f32 {
     let scaled = (projectile.speed * projectile.base_damage).clamp(0.0, f64::from(i32::MAX));
     let mut amount = scaled.ceil() as i64;
     if projectile.critical {
-        let bound = amount / 2 + 1;
-        let extra = i64::from(
-            KeyedStream::new(key, tick).below(bound.clamp(1, i64::from(u32::MAX)) as u32 + 1),
-        );
+        let bound = (amount / 2 + 1).clamp(1, i64::from(u32::MAX)) as u32;
+        let extra = i64::from(KeyedStream::new(key, tick).below(bound.saturating_add(1)));
         amount = amount.saturating_add(extra).min(i64::from(i32::MAX));
     }
     amount as f32

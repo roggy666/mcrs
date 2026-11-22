@@ -6,6 +6,7 @@ use mcrs_minecraft_engine_entity_motion::MotionHold;
 use mcrs_minecraft_engine_entity_motion::MotionId;
 use mcrs_minecraft_engine_entity_motion::MotionKind;
 use mcrs_minecraft_engine_entity_motion::MotionState;
+use mcrs_minecraft_engine_physics::EntityEffect;
 use mcrs_minecraft_engine_physics::EntityWrite;
 use mcrs_minecraft_engine_physics::EntityWrites;
 use mcrs_minecraft_engine_physics::TestScene;
@@ -76,7 +77,11 @@ fn write(scene: &mut TestScene, tick: u64, order: WriteOrder) {
                     target,
                     writer: WriterKey::Entity { key: writer },
                     sequence: index as u32,
-                    effect: DVec3::new(0.1 / 3.0, 0.0, 0.07 * (task as f64 + 1.0)),
+                    effect: EntityEffect::Impulse(DVec3::new(
+                        0.1 / 3.0,
+                        0.0,
+                        0.07 * (task as f64 + 1.0),
+                    )),
                 });
             }
         }
@@ -210,7 +215,7 @@ fn cmp_015_a_write_adds_its_impulse_to_the_velocity_of_its_target_and_wakes_it()
                 key: EntityUuid::from_u128(0),
             },
             sequence: 0,
-            effect,
+            effect: EntityEffect::Impulse(effect),
         });
     scene.step();
     let after = scene.state(target).expect("the target stays");

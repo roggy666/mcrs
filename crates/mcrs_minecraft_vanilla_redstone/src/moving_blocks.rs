@@ -13,7 +13,7 @@ use mcrs_minecraft_engine::dimension_change::Arrival;
 use mcrs_minecraft_engine::teleport::TeleportState;
 use mcrs_minecraft_engine::world_kinds::WorldKinds;
 use mcrs_minecraft_engine_entity_motion::MotionState;
-use mcrs_minecraft_engine_physics::{EntityWrite, EntityWrites};
+use mcrs_minecraft_engine_physics::{EntityEffect, EntityWrite, EntityWrites};
 use mcrs_minecraft_engine_world::entity::physics::Transform;
 use mcrs_minecraft_engine_world::entity::player::Player;
 use mcrs_minecraft_engine_world::session::Owner;
@@ -183,7 +183,7 @@ pub(crate) fn push_entities_with_moving_blocks<B>(
                         pos: YzxPos::from(origin),
                     },
                     sequence,
-                    effect,
+                    effect: EntityEffect::Impulse(effect),
                 });
                 sequence = sequence.saturating_add(1);
             }

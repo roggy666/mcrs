@@ -657,19 +657,49 @@ with the speed 1.6 (test `prj_mob_001_a_skeleton_shoots_an_arrow_at_its_target`)
 arrow launched at a pig lowers its health by the amount of PRJ-ENT-002 and goes away (test
 `prj_ent_002_an_arrow_hits_a_pig_for_the_amount_of_its_speed`); **E14** an arrow launched at a
 stone wall stops before the wall and stays (test
-`prj_blk_001_an_arrow_stops_in_a_wall_and_stays`).
+`prj_blk_001_an_arrow_stops_in_a_wall_and_stays`); **E15** a survival player draws a bow for 20
+ticks and releases it: an arrow leaves at the speed 3 with the critical flag, and one arrow leaves
+the inventory (test `prj_lch_001_a_full_draw_shoots_a_critical_arrow_and_spends_one`); **E16** an
+arrow launched at a survival player lowers its health and the player gets the health packet
+(test `prj_ent_001_an_arrow_hits_a_player_and_the_owner_gets_its_health`); **E17** a pig that a
+full arrow hit takes the knockback of PRJ-ENT-007 (test
+`prj_ent_007_a_full_arrow_hit_pushes_the_pig_away`); **E18** a player that touches an arrow of
+the status `allowed` in a block picks it up (test
+`prj_pck_001_a_player_picks_up_an_arrow_stuck_in_a_block`).
 
 ## 13. Intentional deviations
 
-### PRJ-DEV-001: Water and bubble columns do not act on a projectile
+### PRJ-DEV-001: Bubble columns and fire do not act on a projectile
 
-- **Rule**: PRJ-FLT-001 step 3, PRJ-FLT-003, PRJ-FLT-004.
-- **Reference**: the water drag, the bubble column push and the fire clearing of a projectile.
-- **Reason**: the motion pass has no water state for a lifeless entity yet; the server uses the
-  air drag in water. The owner accepts this until the fluid rules of lifeless entities exist.
-- **Visible to the client**: yes, an arrow in water flies as in air.
+- **Rule**: PRJ-FLT-003 (the bubble column), PRJ-FLT-004, PRJ-ENT-003 steps 2 and 3.
+- **Reference**: a bubble column pushes a projectile, rain and water clear its fire, and a
+  burning arrow ignites its target.
+- **Reason**: the server has no fire state on an entity yet, and the motion pass does not
+  expose the bubble column of a block to a lifeless entity. The water drag of PRJ-FLT-001 and
+  PRJ-FLT-002 applies: a projectile in a fluid block uses its water drag.
+- **Visible to the client**: yes, an arrow in a bubble column does not rise or sink.
 - **Bug reference**: none.
 - **Test**: none; a differential test reports the difference.
+
+### PRJ-DEV-002: The shooter motion is not inherited
+
+- **Rule**: PRJ-LCH-004.
+- **Reference**: a projectile adds the motion of the shooter to its launch velocity.
+- **Reason**: the server does not keep the movement of the last movement packet of a player as a
+  velocity; the launch uses the look of the player only. A mob stands still when it shoots.
+- **Visible to the client**: yes, an arrow of a running player flies as from a standing one.
+- **Bug reference**: none.
+- **Test**: none; a differential test reports the difference.
+
+### PRJ-DEV-003: A player death has no respawn yet
+
+- **Rule**: `entity-damage.md`, DMG-DTH-002.
+- **Reference**: a player at health 0 sees the death screen and respawns on request.
+- **Reason**: the server sends the health to the owner (DMG-NET-005) and keeps the player
+  entity; the respawn request is a separate issue of `docs/damage.md`.
+- **Visible to the client**: yes, the death screen stays until the client leaves.
+- **Bug reference**: none.
+- **Test**: none.
 
 ## 14. Relation to other documents
 

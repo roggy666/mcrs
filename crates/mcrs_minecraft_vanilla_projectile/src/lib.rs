@@ -1,11 +1,22 @@
 mod aim;
+mod bow;
 mod flight;
 mod launch;
+mod pickup;
+mod player_hits;
 mod projectile;
 mod projectile_plugin;
+mod sounds;
 
+pub use aim::launch_velocity;
 pub use aim::mob_shot;
+pub use bow::Drawing;
+pub use bow::bow_power;
+pub use launch::LaunchSound;
 pub use launch::ProjectileLaunch;
+pub use launch::player_id;
+pub use pickup::RestingArrows;
+pub use projectile::Pickup;
 pub use projectile::Projectile;
 pub use projectile::ProjectileKind;
 pub use projectile_plugin::ProjectilePlugin;

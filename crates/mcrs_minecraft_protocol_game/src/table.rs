@@ -17,6 +17,7 @@ mcrs_minecraft_protocol::extend_packet_table! {
         "container_set_slot" => ClientboundContainerSetSlot,
         "custom_chat_completions" => ClientboundCustomChatCompletions<'a>,
         "damage_event" => ClientboundDamageEvent,
+        "set_health" => ClientboundSetHealth,
         "disguised_chat" => ClientboundDisguisedChat<'a>,
         "entity_event" => ClientboundEntityEvent,
         "entity_position_sync" => ClientboundEntityPositionSync,

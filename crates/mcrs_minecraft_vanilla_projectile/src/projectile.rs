@@ -26,11 +26,14 @@ impl ProjectileKind {
             Self::Snowball => &EntityTypeData::SNOWBALL,
         }
     }
+}
 
-    #[must_use]
-    pub const fn air_drag(self) -> f32 {
-        0.99
-    }
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub enum Pickup {
+    #[default]
+    Disallowed,
+    Allowed,
+    CreativeOnly,
 }
 
 #[derive(Component, Clone, Copy, Debug, PartialEq)]
@@ -45,6 +48,7 @@ pub struct Projectile {
     pub in_ground: bool,
     pub shake: u8,
     pub despawn: u16,
+    pub pickup: Pickup,
 }
 
 impl Projectile {
@@ -65,6 +69,7 @@ impl Projectile {
             in_ground: false,
             shake: 0,
             despawn: 0,
+            pickup: Pickup::Disallowed,
         }
     }
 

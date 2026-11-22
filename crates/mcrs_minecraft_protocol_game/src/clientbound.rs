@@ -140,6 +140,13 @@ pub struct ClientboundContainerSetSlot {
 }
 
 #[derive(Clone, Debug, PartialEq, Encode, Decode)]
+pub struct ClientboundSetHealth {
+    pub health: f32,
+    pub food: VarInt,
+    pub saturation: f32,
+}
+
+#[derive(Clone, Debug, PartialEq, Encode, Decode)]
 pub struct ClientboundDamageEvent {
     pub entity_id: VarInt,
     pub damage_type: VarInt,

@@ -12,6 +12,7 @@ use crate::player_dimensions::PlayerBody;
 use crate::use_item_on_request::{
     BlockUseSet, UseItemOnConsumed, UseItemOnRequest, handle_use_item_on,
 };
+use crate::use_item_request::{ReleaseItemRequest, UseItemRequest, handle_use_item};
 use bevy_app::{App, FixedPostUpdate, FixedUpdate, Plugin};
 use bevy_ecs::entity::Entity;
 use bevy_ecs::message::{Message, MessageReader, MessageWriter};
@@ -77,10 +78,13 @@ impl Plugin for BlockBreakPlugin {
         app.add_message::<BlockActionRequest>();
         app.add_message::<UseItemOnRequest>();
         app.add_message::<UseItemOnConsumed>();
+        app.add_message::<UseItemRequest>();
+        app.add_message::<ReleaseItemRequest>();
         app.add_message::<BlockActionAck>();
         app.add_message::<BlockBroken>();
         app.add_observer(handle_player_action);
         app.add_observer(handle_use_item_on);
+        app.add_observer(handle_use_item);
         app.init_resource::<Diggers>();
         if let Err(error) = app.try_register_required_components::<Player, BreakSession>() {
             tracing::error!("a player does not require its dig session: {error}");
@@ -547,10 +551,18 @@ fn break_blocks(
 fn handle_player_action(
     on: On<Received<ServerboundPlayerAction>>,
     mut writer: MessageWriter<BlockActionRequest>,
+    mut releases: MessageWriter<ReleaseItemRequest>,
 ) {
     let Some(p) = on.packet() else {
         return;
     };
+    if p.action == PlayerAction::ReleaseUseItem {
+        releases.write(ReleaseItemRequest {
+            entity: on.entity,
+            sequence: p.sequence,
+        });
+        return;
+    }
     if matches!(
         p.action,
         PlayerAction::StartDestroyBlock

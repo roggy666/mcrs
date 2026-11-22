@@ -22,8 +22,10 @@ mod test_scene;
 
 pub use entity_motion_plugin::EntityMotionPlugin;
 pub use entity_physics_plugin::EntityPhysicsPlugin;
+pub use entity_writes::EntityEffect;
 pub use entity_writes::EntityWrite;
 pub use entity_writes::EntityWrites;
+pub use entity_writes::apply_effect;
 #[cfg(feature = "testing")]
 pub use floor::FLOOR;
 pub use mob_body::mob_body;

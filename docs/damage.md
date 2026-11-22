@@ -151,4 +151,8 @@ Rules:
 ## 7. Open points
 
 - The player attack depends on #93 and #95.
+- A player carries `Vitals` and a `HitRecord` from the vanilla projectile plugin (an observer on
+  the player entity), and `apply_hits` takes a target by its motion state or, for a player, by
+  its UUID and transform. The owner gets `set_health` and `damage_event` from `Damaged`
+  (DMG-NET-005). A respawn request does not exist yet: a dead player keeps its entity.
 - The save of `Vitals` goes through the persisted registry (#159). No rule states the save of a mob.

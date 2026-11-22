@@ -4,6 +4,7 @@ use mcrs_minecraft_numeric as numeric;
 
 use crate::Aabb;
 use crate::BlockAction;
+use crate::BlockFlags;
 use crate::Body;
 use crate::BodyView;
 use crate::Category;
@@ -411,9 +412,17 @@ fn tick_projectile<W: CollisionWorld, B: BodyView>(
     };
     let table = &view.tables.collision;
     let gravity = if entity.no_gravity { 0.0 } else { row.gravity };
-    let drag = f64::from(rule.air_drag);
     let body = &mut entity.body;
     let start = body.position;
+    let in_water = table
+        .state(state_at(view.world, block_at(start)))
+        .flags
+        .contains(BlockFlags::FLUID);
+    let drag = f64::from(if in_water {
+        rule.water_drag
+    } else {
+        rule.air_drag
+    });
     let mut outcome = TickOutcome::default();
     if segment_clip(view.world, table, start, start).is_some() {
         body.velocity = DVec3::ZERO;
@@ -427,6 +436,8 @@ fn tick_projectile<W: CollisionWorld, B: BodyView>(
     }
     if rule.gravity_first {
         body.velocity.y -= gravity;
+        body.velocity *= drag;
+    } else if in_water {
         body.velocity *= drag;
     }
     let velocity = body.velocity;
@@ -447,7 +458,9 @@ fn tick_projectile<W: CollisionWorld, B: BodyView>(
         None => {
             body.position = end;
             if !rule.gravity_first {
-                body.velocity *= drag;
+                if !in_water {
+                    body.velocity *= drag;
+                }
                 body.velocity.y -= gravity;
             }
         }
