@@ -28,6 +28,7 @@ pub struct MeleeHit {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RangedShot {
     pub attacker: EntityId,
+    pub attacker_key: EntityUuid,
     pub target: EntityId,
     pub power: f32,
 }

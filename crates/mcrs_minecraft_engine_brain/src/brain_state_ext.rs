@@ -161,6 +161,7 @@ impl BrainState {
             if let RangedStep::Attack { power } = reflex.tick(sees, distance) {
                 shot = self.target.get().map(|target| RangedShot {
                     attacker: id,
+                    attacker_key: state.key,
                     target,
                     power,
                 });

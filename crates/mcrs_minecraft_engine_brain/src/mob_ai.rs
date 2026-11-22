@@ -3,6 +3,7 @@ use std::time::Instant;
 use bevy_ecs::change_detection::DetectChangesMut;
 use bevy_ecs::entity::Entity;
 use bevy_ecs::resource::Resource;
+use bevy_ecs::system::ParamSet;
 use bevy_ecs::system::Query;
 use bevy_ecs::world::Mut;
 use bevy_tasks::TaskPool;
@@ -74,12 +75,15 @@ pub(crate) type Thinking<'w, 's> = Query<
     (
         Entity,
         &'static MotionId,
-        &'static mut MotionState,
+        &'static MotionState,
         Option<&'static MobAttributes>,
         &'static mut BrainState,
         &'static mut MobIntent,
     ),
 >;
+
+pub(crate) type Hitting<'w, 's> =
+    Query<'w, 's, (&'static mut MotionState, &'static mut BrainState)>;
 
 type Entities = FxHashMap<EntityId, Entity>;
 
@@ -231,7 +235,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         &mut self,
         world: &BlockGoalWorld<'_, V>,
         players: PlayerTable,
-        mobs: &mut Thinking<'_, '_>,
+        mobs: &mut ParamSet<'_, '_, (Thinking<'_, '_>, Hitting<'_, '_>)>,
         changes: &mut MobChanges,
         threads: &mut Parallel<BrainOut>,
     ) {
@@ -255,14 +259,14 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             world,
         };
         let shared = &*threads;
-        mobs.par_iter_mut().for_each_init(
+        mobs.p0().par_iter_mut().for_each_init(
             || shared.borrow_local_mut(),
             |out, (entity, id, state, attributes, brain, intent)| {
                 pass.think(out, entity, id.0, &state.0, attributes, brain, intent);
             },
         );
         let ran = Instant::now();
-        self.publish(threads, players, mobs, changes, tick);
+        self.publish(threads, players, &mut mobs.p1(), changes, tick);
         self.stats.life_cycle = followed.duration_since(started);
         self.stats.tile_tasks = ran.duration_since(followed);
         self.stats.publish = ran.elapsed();
@@ -330,7 +334,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         &mut self,
         threads: &mut Parallel<BrainOut>,
         players: PlayerTable,
-        mobs: &mut Thinking<'_, '_>,
+        mobs: &mut Hitting<'_, '_>,
         changes: &mut MobChanges,
         tick: u64,
     ) {
@@ -382,6 +386,9 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         for proposed in gathered.proposals.drain(..) {
             self.grant(proposed, &entities, mobs, tick, &mut gathered.facts);
         }
+        gathered
+            .shots
+            .sort_by_key(|shot| (shot.attacker_key, shot.target));
         self.shots
             .extend(gathered.shots.drain(..).map(|shot| RangedAttack {
                 attacker: shot.attacker,
@@ -427,7 +434,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         &mut self,
         hit: MeleeHit,
         entities: &Entities,
-        mobs: &mut Thinking<'_, '_>,
+        mobs: &mut Hitting<'_, '_>,
         changes: &mut MobChanges,
         tick: u64,
         facts: &mut Vec<Fact>,
@@ -435,7 +442,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let Some(amount) = entities
             .get(&hit.attacker)
             .and_then(|entity| mobs.get(*entity).ok())
-            .map(|(_, _, _, _, brain, _)| brain.attack_damage)
+            .map(|(_, brain)| brain.attack_damage)
         else {
             return;
         };
@@ -450,7 +457,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
                 let Some(&entity) = entities.get(&target) else {
                     return;
                 };
-                let Ok((_, _, mut state, _, mut brain, _)) = mobs.get_mut(entity) else {
+                let Ok((mut state, mut brain)) = mobs.get_mut(entity) else {
                     return;
                 };
                 let outcome = hurt_mob(
@@ -477,7 +484,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         &mut self,
         proposed: Proposed,
         entities: &Entities,
-        mobs: &mut Thinking<'_, '_>,
+        mobs: &mut Hitting<'_, '_>,
         tick: u64,
         facts: &mut Vec<Fact>,
     ) {
@@ -510,18 +517,14 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         proposer: EntityId,
         partner: EntityId,
         entities: &Entities,
-        mobs: &mut Thinking<'_, '_>,
+        mobs: &mut Hitting<'_, '_>,
         tick: u64,
     ) {
         let (Some(&mine), Some(&theirs)) = (entities.get(&proposer), entities.get(&partner)) else {
             return;
         };
-        let Ok(
-            [
-                (_, _, my_state, _, mut my_brain, _),
-                (_, _, their_state, _, mut their_brain, _),
-            ],
-        ) = mobs.get_many_mut([mine, theirs])
+        let Ok([(my_state, mut my_brain), (their_state, mut their_brain)]) =
+            mobs.get_many_mut([mine, theirs])
         else {
             return;
         };
@@ -579,7 +582,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         reach: f32,
         receivers: Receivers,
         entities: &Entities,
-        mobs: &mut Thinking<'_, '_>,
+        mobs: &mut Hitting<'_, '_>,
         tick: u64,
         facts: &mut Vec<Fact>,
     ) {
@@ -589,7 +592,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let Some((feet, kind, owner)) = entities
             .get(&proposer)
             .and_then(|entity| mobs.get(*entity).ok())
-            .map(|(_, _, state, _, brain, _)| (state.0.body.position, brain.kind, brain.owner))
+            .map(|(state, brain)| (state.0.body.position, brain.kind, brain.owner))
         else {
             return;
         };
@@ -616,7 +619,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             let Some(&entity) = entities.get(&receiver) else {
                 continue;
             };
-            let Ok((_, _, _, _, mut brain, _)) = mobs.get_mut(entity) else {
+            let Ok((_, mut brain)) = mobs.get_mut(entity) else {
                 continue;
             };
             if brain.target.is_none() && brain.owner == owner {

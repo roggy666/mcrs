@@ -14,6 +14,7 @@ use bevy_ecs::schedule::common_conditions::resource_exists;
 use bevy_ecs::schedule::common_conditions::resource_exists_and_changed;
 use bevy_ecs::system::Commands;
 use bevy_ecs::system::Local;
+use bevy_ecs::system::ParamSet;
 use bevy_ecs::system::Query;
 use bevy_ecs::system::Res;
 use bevy_ecs::system::ResMut;
@@ -55,6 +56,7 @@ use crate::RangedAttack;
 use crate::ai_window::AiWindow;
 use crate::mob_ai::Arrival;
 use crate::mob_ai::BrainOut;
+use crate::mob_ai::Hitting;
 use crate::mob_ai::Thinking;
 use crate::panic_causes_in::panic_causes_in;
 use crate::player_table::Players;
@@ -219,7 +221,7 @@ fn prepare<B>(
     tables: Res<PhysicsTables>,
     players: Players,
     stacks: Stacks,
-    mut mobs: Thinking,
+    mut mobs: ParamSet<(Thinking, Hitting)>,
     mut changes: ResMut<MobChanges>,
     mut ai: ResMut<MobAi<B>>,
     mut threads: Local<Parallel<BrainOut>>,
