@@ -112,6 +112,12 @@ impl Follower {
         };
     }
 
+    pub fn set_speed_modifier(&mut self, speed_modifier: f32) {
+        if let Some(route) = self.route.as_mut() {
+            route.speed_modifier = speed_modifier;
+        }
+    }
+
     pub fn step(&mut self, input: &ControlInput) -> FollowerStep {
         let Some(route) = self.route else {
             return FollowerStep::default();

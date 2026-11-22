@@ -9,4 +9,5 @@ pub struct Mob {
     pub looks: MobLooks,
     pub custom_name: Option<String>,
     pub tags: Vec<String>,
+    pub baby: bool,
 }

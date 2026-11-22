@@ -149,6 +149,8 @@ impl Plugin for VanillaMobBrainPlugin {
         app.add_dimension_plugin(MobBrainPlugin::new(
             vanilla_brains::vanilla_brain,
             PANIC_CAUSES,
+            mcrs_minecraft_vanilla_mobs::item_tables,
+            mcrs_minecraft_vanilla_mobs::kind_table,
         ));
     }
 }

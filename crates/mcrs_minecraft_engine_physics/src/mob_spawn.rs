@@ -81,6 +81,7 @@ pub(crate) fn spawn_mob_entities(
             looks,
             custom_name: request.extras.custom_name,
             tags: request.extras.tags,
+            baby: request.extras.baby,
         };
         let entity = commands
             .spawn((

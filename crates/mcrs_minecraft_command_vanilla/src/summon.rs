@@ -92,14 +92,7 @@ enum Summon {
 }
 
 fn server_mob(entity_type: EntityType) -> Option<&'static EntityTypeData> {
-    match entity_type {
-        EntityType::Pig
-        | EntityType::Cow
-        | EntityType::Sheep
-        | EntityType::Chicken
-        | EntityType::ZombifiedPiglin => EntityTypeData::of(entity_type),
-        _ => None,
-    }
+    EntityTypeData::of(entity_type).filter(|kind| kind.mob().is_some())
 }
 
 fn read_summon(
@@ -259,6 +252,7 @@ fn read_keys(compound: NbtCompound) -> Option<Summoned> {
                 }
             }
             ("NoAI", NbtTag::Byte(value)) => extras.no_ai = value != 0,
+            ("Age", NbtTag::Int(value)) => extras.baby = value < 0,
             ("CustomName", NbtTag::String(name)) => extras.custom_name = Some(name),
             ("Tags", NbtTag::List(tags)) => {
                 extras.tags = tags

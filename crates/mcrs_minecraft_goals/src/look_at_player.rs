@@ -1,4 +1,3 @@
-use glam::DVec3;
 use mcrs_minecraft_brain::Intents;
 use mcrs_minecraft_brain::LookIntent;
 use mcrs_minecraft_brain::PlayerFlags;
@@ -86,11 +85,7 @@ pub fn nearest_player<'a, W: GoalWorld + ?Sized>(
     range: f64,
 ) -> Option<&'a PlayerRow> {
     let view = turn.view;
-    let eye = DVec3::new(
-        view.position.x,
-        view.position.y + f64::from(view.eye_height),
-        view.position.z,
-    );
+    let eye = view.eye(turn.kinds.dimensions(view).eye_height);
     let mut best: Option<(f64, &PlayerRow)> = None;
     for row in turn.players {
         if !row.is_qualified() || row.vehicle == Some(view.mob) {

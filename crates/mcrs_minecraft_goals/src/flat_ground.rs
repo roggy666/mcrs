@@ -61,7 +61,9 @@ impl GoalWorld for FlatGround {
                 walk_value: 0.0,
             },
             0 => GroundCell {
-                flags: CellFlags::STABLE_FLOOR.union(CellFlags::NO_COLLISION),
+                flags: CellFlags::STABLE_FLOOR
+                    .union(CellFlags::NO_COLLISION)
+                    .union(CellFlags::GRASS_BELOW),
                 malus: 0.0,
                 walk_value: 10.0,
             },

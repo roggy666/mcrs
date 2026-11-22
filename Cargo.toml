@@ -211,6 +211,7 @@ mcrs_minecraft_vanilla_item_entity = { path = "crates/mcrs_minecraft_vanilla_ite
 mcrs_minecraft_vanilla_falling_block = { path = "crates/mcrs_minecraft_vanilla_falling_block" }
 mcrs_minecraft_vanilla_block_place = { path = "crates/mcrs_minecraft_vanilla_block_place" }
 mcrs_minecraft_vanilla_attributes = { path = "crates/mcrs_minecraft_vanilla_attributes" }
+mcrs_minecraft_vanilla_mobs = { path = "crates/mcrs_minecraft_vanilla_mobs" }
 mcrs_minecraft_vanilla_inventory = { path = "crates/mcrs_minecraft_vanilla_inventory" }
 mcrs_minecraft_vanilla_swing = { path = "crates/mcrs_minecraft_vanilla_swing" }
 mcrs_minecraft_player_holders = { path = "crates/mcrs_minecraft_player_holders" }

@@ -5,6 +5,8 @@ use alloc::vec::Vec;
 use crate::Fact;
 use crate::MobView;
 use crate::PlayerTable;
+use crate::TileIndex;
+use crate::TileViews;
 use mcrs_minecraft_entity_key::TileKey;
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -18,6 +20,7 @@ pub struct Replica {
 struct TileVersion {
     tick: u64,
     views: Vec<MobView>,
+    index: TileIndex,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -32,17 +35,36 @@ struct TickFacts {
     tiles: BTreeMap<TileKey, Vec<Fact>>,
 }
 
-impl Replica {
-    pub fn publish_tile(&mut self, tick: u64, tile: TileKey, mut views: Vec<MobView>) {
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct TileSnapshot {
+    pub views: Vec<MobView>,
+    pub index: TileIndex,
+}
+
+impl TileSnapshot {
+    #[must_use]
+    pub fn new(tile: TileKey, mut views: Vec<MobView>) -> Self {
         views.sort_by_key(|view| view.key);
+        let index = TileIndex::build(tile, &views);
+        Self { views, index }
+    }
+}
+
+impl Replica {
+    pub fn publish_tile(&mut self, tick: u64, tile: TileKey, snapshot: TileSnapshot) {
         let versions = self.tiles.entry(tile).or_default();
         if let Some(last) = versions.back_mut()
             && last.tick == tick
         {
-            last.views = views;
+            last.views = snapshot.views;
+            last.index = snapshot.index;
             return;
         }
-        versions.push_back(TileVersion { tick, views });
+        versions.push_back(TileVersion {
+            tick,
+            views: snapshot.views,
+            index: snapshot.index,
+        });
     }
 
     pub fn publish_players(&mut self, tick: u64, table: PlayerTable) {
@@ -77,11 +99,23 @@ impl Replica {
     }
 
     #[must_use]
+    pub fn tile(&self, tile: TileKey, tick: u64) -> Option<TileViews<'_>> {
+        let version = self
+            .tiles
+            .get(&tile)?
+            .iter()
+            .rev()
+            .find(|version| version.tick <= tick)?;
+        Some(TileViews {
+            tile,
+            views: &version.views,
+            index: &version.index,
+        })
+    }
+
+    #[must_use]
     pub fn views(&self, tile: TileKey, tick: u64) -> &[MobView] {
-        self.tiles
-            .get(&tile)
-            .and_then(|versions| versions.iter().rev().find(|version| version.tick <= tick))
-            .map_or(&[], |version| version.views.as_slice())
+        self.tile(tile, tick).map_or(&[], |found| found.views)
     }
 
     #[must_use]

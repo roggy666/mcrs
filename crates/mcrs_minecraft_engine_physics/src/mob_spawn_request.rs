@@ -16,6 +16,7 @@ pub struct MobExtras {
     pub no_ai: bool,
     pub custom_name: Option<String>,
     pub tags: Vec<String>,
+    pub baby: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

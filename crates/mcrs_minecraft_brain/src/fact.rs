@@ -1,8 +1,10 @@
 use mcrs_minecraft_entity_key::EntityId;
+use mcrs_minecraft_entity_key::EntityUuid;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Fact {
     pub mob: EntityId,
+    pub key: EntityUuid,
     pub kind: FactKind,
 }
 
@@ -17,4 +19,7 @@ pub enum FactKind {
     LoveOrBaby,
     Resumed,
     Dropped,
+    Alerted,
+    TargetLost,
+    Tamed,
 }

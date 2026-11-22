@@ -27,7 +27,8 @@ impl PathTrack {
         match self.route {
             Route::None => false,
             Route::Walking => {
-                view.path.ticket != self.issued || view.path.progress == Progress::Running
+                let applied = view.path();
+                applied.ticket != self.issued || applied.progress == Progress::Running
             }
         }
     }
@@ -39,24 +40,20 @@ impl PathTrack {
         speed_modifier: f32,
         intents: &mut Intents,
     ) {
+        match turn.world.route(turn.view.position, BlockPos::from(target)) {
+            Some(end) => self.walk(end, speed_modifier, intents),
+            None => self.clear(intents),
+        }
+    }
+
+    pub fn walk(&mut self, end: DVec3, speed_modifier: f32, intents: &mut Intents) {
         self.issued = self.issued.next();
-        let ticket = self.issued;
-        intents.path = Some(
-            match turn.world.route(turn.view.position, BlockPos::from(target)) {
-                Some(end) => {
-                    self.route = Route::Walking;
-                    PathIntent::Walk {
-                        ticket,
-                        target: end,
-                        speed_modifier,
-                    }
-                }
-                None => {
-                    self.route = Route::None;
-                    PathIntent::Clear { ticket }
-                }
-            },
-        );
+        self.route = Route::Walking;
+        intents.path = Some(PathIntent::Walk {
+            ticket: self.issued,
+            target: end,
+            speed_modifier,
+        });
     }
 
     pub fn clear(&mut self, intents: &mut Intents) {

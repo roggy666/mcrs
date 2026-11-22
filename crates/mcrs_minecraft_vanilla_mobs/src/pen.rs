@@ -1,46 +1,54 @@
-use alloc::collections::BTreeMap;
-use alloc::vec::Vec;
-use core::hash::Hash;
-use core::hash::Hasher;
+use std::collections::BTreeMap;
+use std::hash::Hash;
+use std::hash::Hasher;
 
 use glam::DVec3;
+use glam::Vec3;
 use mcrs_minecraft_brain::AiDriver;
 use mcrs_minecraft_brain::Applied;
 use mcrs_minecraft_brain::Cadence;
-use mcrs_minecraft_brain::ControlFlags;
 use mcrs_minecraft_brain::DamageCause;
 use mcrs_minecraft_brain::DamageRecord;
 use mcrs_minecraft_brain::Decision;
+use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::Fact;
 use mcrs_minecraft_brain::FactKind;
+use mcrs_minecraft_brain::HurtBy;
+use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::KeyedRandom;
+use mcrs_minecraft_brain::KindTable;
 use mcrs_minecraft_brain::LookIntent;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::MobView;
 use mcrs_minecraft_brain::Panic;
 use mcrs_minecraft_brain::Part;
 use mcrs_minecraft_brain::PathIntent;
-use mcrs_minecraft_brain::PlayerFlags;
 use mcrs_minecraft_brain::PlayerRow;
 use mcrs_minecraft_brain::PlayerTable;
 use mcrs_minecraft_brain::Progress;
 use mcrs_minecraft_brain::Stage;
 use mcrs_minecraft_brain::StageConfig;
+use mcrs_minecraft_brain::Tables;
 use mcrs_minecraft_brain::TickContext;
 use mcrs_minecraft_brain::Ticket;
+use mcrs_minecraft_brain::TileSnapshot;
 use mcrs_minecraft_brain::TileWork;
+use mcrs_minecraft_brain::TurnScratch;
 use mcrs_minecraft_brain::WorldSeed;
-use mcrs_minecraft_entity::EntityTypeData;
+use mcrs_minecraft_entity::entity_type_keys::EntityType;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::TileKey;
+use mcrs_minecraft_goals::FlatGround;
+use mcrs_minecraft_goals::IDLE_RESET_RANGE;
+use mcrs_minecraft_goals::Pond;
+use mcrs_minecraft_goals::STROLL_IDLE_LIMIT;
+use mcrs_minecraft_goals::TableBrain;
 use mcrs_voxel::BlockPos;
 
-use crate::FlatGround;
-use crate::IDLE_RESET_RANGE;
-use crate::PigBrain;
-use crate::Pond;
-use crate::STROLL_IDLE_LIMIT;
+use crate::PIG;
+use crate::kind;
+use crate::kind_table;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum IdleRule {
@@ -63,7 +71,9 @@ pub struct PenConfig {
 pub struct PigPen {
     config: PenConfig,
     ground: FlatGround,
-    driver: AiDriver<PigBrain>,
+    driver: AiDriver<TableBrain>,
+    kinds: KindTable,
+    items: ItemTables,
     players: Vec<PlayerRow>,
     pigs: Vec<HostPig>,
     facts: BTreeMap<TileKey, Vec<Fact>>,
@@ -110,6 +120,7 @@ const PLACE: Part = Part(0xF001);
 const PIG_SPEED: f64 = 0.25;
 const GRASS_WALK: f64 = 2.2026;
 const FAR_IDLE: u32 = 1000;
+const PIG_FOLLOW_RANGE: f32 = 16.0;
 
 impl PigPen {
     #[must_use]
@@ -147,22 +158,19 @@ impl PigPen {
                 mob(index),
                 pig.key,
                 pig.cadence,
-                PigBrain::default(),
+                TableBrain::new(&PIG),
             );
         }
         let players = (0..config.players)
             .map(|index| {
                 let key = EntityUuid::from_u128(u128::from(index) << 64 | 1);
                 let mut random = KeyedRandom::new(seed, &key, 0, PLACE);
-                PlayerRow {
-                    player: EntityId(u64::from(index)),
+                PlayerRow::standing(
+                    EntityId(u64::from(index)),
                     key,
-                    position: DVec3::new(random.unit() * side, 0.0, random.unit() * side),
-                    eye_height: EntityTypeData::PLAYER.eye_height,
-                    flags: PlayerFlags::ALIVE,
-                    visibility: 1.0,
-                    vehicle: None,
-                }
+                    DVec3::new(random.unit() * side, 0.0, random.unit() * side),
+                    1.62,
+                )
             })
             .collect();
         Self {
@@ -172,6 +180,8 @@ impl PigPen {
                 pond: None,
             },
             driver,
+            kinds: kind_table(),
+            items: ItemTables::default(),
             players,
             pigs,
             facts: BTreeMap::new(),
@@ -182,11 +192,15 @@ impl PigPen {
 
     pub fn step(
         &mut self,
-        run: impl FnOnce(&mut [TileWork<'_, PigBrain>], &TickContext<'_, FlatGround>),
+        run: impl FnOnce(&mut [TileWork<'_, TableBrain>], &TickContext<'_, FlatGround>),
     ) -> PenTick {
         let tick = self.driver.begin_tick();
         self.publish();
-        let decisions = self.driver.run_stage(&self.ground, run) as u64;
+        let tables = Tables {
+            items: &self.items,
+            kinds: &self.kinds,
+        };
+        let decisions = self.driver.run_stage(&self.ground, &tables, run) as u64;
         self.decisions += decisions;
         for issued in self.driver.take_due() {
             for decision in issued.tiles.values().flatten() {
@@ -203,7 +217,7 @@ impl PigPen {
     }
 
     #[must_use]
-    pub const fn stage(&self) -> &Stage<PigBrain> {
+    pub const fn stage(&self) -> &Stage<TableBrain> {
         self.driver.stage()
     }
 
@@ -249,10 +263,14 @@ impl PigPen {
     pub fn hurt(&mut self, index: usize, cause: DamageCause) {
         let tick = self.driver.tick();
         if let Some(pig) = self.pigs.get_mut(index) {
-            pig.damage = Some(DamageRecord { tick, cause });
+            pig.damage = Some(DamageRecord {
+                tick: tick as u32,
+                cause,
+            });
             pig.idle_time = 0;
             self.facts.entry(pig.tile).or_default().push(Fact {
                 mob: mob(index),
+                key: pig.key,
                 kind: FactKind::Hurt,
             });
         }
@@ -308,9 +326,10 @@ impl PigPen {
                 .push(view(index, pig, in_water));
         }
         for (tile, views) in tiles {
-            self.driver.publish_tile(tile, views);
+            self.driver
+                .publish_tile(tile, TileSnapshot::new(tile, views));
         }
-        for (tile, facts) in core::mem::take(&mut self.facts) {
+        for (tile, facts) in std::mem::take(&mut self.facts) {
             self.driver.publish_facts(tile, facts);
         }
         self.driver
@@ -403,7 +422,7 @@ impl PigPen {
             pig.idle_time = idle_time;
             if KeyedRandom::new(seed, &pig.key, tick, HURT).chance(self.config.hurt_chance) {
                 pig.damage = Some(DamageRecord {
-                    tick,
+                    tick: tick as u32,
                     cause: DamageCause::Panic,
                 });
                 pig.idle_time = 0;
@@ -414,10 +433,11 @@ impl PigPen {
                 self.moves.push((mob, pig.tile));
             }
             for kind in facts.into_iter().flatten() {
-                self.facts
-                    .entry(pig.tile)
-                    .or_default()
-                    .push(Fact { mob, kind });
+                self.facts.entry(pig.tile).or_default().push(Fact {
+                    mob,
+                    key: pig.key,
+                    kind,
+                });
             }
         }
         self.driver.relocate_all(self.moves.drain(..));
@@ -446,9 +466,10 @@ pub enum HashScope {
     Decisions,
 }
 
-pub fn run_tiles(work: &mut [TileWork<'_, PigBrain>], cx: &TickContext<'_, FlatGround>) {
+pub fn run_tiles(work: &mut [TileWork<'_, TableBrain>], cx: &TickContext<'_, FlatGround>) {
+    let mut scratch = TurnScratch::default();
     for task in work {
-        task.run(cx);
+        task.run(cx, &mut scratch);
     }
 }
 
@@ -475,21 +496,31 @@ fn view(index: usize, pig: &HostPig, in_water: bool) -> MobView {
         (pig.panic == Panic::Panicking, MobFlags::IN_PANIC),
         (in_water, MobFlags::IN_WATER),
         (pig.on_fire, MobFlags::ON_FIRE),
+        (
+            pig.path.progress == Progress::Running,
+            MobFlags::PATH_RUNNING,
+        ),
     ];
-    let flags = marks.into_iter().filter(|(set, _)| *set).fold(
-        MobFlags::ALIVE.union(MobFlags::ON_GROUND),
-        |flags, (_, flag)| flags.union(flag),
-    );
+    let flags = MobFlags::ALIVE
+        .union(MobFlags::ON_GROUND)
+        .union(MobFlags::of(marks));
     MobView {
         mob: mob(index),
         key: pig.key,
         position: pig.position,
-        eye_height: EntityTypeData::PIG.eye_height,
+        velocity: Vec3::ZERO,
+        kind: kind(EntityType::Pig),
         flags,
-        idle_time: pig.idle_time,
+        health: 10.0,
+        follow_range: PIG_FOLLOW_RANGE,
+        age: 0,
+        love: 0,
+        idle_time: u16::try_from(pig.idle_time).unwrap_or(u16::MAX),
         damage: pig.damage,
-        disabled: ControlFlags::NONE,
-        path: pig.path,
+        hurt_by: HurtBy::NONE,
+        target: EntityRef::NONE,
+        owner: EntityRef::NONE,
+        path_ticket: pig.path.ticket,
     }
 }
 

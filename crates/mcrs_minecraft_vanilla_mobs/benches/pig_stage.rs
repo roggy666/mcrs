@@ -10,11 +10,11 @@ use mcrs_minecraft_brain::TileWork;
 use mcrs_minecraft_brain::WakeMode;
 use mcrs_minecraft_brain::WorldSeed;
 use mcrs_minecraft_goals::FlatGround;
-use mcrs_minecraft_goals::IdleRule;
-use mcrs_minecraft_goals::PenConfig;
-use mcrs_minecraft_goals::PigBrain;
-use mcrs_minecraft_goals::PigPen;
-use mcrs_minecraft_goals::run_tiles;
+use mcrs_minecraft_goals::TableBrain;
+use mcrs_minecraft_vanilla_mobs::IdleRule;
+use mcrs_minecraft_vanilla_mobs::PenConfig;
+use mcrs_minecraft_vanilla_mobs::PigPen;
+use mcrs_minecraft_vanilla_mobs::run_tiles;
 use rayon::ThreadPool;
 use rayon::ThreadPoolBuilder;
 use rayon::prelude::*;
@@ -43,7 +43,7 @@ fn pen(wake: WakeMode, idle: IdleRule) -> PigPen {
 fn timed_step(pen: &mut PigPen, pool: &ThreadPool, threads: usize) -> Duration {
     let mut elapsed = Duration::ZERO;
     pen.step(
-        |work: &mut [TileWork<'_, PigBrain>], cx: &TickContext<'_, FlatGround>| {
+        |work: &mut [TileWork<'_, TableBrain>], cx: &TickContext<'_, FlatGround>| {
             let per_task = work.len().div_ceil(threads * 4).max(1);
             let start = Instant::now();
             pool.install(|| {

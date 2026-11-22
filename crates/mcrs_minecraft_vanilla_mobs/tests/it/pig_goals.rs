@@ -1,34 +1,46 @@
 use glam::DVec3;
+use glam::Vec3;
 use mcrs_minecraft_brain::AiDelay;
 use mcrs_minecraft_brain::Cadence;
 use mcrs_minecraft_brain::ConfigError;
-use mcrs_minecraft_brain::ControlFlags;
 use mcrs_minecraft_brain::DamageCause;
 use mcrs_minecraft_brain::DamageRecord;
+use mcrs_minecraft_brain::EntityRef;
+use mcrs_minecraft_brain::HurtBy;
 use mcrs_minecraft_brain::Intents;
+use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::MobBrain;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::MobView;
+use mcrs_minecraft_brain::Neighbours;
 use mcrs_minecraft_brain::Panic;
 use mcrs_minecraft_brain::PathIntent;
-use mcrs_minecraft_brain::PlayerFlags;
 use mcrs_minecraft_brain::PlayerRow;
+use mcrs_minecraft_brain::PlayerTable;
 use mcrs_minecraft_brain::StageConfig;
+use mcrs_minecraft_brain::Ticket;
 use mcrs_minecraft_brain::Turn;
+use mcrs_minecraft_brain::TurnScratch;
 use mcrs_minecraft_brain::WorldSeed;
+use mcrs_minecraft_entity::entity_type_keys::EntityType;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
-use mcrs_minecraft_goals::ChickenBrain;
-use mcrs_minecraft_goals::CowBrain;
+use mcrs_minecraft_entity_key::TileKey;
 use mcrs_minecraft_goals::FlatGround;
-use mcrs_minecraft_goals::IdleRule;
-use mcrs_minecraft_goals::PenConfig;
-use mcrs_minecraft_goals::PenLook;
-use mcrs_minecraft_goals::PigBrain;
-use mcrs_minecraft_goals::PigPen;
+use mcrs_minecraft_goals::GoalTable;
 use mcrs_minecraft_goals::Pond;
-use mcrs_minecraft_goals::SheepBrain;
-use mcrs_minecraft_goals::run_tiles;
+use mcrs_minecraft_goals::TableBrain;
+use mcrs_minecraft_vanilla_mobs::CHICKEN;
+use mcrs_minecraft_vanilla_mobs::COW;
+use mcrs_minecraft_vanilla_mobs::IdleRule;
+use mcrs_minecraft_vanilla_mobs::PIG;
+use mcrs_minecraft_vanilla_mobs::PenConfig;
+use mcrs_minecraft_vanilla_mobs::PenLook;
+use mcrs_minecraft_vanilla_mobs::PigPen;
+use mcrs_minecraft_vanilla_mobs::SHEEP;
+use mcrs_minecraft_vanilla_mobs::kind;
+use mcrs_minecraft_vanilla_mobs::kind_table;
+use mcrs_minecraft_vanilla_mobs::run_tiles;
 
 fn walk_speed(modifier: f64) -> f64 {
     let speed = modifier * 0.25;
@@ -194,15 +206,12 @@ fn a_pig_looks_at_a_player_within_six_blocks_and_never_at_one_farther() {
         );
         pen.place_pig(index, position);
     }
-    pen.set_players(vec![PlayerRow {
-        player: EntityId(1),
-        key: EntityUuid::from_u128(1 << 64 | 1),
-        position: centre,
-        eye_height: 1.62,
-        flags: PlayerFlags::ALIVE,
-        visibility: 1.0,
-        vehicle: None,
-    }]);
+    pen.set_players(vec![PlayerRow::standing(
+        EntityId(1),
+        EntityUuid::from_u128(1 << 64 | 1),
+        centre,
+        1.62,
+    )]);
     let mut looked = vec![false; pigs as usize];
     while pen.tick() <= 2_000 {
         pen.step(run_tiles);
@@ -277,25 +286,37 @@ fn a_burning_pig_panics_into_the_nearest_water() {
     );
 }
 
-fn panic_modifier<B: MobBrain<FlatGround> + Default>() -> Option<f32> {
+fn panic_modifier(table: &'static GoalTable) -> Option<f32> {
     let ground = FlatGround {
         side: 64,
         pond: None,
     };
+    let kinds = kind_table();
+    let items = ItemTables::default();
+    let players = PlayerTable::default();
+    let neighbours = Neighbours::empty(TileKey::new(1, 0, 1));
+    let mut scratch = TurnScratch::default();
     (0..32u128).find_map(|key| {
         let view = MobView {
             mob: EntityId(0),
             key: EntityUuid::from_u128(key << 64),
             position: DVec3::new(32.5, 0.0, 32.5),
-            eye_height: 1.0,
+            velocity: Vec3::ZERO,
+            kind: kind(EntityType::Pig),
             flags: MobFlags::ALIVE.union(MobFlags::ON_GROUND),
+            health: 10.0,
+            follow_range: 16.0,
+            age: 0,
+            love: 0,
             idle_time: 0,
             damage: Some(DamageRecord {
                 tick: 19,
                 cause: DamageCause::Panic,
             }),
-            disabled: ControlFlags::NONE,
-            path: Default::default(),
+            hurt_by: HurtBy::NONE,
+            target: EntityRef::NONE,
+            owner: EntityRef::NONE,
+            path_ticket: Ticket::default(),
         };
         let turn = Turn {
             tick: 20,
@@ -304,10 +325,14 @@ fn panic_modifier<B: MobBrain<FlatGround> + Default>() -> Option<f32> {
             cadence: Cadence::new(1, 0),
             view: &view,
             players: &[],
+            table: &players,
+            neighbours: &neighbours,
+            items: &items,
+            kinds: &kinds,
             world: &ground,
         };
         let mut intents = Intents::default();
-        B::default().evaluate(&turn, &mut intents);
+        TableBrain::new(table).evaluate(&turn, &mut scratch, &mut intents);
         match intents.path {
             Some(PathIntent::Walk { speed_modifier, .. }) => Some(speed_modifier),
             _ => None,
@@ -318,10 +343,10 @@ fn panic_modifier<B: MobBrain<FlatGround> + Default>() -> Option<f32> {
 #[test]
 fn each_farm_animal_panics_at_the_speed_of_its_goal_list() {
     let cases = [
-        ("pig", panic_modifier::<PigBrain>(), 1.25),
-        ("cow", panic_modifier::<CowBrain>(), 2.0),
-        ("sheep", panic_modifier::<SheepBrain>(), 1.25),
-        ("chicken", panic_modifier::<ChickenBrain>(), 1.4),
+        ("pig", panic_modifier(&PIG), 1.25),
+        ("cow", panic_modifier(&COW), 2.0),
+        ("sheep", panic_modifier(&SHEEP), 1.25),
+        ("chicken", panic_modifier(&CHICKEN), 1.4),
     ];
     for (animal, modifier, expected) in cases {
         assert_eq!(modifier, Some(expected), "{animal}");

@@ -35,6 +35,7 @@ mcrs_minecraft_environment.workspace = true
 mcrs_minecraft_falling_block.workspace = true
 mcrs_minecraft_game_mode = { workspace = true, features = ["bevy"] }
 mcrs_minecraft_goals.workspace = true
+mcrs_minecraft_vanilla_mobs.workspace = true
 mcrs_minecraft_item.workspace = true
 mcrs_minecraft_item_key.workspace = true
 mcrs_minecraft_item_stack.workspace = true

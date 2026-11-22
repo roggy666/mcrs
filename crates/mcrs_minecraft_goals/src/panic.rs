@@ -19,7 +19,7 @@ const WATER_REACH: i32 = 5;
 #[must_use]
 pub fn panic_record_fresh(view: &MobView, tick: u64) -> bool {
     view.damage.is_some_and(|record| {
-        record.cause == DamageCause::Panic && tick.saturating_sub(record.tick) <= PANIC_FRESH_TICKS
+        record.cause == DamageCause::Panic && record.age(tick) <= PANIC_FRESH_TICKS
     })
 }
 

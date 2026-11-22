@@ -12,6 +12,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+libm.workspace = true
 mcrs_voxel.workspace = true
 glam = { workspace = true, features = ["std"] }
 mcrs_minecraft_brain.workspace = true

@@ -4,16 +4,24 @@ use crate::Cadence;
 use crate::DecisionPipeline;
 use crate::Fact;
 use crate::IssuedDecisions;
-use crate::MobView;
+use crate::ItemTables;
+use crate::KindTable;
 use crate::PlayerTable;
 use crate::Replica;
 use crate::Stage;
 use crate::StageConfig;
 use crate::TickContext;
+use crate::TileSnapshot;
 use crate::TileWork;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::TileKey;
+
+#[derive(Clone, Copy, Debug)]
+pub struct Tables<'a> {
+    pub items: &'a ItemTables,
+    pub kinds: &'a KindTable,
+}
 
 #[derive(Clone, Debug)]
 pub struct AiDriver<B> {
@@ -53,6 +61,11 @@ impl<B> AiDriver<B> {
     }
 
     #[must_use]
+    pub const fn replica(&self) -> &Replica {
+        &self.replica
+    }
+
+    #[must_use]
     pub const fn waits(&self) -> u64 {
         self.waits
     }
@@ -76,8 +89,8 @@ impl<B> AiDriver<B> {
         self.stage.relocate_all(moves);
     }
 
-    pub fn publish_tile(&mut self, tile: TileKey, views: Vec<MobView>) {
-        self.replica.publish_tile(self.tick, tile, views);
+    pub fn publish_tile(&mut self, tile: TileKey, snapshot: TileSnapshot) {
+        self.replica.publish_tile(self.tick, tile, snapshot);
     }
 
     pub fn publish_facts(&mut self, tile: TileKey, facts: impl IntoIterator<Item = Fact>) {
@@ -101,6 +114,7 @@ impl<B> AiDriver<B> {
     pub fn run_stage<W: ?Sized>(
         &mut self,
         world: &W,
+        tables: &Tables<'_>,
         run: impl FnOnce(&mut [TileWork<'_, B>], &TickContext<'_, W>),
     ) -> usize {
         let tick = self.tick;
@@ -108,6 +122,8 @@ impl<B> AiDriver<B> {
             tick,
             config: *self.stage.config(),
             replica: &self.replica,
+            items: tables.items,
+            kinds: tables.kinds,
             world,
         };
         let mut work = self.stage.work();

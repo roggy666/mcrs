@@ -430,9 +430,14 @@ fn steer(motion: &mut EntityState, intent: Option<&MobIntent>) -> bool {
         return false;
     };
     apply_intent(intent, living);
-    intent
-        .steering
-        .is_some_and(|steering| steering.input.length_squared() >= STILL_INPUT || steering.jump)
+    let leaps = intent.velocity.is_some();
+    if let Some(velocity) = intent.velocity {
+        motion.body.velocity = velocity;
+    }
+    leaps
+        || intent
+            .steering
+            .is_some_and(|steering| steering.input.length_squared() >= STILL_INPUT || steering.jump)
 }
 
 fn apply_intent(intent: &MobIntent, living: &mut Living) {

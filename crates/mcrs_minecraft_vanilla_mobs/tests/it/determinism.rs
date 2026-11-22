@@ -1,7 +1,6 @@
 use glam::DVec3;
 use mcrs_minecraft_brain::AiDelay;
 use mcrs_minecraft_brain::DamageCause;
-use mcrs_minecraft_brain::PlayerFlags;
 use mcrs_minecraft_brain::PlayerRow;
 use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::TickContext;
@@ -11,12 +10,12 @@ use mcrs_minecraft_brain::WorldSeed;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_goals::FlatGround;
-use mcrs_minecraft_goals::HashScope;
-use mcrs_minecraft_goals::IdleRule;
-use mcrs_minecraft_goals::PenConfig;
-use mcrs_minecraft_goals::PigBrain;
-use mcrs_minecraft_goals::PigPen;
-use mcrs_minecraft_goals::run_tiles;
+use mcrs_minecraft_goals::TableBrain;
+use mcrs_minecraft_vanilla_mobs::HashScope;
+use mcrs_minecraft_vanilla_mobs::IdleRule;
+use mcrs_minecraft_vanilla_mobs::PenConfig;
+use mcrs_minecraft_vanilla_mobs::PigPen;
+use mcrs_minecraft_vanilla_mobs::run_tiles;
 use rayon::ThreadPool;
 use rayon::ThreadPoolBuilder;
 use rayon::prelude::*;
@@ -48,7 +47,7 @@ fn run_on(
     (0..ticks)
         .map(|_| {
             pen.step(
-                |work: &mut [TileWork<'_, PigBrain>], cx: &TickContext<'_, FlatGround>| {
+                |work: &mut [TileWork<'_, TableBrain>], cx: &TickContext<'_, FlatGround>| {
                     pool.install(|| {
                         work.par_chunks_mut(tiles_per_task)
                             .for_each(|tasks| run_tiles(tasks, cx));
@@ -94,25 +93,23 @@ fn assert_thread_layouts_agree(ticks: u32, layouts: &[(usize, usize)]) -> u64 {
 
 fn walk_and_hit(pen: &mut PigPen, tick: u64, hit_tick: u64) {
     let mut players: Vec<PlayerRow> = (0..2)
-        .map(|index| PlayerRow {
-            player: EntityId(100 + index),
-            key: EntityUuid::from_u128(u128::from(100 + index) << 64 | 1),
-            position: DVec3::new(f64::from(index as u32) * 200.0 + 20.0, 0.0, 30.0),
-            eye_height: 1.62,
-            flags: PlayerFlags::ALIVE,
-            visibility: 1.0,
-            vehicle: None,
+        .map(|index| {
+            PlayerRow::standing(
+                EntityId(100 + index),
+                EntityUuid::from_u128(u128::from(100 + index) << 64 | 1),
+                DVec3::new(f64::from(index as u32) * 200.0 + 20.0, 0.0, 30.0),
+                1.62,
+            )
         })
         .collect();
-    players.push(PlayerRow {
-        player: EntityId(7),
-        key: EntityUuid::from_u128(7 << 64 | 1),
-        position: DVec3::new(tick as f64 * 0.4, 0.0, 128.0),
-        eye_height: 1.62,
-        flags: PlayerFlags::ALIVE,
-        visibility: 0.8,
-        vehicle: None,
-    });
+    let mut sneaking = PlayerRow::standing(
+        EntityId(7),
+        EntityUuid::from_u128(7 << 64 | 1),
+        DVec3::new(tick as f64 * 0.4, 0.0, 128.0),
+        1.62,
+    );
+    sneaking.visibility = 0.8;
+    players.push(sneaking);
     pen.set_players(players);
     if tick == hit_tick {
         for index in 0..300 {

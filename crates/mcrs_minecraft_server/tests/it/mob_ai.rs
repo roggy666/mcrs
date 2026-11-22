@@ -4,18 +4,18 @@ use mcrs_minecraft_command_engine::CommandPlugin;
 use mcrs_minecraft_command_vanilla::{VanillaCommands, VanillaCommandsPlugin};
 use mcrs_minecraft_engine_brain::MobAi;
 use mcrs_minecraft_entity::EntityTypeData;
-use mcrs_minecraft_goals::VanillaBrain;
 use mcrs_minecraft_protocol::Bounded;
 use mcrs_minecraft_protocol::uuid::Uuid;
 use mcrs_minecraft_protocol_game::serverbound::ServerboundChatCommand;
 use mcrs_minecraft_server::{VanillaEntityPhysicsPlugin, VanillaMobBrainPlugin};
+use mcrs_minecraft_vanilla_mobs::VanillaBrain;
+use mcrs_minecraft_vanilla_mobs::table_of;
 
 use crate::commands::load_stone_column;
 use crate::host_app::{self, PlayServer};
 use crate::mob_replication::mob_entities;
 
 const OPERATOR: Uuid = Uuid::from_u128(1);
-const PANIC: usize = 0;
 
 fn start() -> (PlayServer, Entity) {
     let mut app = host_app::make_host_app();
@@ -46,13 +46,7 @@ fn pig_positions(server: &mut PlayServer) -> Vec<DVec3> {
 }
 
 fn pig_panics(brain: &VanillaBrain) -> bool {
-    let selector = match brain {
-        VanillaBrain::Pig(brain) => brain.selector(),
-        VanillaBrain::Cow(brain) => brain.selector(),
-        VanillaBrain::Sheep(brain) => brain.selector(),
-        VanillaBrain::Chicken(brain) => brain.selector(),
-    };
-    selector.is_running(PANIC)
+    brain.panics()
 }
 
 fn horizontal_distance(from: DVec3, to: DVec3) -> f64 {
@@ -220,14 +214,9 @@ fn summoned_cows_sheep_and_chickens_get_their_brains_and_stroll() {
             .find(|mob| mob.id == entry.mob)
             .map(|mob| mob.mob.kind)
             .unwrap();
-        let expected = match entry.brain {
-            VanillaBrain::Pig(_) => &EntityTypeData::PIG,
-            VanillaBrain::Cow(_) => &EntityTypeData::COW,
-            VanillaBrain::Sheep(_) => &EntityTypeData::SHEEP,
-            VanillaBrain::Chicken(_) => &EntityTypeData::CHICKEN,
-        };
-        assert_eq!(
-            kind, expected,
+        let expected = table_of(kind.entity_type).expect("a farm animal has a table");
+        assert!(
+            std::ptr::eq(entry.brain.table(), expected),
             "the brain of a mob is the brain of its type"
         );
         brains += 1;

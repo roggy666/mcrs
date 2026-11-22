@@ -86,3 +86,40 @@ fn best_of_tries(
     }
     best.map(|(position, _)| position.bottom_centre())
 }
+
+pub fn away_search<W: GoalWorld + ?Sized>(
+    world: &W,
+    feet: DVec3,
+    away_from: DVec3,
+    range: SearchRange,
+    random: &mut KeyedRandom,
+) -> Option<DVec3> {
+    let ax = feet.x - away_from.x;
+    let az = feet.z - away_from.z;
+    let centre = libm::atan2(az, ax) - core::f64::consts::FRAC_PI_2;
+    let horizontal = f64::from(range.horizontal);
+    let mut best: Option<(BlockPos, f32)> = None;
+    for _ in 0..TRIES {
+        let angle =
+            centre + (2.0 * f64::from(random.unit_f32()) - 1.0) * core::f64::consts::FRAC_PI_2;
+        let length = horizontal * libm::sqrt(random.unit()) * core::f64::consts::SQRT_2;
+        let dx = -length * libm::sin(angle);
+        let dz = length * libm::cos(angle);
+        if dx.abs() > horizontal || dz.abs() > horizontal {
+            continue;
+        }
+        let b = random.symmetric(range.vertical);
+        let candidate = BlockPos::from(DVec3::new(feet.x + dx, feet.y + f64::from(b), feet.z + dz));
+        let cell = world.cell(candidate);
+        let valid = world.build_height().contains(candidate.y)
+            && cell.flags.contains(CellFlags::STABLE_FLOOR)
+            && cell.malus == 0.0;
+        if !valid {
+            continue;
+        }
+        if best.is_none_or(|(_, best_value)| cell.walk_value > best_value) {
+            best = Some((candidate, cell.walk_value));
+        }
+    }
+    best.map(|(position, _)| position.bottom_centre())
+}

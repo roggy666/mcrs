@@ -4304,6 +4304,7 @@ name = "mcrs_minecraft_brain"
 version = "0.5.8"
 dependencies = [
  "glam",
+ "hashbrown 0.16.1",
  "libm",
  "mcrs_minecraft_entity_key",
 ]
@@ -5150,21 +5151,28 @@ dependencies = [
  "mcrs_minecraft_damage",
  "mcrs_minecraft_engine",
  "mcrs_minecraft_engine_entity_motion",
+ "mcrs_minecraft_engine_item",
+ "mcrs_minecraft_engine_mob_attributes",
  "mcrs_minecraft_engine_physics",
  "mcrs_minecraft_engine_world",
  "mcrs_minecraft_entity",
+ "mcrs_minecraft_entity_attribute",
  "mcrs_minecraft_entity_key",
  "mcrs_minecraft_game_mode",
  "mcrs_minecraft_goal_world",
  "mcrs_minecraft_goals",
+ "mcrs_minecraft_inventory_player",
+ "mcrs_minecraft_item_stack",
  "mcrs_minecraft_mob_control",
  "mcrs_minecraft_physics",
  "mcrs_minecraft_pose",
  "mcrs_minecraft_protocol_game",
  "mcrs_minecraft_registries",
  "mcrs_minecraft_resource",
+ "mcrs_minecraft_vanilla_mobs",
  "mcrs_minecraft_volume",
  "mcrs_voxel",
+ "rustc-hash 2.1.1",
  "tracing",
 ]
 
@@ -5680,16 +5688,13 @@ dependencies = [
 name = "mcrs_minecraft_goals"
 version = "0.5.8"
 dependencies = [
- "criterion",
  "glam",
  "libm",
  "mcrs_minecraft_brain",
- "mcrs_minecraft_entity",
  "mcrs_minecraft_entity_key",
  "mcrs_minecraft_goal_world",
  "mcrs_minecraft_goals",
  "mcrs_voxel",
- "rayon",
 ]
 
 [[package]]
@@ -6261,6 +6266,7 @@ version = "0.5.8"
 dependencies = [
  "criterion",
  "glam",
+ "libm",
  "mcrs_minecraft_brain",
  "mcrs_minecraft_entity",
  "mcrs_minecraft_numeric",
@@ -6984,6 +6990,7 @@ dependencies = [
  "mcrs_minecraft_vanilla_inventory",
  "mcrs_minecraft_vanilla_item_entity",
  "mcrs_minecraft_vanilla_light",
+ "mcrs_minecraft_vanilla_mobs",
  "mcrs_minecraft_vanilla_redstone",
  "mcrs_minecraft_vanilla_swing",
  "mcrs_minecraft_vanilla_worldgen",
@@ -7336,6 +7343,26 @@ dependencies = [
  "rayon",
  "rustc-hash 2.1.1",
  "tracing",
+]
+
+[[package]]
+name = "mcrs_minecraft_vanilla_mobs"
+version = "0.5.8"
+dependencies = [
+ "criterion",
+ "glam",
+ "libm",
+ "mcrs_minecraft_brain",
+ "mcrs_minecraft_entity",
+ "mcrs_minecraft_entity_key",
+ "mcrs_minecraft_goal_world",
+ "mcrs_minecraft_goals",
+ "mcrs_minecraft_item_key",
+ "mcrs_minecraft_registries",
+ "mcrs_minecraft_resource",
+ "mcrs_minecraft_vanilla_mobs",
+ "mcrs_voxel",
+ "rayon",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
 use glam::DVec3;
 use mcrs_minecraft_brain::Applied;
 use mcrs_minecraft_brain::Intents;
+use mcrs_minecraft_brain::LookIntent;
 
 use crate::BodyFlags;
 use crate::BodyRotation;
@@ -54,6 +55,14 @@ impl MobControl {
         if let Some(look) = &intents.look {
             self.look.apply(look);
         }
+    }
+
+    pub fn set_speed_modifier(&mut self, speed_modifier: f32) {
+        self.follower.set_speed_modifier(speed_modifier);
+    }
+
+    pub fn look(&mut self, intent: &LookIntent) {
+        self.look.apply(intent);
     }
 
     pub fn before_travel(&mut self, input: &ControlInput) -> ControlOutput {

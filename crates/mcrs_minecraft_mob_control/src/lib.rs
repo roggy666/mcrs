@@ -4,8 +4,10 @@ mod control_input;
 mod control_output;
 mod follower;
 mod look_control;
+mod melee_reflex;
 mod mob_control;
 mod move_control;
+mod ranged_reflex;
 
 pub use angles::*;
 pub use body_rotation::*;
@@ -13,5 +15,7 @@ pub use control_input::*;
 pub use control_output::*;
 pub use follower::*;
 pub use look_control::*;
+pub use melee_reflex::*;
 pub use mob_control::*;
 pub use move_control::*;
+pub use ranged_reflex::*;

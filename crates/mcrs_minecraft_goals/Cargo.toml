@@ -1,6 +1,6 @@
 [package]
 name = "mcrs_minecraft_goals"
-description = "The goals of passive mobs for the AI stage: float, panic, random stroll, look at a player and look around, the random position searches, the goal list of the pig and the brain of each mob type with goals"
+description = "The goals of mobs for the AI stage: the passive goals, the combat and target goals, the random position searches, and the brain that runs a goal table"
 version.workspace = true
 edition.workspace = true
 
@@ -18,16 +18,9 @@ glam = { workspace = true, features = ["nostd-libm"] }
 libm.workspace = true
 mcrs_minecraft_brain.workspace = true
 mcrs_minecraft_goal_world.workspace = true
-mcrs_minecraft_entity = { workspace = true, optional = true }
 
 [dev-dependencies]
-criterion = { workspace = true }
 mcrs_minecraft_goals = { workspace = true, features = ["testing"] }
-rayon.workspace = true
 
 [features]
-testing = ["dep:mcrs_minecraft_entity"]
-
-[[bench]]
-name = "pig_stage"
-harness = false
+testing = []
