@@ -8,6 +8,25 @@ pub trait BodyView {
     fn colliders(&self, query: Aabb, mover: EntityUuid, out: &mut Vec<EntityCollider>);
 
     fn neighbours(&self, of: &GridRow, out: &mut Vec<GridRow>);
+
+    fn neighbours_up_to<F: FnMut(&GridRow)>(
+        &self,
+        of: &GridRow,
+        out: &mut Vec<GridRow>,
+        limit: usize,
+        mut each: F,
+    ) {
+        self.neighbours(of, out);
+        let bounds = of.bounds();
+        out.retain(|row| row.key != of.key && row.bounds().intersects(&bounds));
+        out.sort_by_key(|row| row.key);
+        for row in out.iter() {
+            each(row);
+        }
+        if limit > 0 {
+            out.truncate(limit);
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

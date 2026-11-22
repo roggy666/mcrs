@@ -36,6 +36,19 @@ pub struct RedstoneSettings {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EntitySettings {
+    pub collisions_max_per_tick: u16,
+}
+
+impl Default for EntitySettings {
+    fn default() -> Self {
+        Self {
+            collisions_max_per_tick: 8,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct ServerSettings {
     pub port: Option<u16>,
@@ -53,6 +66,7 @@ pub struct ServerSettings {
     pub forwarding_secret: String,
     pub proxy_upstreams: Vec<IpAddr>,
     pub redstone: RedstoneSettings,
+    pub entities: EntitySettings,
 }
 
 impl Default for ServerSettings {
@@ -73,6 +87,7 @@ impl Default for ServerSettings {
             forwarding_secret: String::new(),
             proxy_upstreams: Vec::new(),
             redstone: RedstoneSettings::default(),
+            entities: EntitySettings::default(),
         }
     }
 }
@@ -131,6 +146,15 @@ impl ServerSettings {
                 pistons_move_block_entities: reader.switch("REDSTONE_PISTONS_MOVE_BLOCK_ENTITIES"),
                 dust_connects_to_pistons: reader.switch("REDSTONE_DUST_CONNECTS_TO_PISTONS"),
                 experimental_wire: reader.switch("REDSTONE_EXPERIMENTAL_WIRE"),
+            },
+            entities: EntitySettings {
+                collisions_max_per_tick: reader
+                    .read(
+                        "ENTITIES_COLLISIONS_MAX_PER_TICK",
+                        "a count from 0 to 65535 (0 = no limit, as the vanilla server)",
+                        |raw| raw.parse().ok(),
+                    )
+                    .unwrap_or(defaults.entities.collisions_max_per_tick),
             },
         }
     }
@@ -237,6 +261,7 @@ mod tests {
             ("REDSTONE_STICKY_PISTON_SHORT_PULSE", "maybe"),
             ("REDSTONE_PISTONS_MOVE_BLOCK_ENTITIES", "0"),
             ("REDSTONE_EXPERIMENTAL_WIRE", "yes"),
+            ("ENTITIES_COLLISIONS_MAX_PER_TICK", " 0 "),
         ]);
         assert_eq!(
             settings,
@@ -263,6 +288,9 @@ mod tests {
                     dust_connects_to_pistons: None,
                     experimental_wire: Some(true),
                 },
+                entities: EntitySettings {
+                    collisions_max_per_tick: 0,
+                },
             }
         );
         assert_eq!(
@@ -282,8 +310,10 @@ mod tests {
             ("FORWARDING", "enabled"),
             ("PROXY_UPSTREAMS", "192.0.2.1,localhost"),
             ("REDSTONE_PRESET", "pocket"),
+            ("ENTITIES_COLLISIONS_MAX_PER_TICK", "70000"),
         ]);
         assert_eq!(settings.world_seed, u64::MAX, "an unsigned seed reads");
+        assert_eq!(settings.entities.collisions_max_per_tick, 8);
         assert_eq!(settings.redstone.preset, RedstonePreset::Java);
         assert_eq!(
             (
@@ -303,7 +333,8 @@ mod tests {
                 "MOB_AI",
                 "FORWARDING",
                 "PROXY_UPSTREAMS",
-                "REDSTONE_PRESET"
+                "REDSTONE_PRESET",
+                "ENTITIES_COLLISIONS_MAX_PER_TICK"
             ]
         );
     }

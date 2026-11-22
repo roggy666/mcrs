@@ -4,11 +4,13 @@ use bevy_app::Plugin;
 use bevy_ecs::entity::Entity;
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::query::With;
+use bevy_ecs::resource::Resource;
 use bevy_ecs::schedule::IntoScheduleConfigs;
 use bevy_ecs::schedule::common_conditions::resource_exists;
 use bevy_ecs::system::Res;
 use bevy_ecs::system::ResMut;
 use bevy_ecs::system::Single;
+use bevy_ecs::system::SystemParam;
 use mcrs_minecraft_collision_table::BlockWorld;
 use mcrs_minecraft_engine_entity_motion::Crowding;
 use mcrs_minecraft_engine_entity_motion::MotionPass;
@@ -58,13 +60,28 @@ fn stir_tiles(mut placed: MessageReader<BlockPlaced>, mut stirred: ResMut<Stirre
     stirred.replace(tiles);
 }
 
+#[derive(SystemParam)]
+struct CrowdSettings<'w> {
+    damage_type: Option<Res<'w, CrowdDamageType>>,
+    rules: Option<Res<'w, GameRules>>,
+    cap: Option<Res<'w, CollisionCap>>,
+}
+
+impl CrowdSettings<'_> {
+    fn crowding(&self) -> Crowding {
+        Crowding {
+            rules: push_rules(self.rules.as_deref(), self.cap.as_deref()),
+            damage_type: self.damage_type.as_deref().and_then(|crowd| crowd.0),
+        }
+    }
+}
+
 fn step_motion(
     dimension: Single<Entity, With<Dimension>>,
     world: WorldView,
     tables: Res<PhysicsTables>,
     clock: Res<BirthClock>,
-    crowd: Option<Res<CrowdDamageType>>,
-    rules: Option<Res<GameRules>>,
+    crowd: CrowdSettings,
     mut step: MotionStep,
 ) {
     let Some(blocks) = world.get(*dimension) else {
@@ -79,18 +96,24 @@ fn step_motion(
         tables.tables(),
         Side::Server { authority: true },
         clock.0,
-        &Crowding {
-            rules: push_rules(rules.as_deref()),
-            damage_type: crowd.and_then(|crowd| crowd.0),
-        },
+        &crowd.crowding(),
     );
 }
 
-pub(crate) fn push_rules(rules: Option<&GameRules>) -> PushRules {
+#[derive(Resource, Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CollisionCap(pub u16);
+
+impl Default for CollisionCap {
+    fn default() -> Self {
+        Self(PushRules::DEFAULT_CAP as u16)
+    }
+}
+
+pub(crate) fn push_rules(rules: Option<&GameRules>, cap: Option<&CollisionCap>) -> PushRules {
     PushRules {
         max_entity_cramming: rules.map_or(PushRules::default().max_entity_cramming, |rules| {
             rules.get(GameRule::MaxEntityCramming)
         }),
-        ..PushRules::default()
+        cap: usize::from(cap.copied().unwrap_or_default().0),
     }
 }

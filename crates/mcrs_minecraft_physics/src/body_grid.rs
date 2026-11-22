@@ -55,11 +55,22 @@ impl BodyView for BodyGrid {
     fn colliders(&self, _query: Aabb, _mover: EntityUuid, _out: &mut Vec<EntityCollider>) {}
 
     fn neighbours(&self, of: &GridRow, out: &mut Vec<GridRow>) {
+        self.neighbours_up_to(of, out, 0, |_| {});
+    }
+
+    fn neighbours_up_to<F: FnMut(&GridRow)>(
+        &self,
+        of: &GridRow,
+        out: &mut Vec<GridRow>,
+        limit: usize,
+        mut each: F,
+    ) {
         let reach = f64::from(of.half_width) + f64::from(self.reach);
         let low = of.position - DVec3::new(reach, 0.0, reach);
         let high = of.position + DVec3::new(reach, 0.0, reach);
         let bounds = of.bounds();
         let (first, last) = (TileKey::at(low), TileKey::at(high));
+        let wanted = if limit == 0 { usize::MAX } else { limit };
         for tile_z in first.z..=last.z {
             for tile_x in first.x..=last.x {
                 let tile = TileKey::new(tile_x, 0, tile_z);
@@ -67,14 +78,29 @@ impl BodyView for BodyGrid {
                 let [x0, z0] = bucket_xz(tile, low);
                 let [x1, z1] = bucket_xz(tile, high);
                 for z in z0..=z1 {
-                    out.extend(
-                        bodies
-                            .cells(z * BUCKETS + x0, z * BUCKETS + x1)
-                            .iter()
-                            .filter(|row| row.bounds().intersects(&bounds)),
-                    );
+                    let rows = bodies.cells(z * BUCKETS + x0, z * BUCKETS + x1);
+                    keep_up_to(rows, of, &bounds, out, wanted, &mut each);
                 }
             }
+        }
+    }
+}
+
+fn keep_up_to<F: FnMut(&GridRow)>(
+    rows: &[GridRow],
+    of: &GridRow,
+    bounds: &Aabb,
+    out: &mut Vec<GridRow>,
+    wanted: usize,
+    each: &mut F,
+) {
+    for row in rows {
+        if row.key == of.key || !row.bounds().intersects(bounds) {
+            continue;
+        }
+        each(row);
+        if out.len() < wanted {
+            out.push(*row);
         }
     }
 }

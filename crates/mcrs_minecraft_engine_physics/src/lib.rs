@@ -21,6 +21,7 @@ mod player_index;
 #[cfg(feature = "testing")]
 mod test_scene;
 
+pub use entity_motion_plugin::CollisionCap;
 pub use entity_motion_plugin::EntityMotionPlugin;
 pub use entity_physics_plugin::EntityPhysicsPlugin;
 pub use entity_writes::EntityEffect;

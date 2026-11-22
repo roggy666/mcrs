@@ -367,3 +367,48 @@ fn crw_002_the_crowd_hits_do_not_depend_on_the_spawn_order() {
         "the reverse spawn order gives the same state"
     );
 }
+
+const HEAP: u32 = 2000;
+const HEAP_TICKS: u32 = 40;
+const HEAP_GOLDEN: u64 = 5_319_227_085_946_612_170;
+
+fn heap_hash(threads: usize) -> u64 {
+    use std::hash::{DefaultHasher, Hash, Hasher};
+    bevy_tasks::ComputeTaskPool::get_or_init(|| {
+        bevy_tasks::TaskPoolBuilder::new()
+            .num_threads(threads)
+            .build()
+    });
+    assert_eq!(bevy_tasks::ComputeTaskPool::get().thread_num(), threads);
+    let mut scene = scene();
+    let at = DVec3::new(0.5, f64::from(FLOOR), 0.5);
+    for index in 0..HEAP {
+        add_pig(&mut scene, index, at, 10.0);
+    }
+    for _ in 0..HEAP_TICKS {
+        scene.step();
+    }
+    let mut states: Vec<(EntityUuid, DVec3)> = scene
+        .states()
+        .iter()
+        .filter(|(_, state)| state.living.is_some())
+        .map(|(_, state)| (state.key, state.body.position))
+        .collect();
+    states.sort_by_key(|(key, _)| *key);
+    let mut hasher = DefaultHasher::new();
+    for (key, position) in states {
+        key.hash(&mut hasher);
+        position.to_array().map(f64::to_bits).hash(&mut hasher);
+    }
+    hasher.finish()
+}
+
+#[test]
+fn cmp_019_a_heap_of_2000_ends_on_the_golden_state_at_1_thread() {
+    assert_eq!(heap_hash(1), HEAP_GOLDEN);
+}
+
+#[test]
+fn cmp_019_a_heap_of_2000_ends_on_the_golden_state_at_8_threads() {
+    assert_eq!(heap_hash(8), HEAP_GOLDEN);
+}

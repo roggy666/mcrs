@@ -20,7 +20,9 @@ use mcrs_minecraft_engine_server::{
 };
 use mcrs_minecraft_engine_world::world::sub_app::AddDimensionPlugins;
 use mcrs_minecraft_lang::{EN_US, Language};
-use mcrs_minecraft_server::{MinecraftServerPlugins, VanillaMobBrainPlugin, VanillaRedstonePlugin};
+use mcrs_minecraft_server::{
+    CollisionCap, MinecraftServerPlugins, VanillaMobBrainPlugin, VanillaRedstonePlugin,
+};
 use mcrs_minecraft_server_settings::ServerSettings;
 use mcrs_minecraft_vanilla_worldgen::WorldGenPlugin;
 
@@ -111,6 +113,7 @@ fn serve() -> AppExit {
     }
     .build()
     .set(VanillaRedstonePlugin::from_settings(&settings.redstone));
+    app.insert_resource(CollisionCap(settings.entities.collisions_max_per_tick));
     if !settings.mob_ai {
         server = server.disable::<VanillaMobBrainPlugin>();
     }
