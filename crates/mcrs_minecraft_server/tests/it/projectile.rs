@@ -27,7 +27,8 @@ use mcrs_minecraft_protocol_game::serverbound::ServerboundChatCommand;
 use mcrs_minecraft_protocol_game::serverbound::{ServerboundPlayerAction, ServerboundUseItem};
 use mcrs_minecraft_server::VanillaItemEntityPlugin;
 use mcrs_minecraft_server::{
-    VanillaEntityPhysicsPlugin, VanillaMobBrainPlugin, VanillaProjectilePlugin,
+    VanillaEntityAttributesPlugin, VanillaEntityPhysicsPlugin, VanillaMobBrainPlugin,
+    VanillaProjectilePlugin,
 };
 use mcrs_minecraft_simulation::BlockUpdateFlags;
 use mcrs_minecraft_vanilla_projectile::{Drawing, Pickup, player_id};
@@ -45,6 +46,7 @@ fn start() -> (PlayServer, Entity) {
     app.add_plugins(CommandPlugin::<VanillaCommands>::new());
     app.add_plugins(VanillaCommandsPlugin);
     app.add_plugins(VanillaEntityPhysicsPlugin);
+    app.add_plugins(VanillaEntityAttributesPlugin);
     app.add_plugins(VanillaMobBrainPlugin);
     app.add_plugins(VanillaProjectilePlugin);
     let mut server = PlayServer::start(app, &[(OPERATOR, 2)], 0);
@@ -220,6 +222,7 @@ fn start_with_items() -> (PlayServer, Entity, Entity) {
     app.add_plugins(CommandPlugin::<VanillaCommands>::new());
     app.add_plugins(VanillaCommandsPlugin);
     app.add_plugins(VanillaEntityPhysicsPlugin);
+    app.add_plugins(VanillaEntityAttributesPlugin);
     app.add_plugins(VanillaItemEntityPlugin);
     app.add_plugins(VanillaMobBrainPlugin);
     app.add_plugins(VanillaProjectilePlugin);

@@ -13,9 +13,8 @@ use mcrs_minecraft_engine::use_item_request::UseItemRequest;
 use mcrs_minecraft_engine_brain::MobBrainSet;
 use mcrs_minecraft_engine_brain::RangedAttack;
 use mcrs_minecraft_engine_damage::DamageSet;
-use mcrs_minecraft_engine_damage::Damaged;
 use mcrs_minecraft_engine_entity_motion::MotionPass;
-use mcrs_minecraft_engine_physics::MobPublish;
+use mcrs_minecraft_engine_player_vitals::PlayerDefenceSet;
 use mcrs_minecraft_engine_world::tick::TickSet;
 use mcrs_minecraft_registries::CurrentRegistries;
 
@@ -35,8 +34,6 @@ use crate::pickup::RestingArrows;
 use crate::pickup::forget_resting;
 use crate::pickup::has_resting_arrows;
 use crate::pickup::pick_up_arrows;
-use crate::player_hits::give_player_vitals;
-use crate::player_hits::report_player_hits;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct ProjectilePlugin;
@@ -53,15 +50,14 @@ impl Plugin for ProjectilePlugin {
             .add_message::<RangedAttack>()
             .add_message::<UseItemRequest>()
             .add_message::<ReleaseItemRequest>()
-            .add_message::<Damaged>()
             .add_observer(forget_projectile)
             .add_observer(forget_resting)
-            .add_observer(give_player_vitals)
             .configure_sets(
                 FixedUpdate,
                 ProjectileSet
                     .in_set(TickSet::Simulate)
                     .after(MotionPass)
+                    .after(PlayerDefenceSet)
                     .before(DamageSet::Collect),
             )
             .add_systems(
@@ -99,12 +95,6 @@ impl Plugin for ProjectilePlugin {
                 )
                     .chain()
                     .in_set(ProjectileSet),
-            )
-            .add_systems(
-                FixedUpdate,
-                report_player_hits
-                    .in_set(DamageSet::Report)
-                    .ambiguous_with(MobPublish),
             );
     }
 }

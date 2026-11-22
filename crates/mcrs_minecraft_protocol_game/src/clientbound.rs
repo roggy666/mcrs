@@ -140,13 +140,6 @@ pub struct ClientboundContainerSetSlot {
 }
 
 #[derive(Clone, Debug, PartialEq, Encode, Decode)]
-pub struct ClientboundSetHealth {
-    pub health: f32,
-    pub food: VarInt,
-    pub saturation: f32,
-}
-
-#[derive(Clone, Debug, PartialEq, Encode, Decode)]
 pub struct ClientboundDamageEvent {
     pub entity_id: VarInt,
     pub damage_type: VarInt,
@@ -664,6 +657,13 @@ impl mcrs_minecraft_protocol::Decode<'_> for ClientboundSetEquipment {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Encode, Decode)]
+pub struct ClientboundSetHealth {
+    pub health: f32,
+    pub food: VarInt,
+    pub saturation: f32,
+}
+
 #[derive(Clone, Debug, PartialEq, Encode, Decode)]
 pub struct ClientboundSetHeldSlot {
     pub slot: VarInt,
@@ -809,6 +809,12 @@ pub struct ClientboundDisguisedChat<'a> {
     pub chat_type: ChatTypeId,
     pub sender_name: RawText<'a>,
     pub target_name: Option<RawText<'a>>,
+}
+
+#[derive(Clone, Debug, Encode, Decode)]
+pub struct ClientboundPlayerCombatKill<'a> {
+    pub player_id: VarInt,
+    pub message: RawText<'a>,
 }
 
 #[derive(Clone, Debug, Encode, Decode)]

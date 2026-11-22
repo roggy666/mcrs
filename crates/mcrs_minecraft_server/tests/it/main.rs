@@ -64,6 +64,7 @@ mod probe_bans;
 mod projectile;
 mod proxy_forwarding;
 mod redstone;
+mod respawn;
 mod run_server_loop_exit;
 mod schedule_ambiguity;
 mod session_lifecycle;

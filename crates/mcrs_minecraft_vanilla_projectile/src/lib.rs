@@ -3,7 +3,6 @@ mod bow;
 mod flight;
 mod launch;
 mod pickup;
-mod player_hits;
 mod projectile;
 mod projectile_plugin;
 mod sounds;

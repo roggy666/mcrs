@@ -1,6 +1,6 @@
 use bevy_ecs::change_detection::DetectChangesMut;
 use bevy_ecs::message::MessageWriter;
-use bevy_ecs::query::AnyOf;
+use bevy_ecs::query::{Or, With};
 use bevy_ecs::system::Local;
 use bevy_ecs::system::Query;
 use bevy_ecs::system::Res;
@@ -40,17 +40,31 @@ type Targets<'w, 's> = Query<
     'w,
     's,
     (
-        AnyOf<(
-            &'static MotionState,
-            (&'static EntityUuid, &'static Transform),
-        )>,
+        Place<'static>,
         &'static mut Vitals,
         &'static mut HitRecord,
         Option<&'static Defence>,
         Option<&'static GridSlot>,
         Option<&'static StepOutcome>,
     ),
+    Or<(With<MotionState>, (With<EntityUuid>, With<Transform>))>,
 >;
+
+type Place<'a> = (
+    Option<&'a MotionState>,
+    Option<&'a EntityUuid>,
+    Option<&'a Transform>,
+);
+
+fn key((motion, uuid, _): Place) -> Option<EntityUuid> {
+    motion.map(|motion| motion.0.key).or(uuid.copied())
+}
+
+fn position((motion, _, transform): Place) -> Option<DVec3> {
+    motion
+        .map(|motion| motion.0.body.position)
+        .or(transform.map(|transform| transform.translation))
+}
 
 #[derive(Default)]
 pub(crate) struct ApplyScratch {
@@ -83,14 +97,15 @@ pub(crate) fn apply_hits(
     order.clear();
     dead.clear();
     for (index, request) in pending.requests.iter().enumerate() {
-        let Ok((identity, ..)) = targets.get(request.target) else {
-            continue;
-        };
-        let Some((key, _)) = identity_of(identity) else {
+        let Some(target) = targets
+            .get(request.target)
+            .ok()
+            .and_then(|(place, ..)| key(place))
+        else {
             continue;
         };
         order.push(HitOrder {
-            target: key,
+            target,
             writer: request.writer,
             tick: request.tick,
             sequence: request.sequence,
@@ -141,12 +156,12 @@ fn apply_group(
         if request.crowd.is_some_and(|crowd| !crowd.overcrowded(dead)) {
             continue;
         }
-        let Ok((identity, mut vitals, mut record, defence, slot, outcome)) =
+        let Ok((place, mut vitals, mut record, defence, slot, outcome)) =
             targets.get_mut(request.target)
         else {
             continue;
         };
-        let Some((_, position)) = identity_of((identity.0.as_deref(), identity.1)) else {
+        let Some(position) = position(place) else {
             continue;
         };
         let mut next_vitals = *vitals;
@@ -201,17 +216,4 @@ fn counted_row(
         },
         _ => row,
     })
-}
-
-type Identity<'a> = (
-    Option<&'a MotionState>,
-    Option<(&'a EntityUuid, &'a Transform)>,
-);
-
-fn identity_of(identity: Identity<'_>) -> Option<(EntityUuid, DVec3)> {
-    match identity {
-        (Some(state), _) => Some((state.0.key, state.0.body.position)),
-        (None, Some((key, transform))) => Some((*key, transform.translation)),
-        (None, None) => None,
-    }
 }
