@@ -76,11 +76,11 @@ impl Searcher {
         if !scene.region.contains(at.x, at.z)
             || at.y < scene.world.min_y()
             || at.y > scene.world.max_y()
-            || !scene.world.column_loaded(at.x, at.z)
+            || !scene.world.column_loaded(at)
         {
             return PathCell::AIR;
         }
-        scene.world.cell(at)
+        scene.world.path_cell(at)
     }
 
     pub(crate) fn block_type<W: PathWorld + ?Sized>(

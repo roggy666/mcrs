@@ -48,4 +48,9 @@ impl BodyFlags {
     pub const fn contains(self, other: Self) -> bool {
         self.0 & other.0 == other.0
     }
+
+    #[must_use]
+    pub const fn with(self, flag: Self, set: bool) -> Self {
+        if set { self.union(flag) } else { self }
+    }
 }

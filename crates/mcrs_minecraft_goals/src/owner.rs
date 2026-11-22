@@ -6,10 +6,10 @@ use mcrs_minecraft_brain::ItemTest;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::PoseBits;
 use mcrs_minecraft_brain::PoseIntent;
-use mcrs_minecraft_goal_world::GoalWorld;
 
 use crate::BEG_TIME;
 use crate::BegState;
+use crate::BrainWorld;
 use crate::FollowOwnerState;
 use crate::OwnerState;
 use crate::Sight;
@@ -25,11 +25,11 @@ const OWNER_LOOK_SPEED: f32 = 10.0;
 const PATH_UNITS: u8 = 5;
 const OWNER_HURT_WINDOW: u32 = 100;
 
-pub(crate) fn owner<W: GoalWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>) -> Option<Candidate> {
+pub(crate) fn owner<W: BrainWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>) -> Option<Candidate> {
     cx.me().owner.get().and_then(|id| cx.find(id))
 }
 
-fn can_move_to_owner<W: GoalWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>, owner: &Candidate) -> bool {
+fn can_move_to_owner<W: BrainWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>, owner: &Candidate) -> bool {
     let me = cx.me();
     !me.flags.contains(MobFlags::SITTING)
         && !me.flags.contains(MobFlags::PASSENGER)
@@ -37,7 +37,7 @@ fn can_move_to_owner<W: GoalWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>, owner: &Cand
         && !owner.flags.contains(CandidateFlags::SPECTATOR)
 }
 
-pub(crate) fn follow_can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn follow_can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     start: f32,
 ) -> bool {
@@ -53,7 +53,7 @@ pub(crate) fn follow_start(state: &mut FollowOwnerState) {
     state.timer = 0;
 }
 
-pub(crate) fn follow_tick<W: GoalWorld + ?Sized>(
+pub(crate) fn follow_tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     speed: f32,
     state: &mut FollowOwnerState,
@@ -74,7 +74,7 @@ pub(crate) fn follow_tick<W: GoalWorld + ?Sized>(
     cx.request_path_to(&owner, speed);
 }
 
-pub(crate) fn follow_can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn follow_can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     stop: f32,
 ) -> bool {
@@ -88,11 +88,11 @@ pub(crate) fn follow_can_continue<W: GoalWorld + ?Sized>(
         && cx.feet_distance_squared(&owner) > stop * stop
 }
 
-pub(crate) fn follow_stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
+pub(crate) fn follow_stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     cx.clear_path();
 }
 
-pub(crate) fn sit_can_start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
+pub(crate) fn sit_can_start<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
     let me = *cx.me();
     if !me.flags.contains(MobFlags::SITTING) && !me.flags.contains(MobFlags::TAME) {
         return false;
@@ -109,7 +109,7 @@ pub(crate) fn sit_can_start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -
     me.flags.contains(MobFlags::SITTING)
 }
 
-pub(crate) fn sit_start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
+pub(crate) fn sit_start<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     cx.clear_path();
     cx.intents.pose = Some(
         cx.intents
@@ -119,11 +119,11 @@ pub(crate) fn sit_start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     );
 }
 
-pub(crate) fn sit_can_continue<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
+pub(crate) fn sit_can_continue<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
     cx.me().flags.contains(MobFlags::SITTING)
 }
 
-pub(crate) fn sit_stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
+pub(crate) fn sit_stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     cx.intents.pose = Some(
         cx.intents
             .pose
@@ -132,7 +132,7 @@ pub(crate) fn sit_stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     );
 }
 
-pub(crate) fn beg_can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn beg_can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     range: f32,
     items: ItemTest,
@@ -173,7 +173,7 @@ pub(crate) fn beg_can_start<W: GoalWorld + ?Sized>(
     true
 }
 
-pub(crate) fn beg_start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut BegState) {
+pub(crate) fn beg_start<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut BegState) {
     cx.intents.pose = Some(
         cx.intents
             .pose
@@ -184,7 +184,7 @@ pub(crate) fn beg_start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state
     state.time = u8::try_from((40 + draw).div_ceil(2)).unwrap_or(u8::MAX);
 }
 
-pub(crate) fn beg_tick<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut BegState) {
+pub(crate) fn beg_tick<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut BegState) {
     if let Some(player) = state.player.get().and_then(|id| cx.find(id)) {
         let eye = cx.eye();
         let point = DVec3::new(player.position.x, eye.y, player.position.z);
@@ -194,7 +194,7 @@ pub(crate) fn beg_tick<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state:
     state.time = state.time.saturating_sub(1);
 }
 
-pub(crate) fn beg_can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn beg_can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     range: f32,
     items: ItemTest,
@@ -212,7 +212,7 @@ pub(crate) fn beg_can_continue<W: GoalWorld + ?Sized>(
         && player.hands.iter().any(|item| items.passes(tables, *item))
 }
 
-pub(crate) fn beg_stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut BegState) {
+pub(crate) fn beg_stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut BegState) {
     cx.intents.pose = Some(
         cx.intents
             .pose
@@ -222,7 +222,7 @@ pub(crate) fn beg_stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state:
     state.player = EntityRef::NONE;
 }
 
-fn wants_to_attack<W: GoalWorld + ?Sized>(
+fn wants_to_attack<W: BrainWorld + ?Sized>(
     cx: &Cx<'_, '_, '_, W>,
     candidate: &Candidate,
     owner: &Candidate,
@@ -236,7 +236,7 @@ fn wants_to_attack<W: GoalWorld + ?Sized>(
     cx.can_attack(candidate)
 }
 
-pub(crate) fn owner_hurt_by_can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn owner_hurt_by_can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &OwnerState,
 ) -> bool {
@@ -267,7 +267,7 @@ pub(crate) fn owner_hurt_by_can_start<W: GoalWorld + ?Sized>(
     ) && wants_to_attack(cx, &candidate, &owner)
 }
 
-pub(crate) fn owner_hurt_by_start<W: GoalWorld + ?Sized>(
+pub(crate) fn owner_hurt_by_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &mut OwnerState,
 ) {
@@ -282,7 +282,7 @@ pub(crate) fn owner_hurt_by_start<W: GoalWorld + ?Sized>(
     state.unseen = 0;
 }
 
-pub(crate) fn owner_can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn owner_can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &mut OwnerState,
 ) -> bool {
@@ -298,6 +298,6 @@ pub(crate) fn owner_can_continue<W: GoalWorld + ?Sized>(
     )
 }
 
-pub(crate) fn owner_stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
+pub(crate) fn owner_stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     cx.set_target(None);
 }

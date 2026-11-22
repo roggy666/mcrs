@@ -2,6 +2,7 @@ use alloc::vec::Vec;
 
 use crate::Cadence;
 use crate::Decision;
+use crate::IssuedPath;
 use crate::PlayerRow;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
@@ -15,7 +16,15 @@ pub struct TileBrains<B> {
     pub(crate) brains: Vec<B>,
     pub(crate) near_players: Vec<PlayerRow>,
     pub(crate) decisions: Vec<Decision>,
+    pub(crate) paths: Vec<IssuedPath>,
+    pub(crate) deferred: Vec<Deferred>,
     pub(crate) evaluations: u64,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Deferred {
+    pub tick: u64,
+    pub key: EntityUuid,
 }
 
 impl<B> Default for TileBrains<B> {
@@ -28,6 +37,8 @@ impl<B> Default for TileBrains<B> {
             brains: Vec::new(),
             near_players: Vec::new(),
             decisions: Vec::new(),
+            paths: Vec::new(),
+            deferred: Vec::new(),
             evaluations: 0,
         }
     }
@@ -56,6 +67,16 @@ impl<B> TileBrains<B> {
     #[must_use]
     pub const fn evaluations(&self) -> u64 {
         self.evaluations
+    }
+
+    #[must_use]
+    pub fn pending_searches(&self) -> usize {
+        self.deferred.len()
+    }
+
+    #[must_use]
+    pub fn oldest_deferral(&self) -> Option<u64> {
+        self.deferred.iter().map(|deferred| deferred.tick).min()
     }
 
     pub fn iter(&self) -> impl Iterator<Item = BrainEntry<'_, B>> {
@@ -145,6 +166,8 @@ impl<B> TileBrains<B> {
             brains: Vec::with_capacity(count),
             near_players: core::mem::take(&mut self.near_players),
             decisions: core::mem::take(&mut self.decisions),
+            paths: core::mem::take(&mut self.paths),
+            deferred: core::mem::take(&mut self.deferred),
             evaluations: self.evaluations,
         };
         let mut held = core::mem::take(self).into_entries().peekable();

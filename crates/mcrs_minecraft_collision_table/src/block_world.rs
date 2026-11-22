@@ -22,6 +22,22 @@ pub struct BlockSection<S> {
     masks: SectionMasks,
 }
 
+impl<'a, V: BlockVolume> BlockWorld<'a, V> {
+    pub fn section_at(&self, at: SectionPos) -> SectionLookup<BlockSection<V::Section<'a>>> {
+        let blocks: &'a V = self.blocks;
+        match blocks.section(at) {
+            Ok(blocks) => {
+                let mut buffer = PaletteBuffer::default();
+                let states = blocks.palette(&mut buffer).iter().map(|(state, _)| state);
+                let masks = SectionMasks::from_palette(self.table, states);
+                SectionLookup::Loaded(BlockSection { blocks, masks })
+            }
+            Err(Unavailable::Outside) => SectionLookup::Outside,
+            Err(Unavailable::Unloaded | Unavailable::Foreign) => SectionLookup::Unloaded,
+        }
+    }
+}
+
 impl<V: BlockVolume> CollisionWorld for BlockWorld<'_, V> {
     type Section<'s>
         = BlockSection<V::Section<'s>>

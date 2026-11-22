@@ -2,8 +2,8 @@ use mcrs_minecraft_brain::Candidate;
 use mcrs_minecraft_brain::CandidateFlags;
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::MobFlags;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::Sight;
 use crate::TARGET_WAIT;
 use crate::TameRule;
@@ -27,7 +27,7 @@ pub(crate) struct NearestParams {
     pub(crate) tame: TameRule,
 }
 
-fn passes_filter<W: GoalWorld + ?Sized>(
+fn passes_filter<W: BrainWorld + ?Sized>(
     cx: &Cx<'_, '_, '_, W>,
     candidate: &Candidate,
     filter: TargetFilter,
@@ -44,7 +44,7 @@ fn passes_filter<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     params: &NearestParams,
     slot: usize,
@@ -98,12 +98,12 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut TargetState) {
+pub(crate) fn start<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut TargetState) {
     cx.set_target(state.kept.get());
     state.unseen = 0;
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     params: &NearestParams,
     state: &mut TargetState,
@@ -135,7 +135,7 @@ pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn base_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn base_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     sight: Sight,
     follow: f64,
@@ -169,7 +169,7 @@ pub(crate) fn base_continue<W: GoalWorld + ?Sized>(
     true
 }
 
-pub(crate) fn stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut TargetState) {
+pub(crate) fn stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut TargetState) {
     cx.set_target(None);
     state.kept = EntityRef::NONE;
 }

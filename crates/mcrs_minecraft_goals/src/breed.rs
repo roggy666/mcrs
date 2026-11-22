@@ -4,8 +4,8 @@ use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::Proposal;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::BreedState;
 use crate::Kinds;
 use crate::Mates;
@@ -24,7 +24,7 @@ pub(crate) fn kind_set(kinds: Kinds, own: mcrs_minecraft_brain::MobKind) -> Kind
     }
 }
 
-fn can_mate<W: GoalWorld + ?Sized>(
+fn can_mate<W: BrainWorld + ?Sized>(
     cx: &Cx<'_, '_, '_, W>,
     candidate: &Candidate,
     mates: Mates,
@@ -52,7 +52,7 @@ fn can_mate<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     kinds: Kinds,
     mates: Mates,
@@ -81,7 +81,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     partner.is_some()
 }
 
-pub(crate) fn tick<W: GoalWorld + ?Sized>(
+pub(crate) fn tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     speed: f32,
     state: &mut BreedState,
@@ -101,7 +101,7 @@ pub(crate) fn tick<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &BreedState,
 ) -> bool {

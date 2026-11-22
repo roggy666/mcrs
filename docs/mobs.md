@@ -138,11 +138,19 @@ to the population.
 
 ## 6. Path search
 
-This branch keeps the straight route of `mcrs_minecraft_goal_world`. The combat goals ask for a
-path to the target; a wall between them makes the mob stop at the wall. A later branch adds
-`mcrs_minecraft_pathfind` with the ground node evaluator and the search of `docs/spec/pathfinding.md`,
-a `Navigation` on the host and a node budget per tile. `PathIntent::Walk` keeps its shape, so that
-branch changes the resolver of a request, not the goals.
+`mcrs_minecraft_pathfind` (no Bevy) holds the ground node evaluator and the search of
+`docs/spec/pathfinding.md`, the requests, the navigation and the follower. A goal asks the
+`PathTrack` of its brain for a path; the brain runs the search inline in its tile task of the AI
+stage, on the per-task `Searcher` scratch of `TurnScratch` and within the node budget of the tile
+(`StageConfig::path_budget` for the dimension, `tile_path_budget` per tile; a request that does
+not fit is deferred whole and runs first in the next tick, PATH-DEV-010). The found nodes travel
+beside the decision in `IssuedDecisions::paths` (sorted by mob and ticket) and apply with it into
+the `MobNavigation` component of the mob on the host; `PathIntent::Walk` keeps its shape. The
+follower of `mcrs_minecraft_mob_control` walks the nodes in the hot tick (PATH-FOL), and the host
+flags a recompute from the block changes of the previous tick against the box of each path
+(PATH-RCP-003); the brain re-requests its stored target under the 20-tick gate. The search view
+of the host keeps a cache of 64 sections per search (PATH-PRF-002). `run_tiles` chunks the tiles
+by a cost of `brains + 16 × deferred requests`.
 
 ## 7. Use cases
 
@@ -180,6 +188,7 @@ branch changes the resolver of a request, not the goals.
   on a player goes to the same queue and applies once the player entity carries `Vitals` and a
   `HitRecord`. The knockback of a melee hit (an impulse for a mob, a velocity write for a player)
   still waits for the pipeline.
-- The path search is the next branch (section 6).
+- The fly and swim node evaluators, and the fluid model of the kernel that swimming needs, are
+  later branches with their specifications first.
 - The save of the anger state, the tame state and the owner goes through the persisted registry
   (#159); no rule states the save of a mob yet.

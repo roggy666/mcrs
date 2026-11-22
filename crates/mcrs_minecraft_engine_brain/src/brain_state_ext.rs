@@ -35,6 +35,8 @@ use mcrs_minecraft_mob_control::PathEnd;
 use mcrs_minecraft_mob_control::RangedReflex;
 use mcrs_minecraft_mob_control::RangedStep;
 use mcrs_minecraft_mob_control::Rotations;
+use mcrs_minecraft_pathfind::FoundPath;
+use mcrs_minecraft_pathfind::Navigation;
 use mcrs_minecraft_physics::EntityState;
 use mcrs_minecraft_physics::Living;
 use mcrs_minecraft_physics::MoveInput;
@@ -80,7 +82,14 @@ pub(crate) trait BrainStateExt {
         sensed: Sensed<'_>,
     ) -> Observed;
 
-    fn apply(&mut self, intents: &Intents, state: &EntityState);
+    fn apply<V: BlockVolume>(
+        &mut self,
+        intents: &Intents,
+        state: &EntityState,
+        navigation: &mut Navigation,
+        found: Option<&FoundPath>,
+        world: &BlockGoalWorld<'_, V>,
+    );
 
     fn steer<V: BlockVolume, B>(
         &mut self,
@@ -89,6 +98,7 @@ pub(crate) trait BrainStateExt {
         tick: u64,
         id: EntityId,
         sensed: Sensed<'_>,
+        navigation: &mut Navigation,
     ) -> Option<Steered>;
 }
 
@@ -229,6 +239,7 @@ impl BrainStateExt for BrainState {
             (state.body.flags.on_ground, MobFlags::ON_GROUND),
             (sensed.burning(), MobFlags::ON_FIRE),
             (sensed.exposure().in_sun, MobFlags::IN_SUN),
+            (sensed.recompute_waiting, MobFlags::RECOMPUTE_PATH),
             (state.contact.in_water(), MobFlags::IN_WATER),
             (self.panic == Panic::Panicking, MobFlags::IN_PANIC),
             (
@@ -266,8 +277,18 @@ impl BrainStateExt for BrainState {
         }
     }
 
-    fn apply(&mut self, intents: &Intents, state: &EntityState) {
-        self.control.apply(intents, state.body.position);
+    fn apply<V: BlockVolume>(
+        &mut self,
+        intents: &Intents,
+        state: &EntityState,
+        navigation: &mut Navigation,
+        found: Option<&FoundPath>,
+        world: &BlockGoalWorld<'_, V>,
+    ) {
+        self.control
+            .apply(intents, navigation, found, state.body.position, |at| {
+                world.is_cauldron(at)
+            });
         if let Some(panic) = intents.panic {
             self.panic = panic;
         }
@@ -306,9 +327,6 @@ impl BrainStateExt for BrainState {
         if let Some(leap) = intents.leap {
             self.leap = Some(leap);
         }
-        if let Some(speed) = intents.speed {
-            self.control.set_speed_modifier(speed);
-        }
         if let Some(pose) = intents.pose {
             self.pose =
                 PoseBits::of_bits((self.pose.bits() | pose.set.bits()) & !pose.clear.bits());
@@ -322,6 +340,7 @@ impl BrainStateExt for BrainState {
         tick: u64,
         id: EntityId,
         sensed: Sensed<'_>,
+        navigation: &mut Navigation,
     ) -> Option<Steered> {
         let state = sensed.state;
         let living = state.living.filter(|_| sensed.is_alive())?;
@@ -360,17 +379,15 @@ impl BrainStateExt for BrainState {
                 step_height: living.attributes.step_height as f32,
                 head_yaw_limit,
             },
-            flags: if on_ground {
-                BodyFlags::ON_GROUND
-            } else {
-                BodyFlags::NONE
-            },
+            flags: BodyFlags::NONE
+                .with(BodyFlags::ON_GROUND, on_ground)
+                .with(BodyFlags::IN_LIQUID, state.contact.in_water()),
             sideways: living.input.sideways,
             speed: living.speed,
             movement_speed: living.attributes.movement_speed,
             feet_block_top: world.feet_top(BlockPos::from(position)),
         };
-        let out = self.control.before_travel(&input);
+        let out = self.control.before_travel(&input, navigation, world);
         self.travelled = Some(input);
         let intent = MobIntent {
             steering: out.steering.map(|steering| Steering {

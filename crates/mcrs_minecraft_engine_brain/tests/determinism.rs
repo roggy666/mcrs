@@ -48,8 +48,8 @@ const SHORT_TICKS: u64 = 60;
 const HALF_TILES: i32 = 3;
 const CACTUS: u32 = 7;
 const HIT_TICK: u64 = 50;
-const SHORT_GOLDEN: u64 = 13_365_712_349_125_699_181;
-const LONG_GOLDEN: u64 = 18_298_149_933_240_569_738;
+const SHORT_GOLDEN: u64 = 10_570_632_312_352_256_482;
+const LONG_GOLDEN: u64 = 7_854_557_506_117_327_600;
 
 fn positions() -> Vec<DVec3> {
     let edge = f64::from(HALF_TILES * 32 - 2);

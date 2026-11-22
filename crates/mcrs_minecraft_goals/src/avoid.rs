@@ -2,13 +2,13 @@ use glam::DVec3;
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::PlayerRow;
-use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_voxel::BlockPos;
 
 use crate::AVOID_SEARCH;
 use crate::AVOID_STRENGTH;
 use crate::AvoidExtra;
 use crate::AvoidState;
+use crate::BrainWorld;
 use crate::SearchRange;
 use crate::TargetSet;
 use crate::query::Combat;
@@ -32,7 +32,7 @@ pub(crate) struct AvoidParams {
     pub(crate) extra: AvoidExtra,
 }
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     params: &AvoidParams,
     state: &mut AvoidState,
@@ -83,12 +83,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     if entity.position.distance_squared(destination) < entity.position.distance_squared(feet) {
         return false;
     }
-    if cx
-        .turn
-        .world
-        .route(feet, BlockPos::from(destination))
-        .is_none()
-    {
+    if !cx.has_route_to_point(destination) {
         return false;
     }
     state.entity = EntityRef::of(entity.id);
@@ -96,7 +91,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     true
 }
 
-pub(crate) fn start<W: GoalWorld + ?Sized>(
+pub(crate) fn start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     params: &AvoidParams,
     state: &AvoidState,
@@ -107,7 +102,7 @@ pub(crate) fn start<W: GoalWorld + ?Sized>(
     cx.request_path(state.destination.bottom_centre(), params.walk);
 }
 
-pub(crate) fn tick<W: GoalWorld + ?Sized>(
+pub(crate) fn tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     params: &AvoidParams,
     state: &AvoidState,
@@ -123,7 +118,7 @@ pub(crate) fn tick<W: GoalWorld + ?Sized>(
     cx.intents.speed = Some(if near { params.sprint } else { params.walk });
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
     cx.busy();
     cx.path_running()
 }

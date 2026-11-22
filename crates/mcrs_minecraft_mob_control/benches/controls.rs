@@ -18,6 +18,13 @@ use mcrs_minecraft_mob_control::ControlOutput;
 use mcrs_minecraft_mob_control::LookDefaults;
 use mcrs_minecraft_mob_control::MobControl;
 use mcrs_minecraft_mob_control::Rotations;
+use mcrs_minecraft_pathfind::FoundPath;
+use mcrs_minecraft_pathfind::Navigation;
+use mcrs_minecraft_pathfind::PathCell;
+use mcrs_minecraft_pathfind::PathNode;
+use mcrs_minecraft_pathfind::PathType;
+use mcrs_minecraft_pathfind::PathWorld;
+use mcrs_voxel::BlockPos;
 
 const MOBS: u32 = 50_000;
 const PIG_LOOK: LookDefaults = LookDefaults {
@@ -25,8 +32,48 @@ const PIG_LOOK: LookDefaults = LookDefaults {
     pitch_limit: MobData::DEFAULT.pitch_limit,
 };
 
+struct Open;
+
+impl PathWorld for Open {
+    fn path_cell(&self, _: BlockPos) -> PathCell {
+        PathCell::AIR
+    }
+
+    fn min_y(&self) -> i32 {
+        -64
+    }
+
+    fn max_y(&self) -> i32 {
+        319
+    }
+
+    fn column_loaded(&self, _: BlockPos) -> bool {
+        true
+    }
+
+    fn collides(&self, _: DVec3, _: DVec3) -> bool {
+        false
+    }
+}
+
+fn found_for(intents: &Intents) -> Option<FoundPath> {
+    match intents.path? {
+        PathIntent::Walk { target, .. } => {
+            let block = BlockPos::from(target);
+            Some(FoundPath {
+                nodes: vec![PathNode::new(block, PathType::Walkable)],
+                target: block,
+                reach: 1,
+                reached: true,
+            })
+        }
+        PathIntent::Clear { .. } => None,
+    }
+}
+
 struct Mob {
     control: MobControl,
+    navigation: Navigation,
     input: ControlInput,
 }
 
@@ -62,7 +109,11 @@ fn mobs() -> Vec<Mob> {
                     ..Intents::default()
                 },
             };
-            control.apply(&intents, position);
+            let mut navigation = Navigation::default();
+            let found = found_for(&intents);
+            control.apply(&intents, &mut navigation, found.as_ref(), position, |_| {
+                false
+            });
             let input = ControlInput {
                 tick: 0,
                 position,
@@ -79,7 +130,11 @@ fn mobs() -> Vec<Mob> {
                 movement_speed: 0.25,
                 feet_block_top: None,
             };
-            Mob { control, input }
+            Mob {
+                control,
+                navigation,
+                input,
+            }
         })
         .collect()
 }
@@ -87,10 +142,10 @@ fn mobs() -> Vec<Mob> {
 fn tick(mobs: &mut [Mob], outputs: &mut Vec<ControlOutput>, ends: &mut Vec<DVec3>) -> Duration {
     let start = Instant::now();
     outputs.clear();
-    outputs.extend(
-        mobs.iter_mut()
-            .map(|mob| mob.control.before_travel(&mob.input)),
-    );
+    outputs.extend(mobs.iter_mut().map(|mob| {
+        mob.control
+            .before_travel(&mob.input, &mut mob.navigation, &Open)
+    }));
     let mut timed = start.elapsed();
     ends.clear();
     for (mob, output) in mobs.iter_mut().zip(outputs.iter()) {

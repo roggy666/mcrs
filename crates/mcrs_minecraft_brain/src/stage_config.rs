@@ -10,6 +10,8 @@ pub struct StageConfig {
     max_lag: u8,
     delay: AiDelay,
     wake: WakeMode,
+    path_budget: u32,
+    tile_path_budget: u32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -28,6 +30,30 @@ impl StageConfig {
             max_lag: Self::DEFAULT_MAX_LAG,
             delay: AiDelay::AtLeast(1),
             wake: WakeMode::Sleep,
+            path_budget: Self::DEFAULT_PATH_BUDGET,
+            tile_path_budget: Self::DEFAULT_TILE_PATH_BUDGET,
+        }
+    }
+
+    pub const DEFAULT_PATH_BUDGET: u32 = 65_536;
+    pub const DEFAULT_TILE_PATH_BUDGET: u32 = 4096;
+
+    #[must_use]
+    pub const fn path_budget(&self) -> u32 {
+        self.path_budget
+    }
+
+    #[must_use]
+    pub const fn tile_path_budget(&self) -> u32 {
+        self.tile_path_budget
+    }
+
+    #[must_use]
+    pub const fn with_path_budgets(self, path_budget: u32, tile_path_budget: u32) -> Self {
+        Self {
+            path_budget,
+            tile_path_budget,
+            ..self
         }
     }
 

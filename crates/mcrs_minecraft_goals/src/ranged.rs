@@ -1,7 +1,7 @@
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::RangedIntent;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::RangedState;
 use crate::query::Cx;
 
@@ -13,7 +13,7 @@ pub(crate) struct RangedParams {
     pub(crate) range: f32,
 }
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &mut RangedState,
 ) -> bool {
@@ -25,7 +25,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     true
 }
 
-pub(crate) fn start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, params: &RangedParams) {
+pub(crate) fn start<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, params: &RangedParams) {
     cx.intents.ranged = Some(RangedIntent::Start {
         speed_modifier: params.speed,
         min_interval: params.min_interval,
@@ -34,7 +34,7 @@ pub(crate) fn start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, params: &
     });
 }
 
-pub(crate) fn tick<W: GoalWorld + ?Sized>(
+pub(crate) fn tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     params: &RangedParams,
     state: &RangedState,
@@ -50,7 +50,7 @@ pub(crate) fn tick<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &mut RangedState,
 ) -> bool {
@@ -67,7 +67,7 @@ pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
         && cx.path_running()
 }
 
-pub(crate) fn stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut RangedState) {
+pub(crate) fn stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut RangedState) {
     state.target = EntityRef::NONE;
     cx.intents.ranged = Some(RangedIntent::Stop);
 }

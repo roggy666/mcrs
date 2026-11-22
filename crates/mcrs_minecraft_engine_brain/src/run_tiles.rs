@@ -13,12 +13,23 @@ pub(crate) fn run_tiles<B, W>(
     B: MobBrain<W> + Send,
     W: GoalWorld + Sync,
 {
-    let per_task = work
-        .len()
-        .div_ceil(pool.thread_num().saturating_mul(4).max(1))
-        .max(1);
+    let tasks = pool.thread_num().saturating_mul(4).max(1);
+    let total: usize = work.iter().map(TileWork::cost).sum();
+    let share = total.div_ceil(tasks).max(1);
     pool.scope(|scope| {
-        for chunk in work.chunks_mut(per_task) {
+        let mut rest = work;
+        while !rest.is_empty() {
+            let mut cost = 0;
+            let mut count = 0;
+            for task in rest.iter() {
+                if count > 0 && cost + task.cost() > share {
+                    break;
+                }
+                cost += task.cost();
+                count += 1;
+            }
+            let (chunk, tail) = rest.split_at_mut(count);
+            rest = tail;
             scope.spawn(async move {
                 let mut scratch = TurnScratch::default();
                 for task in chunk {

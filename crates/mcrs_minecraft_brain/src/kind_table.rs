@@ -1,4 +1,5 @@
 use alloc::vec::Vec;
+use mcrs_minecraft_pathfind::PathType;
 
 use crate::MobFlags;
 use crate::MobKind;
@@ -13,6 +14,7 @@ pub struct KindData {
     pub pitch_limit: f32,
     pub head_yaw_limit: f32,
     pub tempt_range: f32,
+    pub malus: &'static [(PathType, f32)],
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -82,10 +84,15 @@ impl KindData {
             pitch_limit: Self::DEFAULT_PITCH_LIMIT,
             head_yaw_limit: Self::DEFAULT_HEAD_YAW_LIMIT,
             tempt_range: Self::DEFAULT_TEMPT_RANGE,
+            malus: &[],
         }
     }
 
     #[must_use]
+    pub const fn with_malus(self, malus: &'static [(PathType, f32)]) -> Self {
+        Self { malus, ..self }
+    }
+
     pub const fn with_baby(self, baby: Dimensions) -> Self {
         Self { baby, ..self }
     }

@@ -73,7 +73,7 @@ pub fn follow<W: PathWorld + ?Sized>(
     };
     let point = next.point(input.width);
     let block = BlockPos::from(point);
-    let below = world.cell(block.below());
+    let below = world.path_cell(block.below());
     let y = if below.is_air() {
         point.y
     } else {

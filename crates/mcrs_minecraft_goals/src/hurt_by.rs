@@ -2,9 +2,9 @@ use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::Proposal;
 use mcrs_minecraft_brain::Receivers;
-use mcrs_minecraft_goal_world::GoalWorld;
 
 use crate::Alert;
+use crate::BrainWorld;
 use crate::HurtByState;
 use crate::Sight;
 use crate::nearest_target::base_continue;
@@ -15,7 +15,7 @@ use crate::query::Visibility;
 
 const UNSEEN_LIMIT: u8 = 150;
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     ignored: &KindSet,
     state: &HurtByState,
@@ -43,7 +43,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     )
 }
 
-pub(crate) fn start<W: GoalWorld + ?Sized>(
+pub(crate) fn start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     alert: Alert,
     state: &mut HurtByState,
@@ -69,7 +69,7 @@ pub(crate) fn start<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &mut HurtByState,
 ) -> bool {
@@ -85,7 +85,7 @@ pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
     )
 }
 
-pub(crate) fn stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut HurtByState) {
+pub(crate) fn stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut HurtByState) {
     cx.set_target(None);
     state.goal_target = EntityRef::NONE;
 }

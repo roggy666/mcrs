@@ -4,6 +4,7 @@ use mcrs_minecraft_brain::KindFlags;
 use mcrs_minecraft_brain::KindTable;
 use mcrs_minecraft_brain::MobKind;
 use mcrs_minecraft_entity::entity_type_keys::EntityType;
+use mcrs_minecraft_pathfind::PathType;
 
 #[must_use]
 pub const fn kind(entity_type: EntityType) -> MobKind {
@@ -111,5 +112,5 @@ pub const KINDS: &[(EntityType, KindData)] = &[
     (EntityType::ZombieHorse, KindData::new(Dimensions::new(1.3964844, 1.6, 1.52), KindFlags::AGEABLE.union(KindFlags::ANIMAL).union(KindFlags::CAN_BE_TAME))),
     (EntityType::ZombieNautilus, KindData::new(Dimensions::new(0.875, 0.95, 0.2751), KindFlags::NONE)),
     (EntityType::ZombieVillager, KindData::new(Dimensions::new(0.6, 1.95, 1.74), KindFlags::AGEABLE)),
-    (EntityType::ZombifiedPiglin, KindData::new(Dimensions::new(0.6, 1.95, 1.79), KindFlags::AGEABLE.union(KindFlags::FIRE_IMMUNE))),
+    (EntityType::ZombifiedPiglin, KindData::new(Dimensions::new(0.6, 1.95, 1.79), KindFlags::AGEABLE.union(KindFlags::FIRE_IMMUNE)).with_malus(&[(PathType::Lava, 8.0)])),
 ];

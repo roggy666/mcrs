@@ -41,6 +41,16 @@ pub use melee::in_reach;
 pub use panic::*;
 pub use parts::*;
 pub use path_track::*;
+
+pub trait BrainWorld:
+    mcrs_minecraft_goal_world::GoalWorld + mcrs_minecraft_pathfind::PathSearchWorld
+{
+}
+
+impl<W: mcrs_minecraft_goal_world::GoalWorld + mcrs_minecraft_pathfind::PathSearchWorld + ?Sized>
+    BrainWorld for W
+{
+}
 pub use random_position::*;
 pub use stroll::*;
 pub use table_brain::*;

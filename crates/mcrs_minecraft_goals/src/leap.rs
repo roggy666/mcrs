@@ -1,7 +1,7 @@
 use mcrs_minecraft_brain::Leap;
 use mcrs_minecraft_brain::MobFlags;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::Gate;
 use crate::LEAP_WAIT;
 use crate::query::Cx;
@@ -10,7 +10,7 @@ const NEAR_SQUARED: f64 = 4.0;
 const FAR_SQUARED: f64 = 16.0;
 const CHANCE: f64 = 1.0 / 3.0;
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     gate: &mut Gate,
 ) -> bool {
@@ -33,7 +33,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     gate.passes(cx.turn, LEAP_WAIT, CHANCE)
 }
 
-pub(crate) fn start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, vertical: f32) {
+pub(crate) fn start<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, vertical: f32) {
     let Some(target) = cx.attack_target() else {
         return;
     };
@@ -52,7 +52,7 @@ pub(crate) fn start<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, vertical:
     });
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) -> bool {
     cx.busy();
     !cx.me().flags.contains(MobFlags::ON_GROUND)
 }

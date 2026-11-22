@@ -12,8 +12,8 @@ use mcrs_minecraft_brain::Panic;
 use mcrs_minecraft_brain::Selector;
 use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_brain::TurnScratch;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::GoalKind;
 use crate::GoalRow;
 use crate::GoalState;
@@ -165,9 +165,18 @@ fn initial_state(kind: &GoalKind) -> GoalState {
     }
 }
 
-impl<W: GoalWorld + ?Sized> MobBrain<W> for TableBrain {
+impl<W: BrainWorld + ?Sized> MobBrain<W> for TableBrain {
     fn rules(&self) -> &'static BrainRules {
         &self.table.rules
+    }
+
+    fn retry_search(
+        &mut self,
+        turn: &Turn<'_, W>,
+        scratch: &mut TurnScratch,
+        intents: &mut Intents,
+    ) {
+        self.path.retry(turn, scratch, intents);
     }
 
     fn evaluate(
@@ -187,6 +196,7 @@ impl<W: GoalWorld + ?Sized> MobBrain<W> for TableBrain {
         }
         let disabled = view.flags.disabled();
         let split = self.table.targets.len().min(self.state.len());
+        self.path.recompute_if_due(turn, scratch, intents);
         {
             let mut cx = Cx {
                 turn,
@@ -241,7 +251,7 @@ struct ListRun<'x, 'r, 't, 'a, W: ?Sized> {
     examined: u32,
 }
 
-impl<W: GoalWorld + ?Sized> ListRun<'_, '_, '_, '_, W> {
+impl<W: BrainWorld + ?Sized> ListRun<'_, '_, '_, '_, W> {
     fn with_state(
         &mut self,
         goal: usize,
@@ -334,14 +344,14 @@ fn ranged_params(goal: &GoalKind) -> Option<RangedParams> {
     }
 }
 
-fn note_gate<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, due: Option<u64>) {
+fn note_gate<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, due: Option<u64>) {
     match due {
         Some(due) => cx.wake.due_at(Some(due)),
         None => cx.wake.busy = true,
     }
 }
 
-impl<W: GoalWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
+impl<W: BrainWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
     fn count(&self) -> usize {
         self.rows.len()
     }

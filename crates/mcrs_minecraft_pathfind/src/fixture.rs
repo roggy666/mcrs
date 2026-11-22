@@ -8,6 +8,7 @@ use mcrs_voxel::BlockPos;
 use crate::CellBits;
 use crate::MobPath;
 use crate::PathCell;
+use crate::PathSearchWorld;
 use crate::PathWorld;
 use crate::Request;
 use crate::Searcher;
@@ -70,12 +71,12 @@ impl MapWorld {
     }
 
     fn solid_at(&self, at: BlockPos) -> bool {
-        self.cell(at).bits.contains(CellBits::SHAPE)
+        self.path_cell(at).bits.contains(CellBits::SHAPE)
     }
 }
 
 impl PathWorld for MapWorld {
-    fn cell(&self, at: BlockPos) -> PathCell {
+    fn path_cell(&self, at: BlockPos) -> PathCell {
         if let Some(cell) = self.cells.get(&(at.x, at.y, at.z)) {
             return *cell;
         }
@@ -94,7 +95,7 @@ impl PathWorld for MapWorld {
         319
     }
 
-    fn column_loaded(&self, _: i32, _: i32) -> bool {
+    fn column_loaded(&self, _: BlockPos) -> bool {
         true
     }
 
@@ -108,7 +109,7 @@ impl PathWorld for MapWorld {
                     if !self.solid_at(at) {
                         continue;
                     }
-                    let cell = self.cell(at);
+                    let cell = self.path_cell(at);
                     let top = f64::from(y) + f64::from(cell.top);
                     if min.y < top && max.y > f64::from(y) {
                         return true;
@@ -126,6 +127,14 @@ pub(crate) fn near(path: &[BlockPos], target: BlockPos) -> bool {
     path.last().is_some_and(|end| {
         (end.x - target.x).abs() + (end.y - target.y).abs() + (end.z - target.z).abs() <= 1
     })
+}
+
+impl PathSearchWorld for MapWorld {
+    type Search<'a> = &'a MapWorld;
+
+    fn open(&self, _: &MobPath) -> Self::Search<'_> {
+        self
+    }
 }
 
 pub(crate) fn zombie_at(x: f64, y: f64, z: f64) -> MobPath {

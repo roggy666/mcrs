@@ -1,7 +1,7 @@
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::ItemTest;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::TemptState;
 use crate::query::Cx;
 
@@ -9,7 +9,7 @@ const STOP_DISTANCE_SQUARED: f64 = 2.5 * 2.5;
 const CALM_DOWN_TICKS: u32 = 100;
 const HEAD_SPEED_BONUS: f32 = 20.0;
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     items: ItemTest,
     state: &mut TemptState,
@@ -47,7 +47,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     player.is_some()
 }
 
-pub(crate) fn tick<W: GoalWorld + ?Sized>(
+pub(crate) fn tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     speed: f32,
     state: &TemptState,
@@ -65,7 +65,7 @@ pub(crate) fn tick<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut TemptState) {
+pub(crate) fn stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, state: &mut TemptState) {
     state.player = EntityRef::NONE;
     cx.clear_path();
     state.calm_until = (cx.tick() as u32).wrapping_add(CALM_DOWN_TICKS).max(1);

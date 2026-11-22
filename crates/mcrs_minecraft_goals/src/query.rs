@@ -12,9 +12,8 @@ use mcrs_minecraft_brain::TargetIntent;
 use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_brain::TurnScratch;
 use mcrs_minecraft_entity_key::EntityId;
-use mcrs_minecraft_goal_world::GoalWorld;
-use mcrs_voxel::BlockPos;
 
+use crate::BrainWorld;
 use crate::PathTrack;
 use crate::look_hold;
 
@@ -66,7 +65,7 @@ pub(crate) struct Combat {
     pub(crate) visibility: Visibility,
 }
 
-impl<W: GoalWorld + ?Sized> Cx<'_, '_, '_, W> {
+impl<W: BrainWorld + ?Sized> Cx<'_, '_, '_, W> {
     pub(crate) fn me(&self) -> &MobView {
         self.turn.view
     }
@@ -305,26 +304,25 @@ impl<W: GoalWorld + ?Sized> Cx<'_, '_, '_, W> {
 
     pub(crate) fn request_path(&mut self, point: DVec3, speed_modifier: f32) {
         self.path
-            .request(self.turn, point, speed_modifier, self.intents);
+            .request(self.turn, self.scratch, point, speed_modifier, self.intents);
     }
 
     pub(crate) fn request_path_to(&mut self, candidate: &Candidate, speed_modifier: f32) -> bool {
-        let target = BlockPos::from(candidate.position);
-        match self.turn.world.route(self.turn.view.position, target) {
-            Some(end) => {
-                self.path.walk(end, speed_modifier, self.intents);
-                true
-            }
-            None => false,
-        }
+        self.path.request_to(
+            self.turn,
+            self.scratch,
+            candidate,
+            speed_modifier,
+            self.intents,
+        )
     }
 
-    pub(crate) fn has_route_to(&self, candidate: &Candidate) -> bool {
-        let target = BlockPos::from(candidate.position);
-        self.turn
-            .world
-            .route(self.turn.view.position, target)
-            .is_some()
+    pub(crate) fn has_route_to(&mut self, candidate: &Candidate) -> bool {
+        self.path.has_route_to(self.turn, self.scratch, candidate)
+    }
+
+    pub(crate) fn has_route_to_point(&mut self, point: DVec3) -> bool {
+        self.path.has_route_to_point(self.turn, self.scratch, point)
     }
 
     pub(crate) fn clear_path(&mut self) {

@@ -117,11 +117,11 @@ pub fn adjust_target<W: PathWorld + ?Sized>(world: &W, target: BlockPos) -> Bloc
     let min_y = world.min_y();
     let max_y = world.max_y();
     let mut found = None;
-    if world.cell(target).is_air() {
+    if world.path_cell(target).is_air() {
         let mut y = target.y - 1;
         while y > min_y {
             let at = BlockPos::new(target.x, y, target.z);
-            if !world.cell(at).is_air() {
+            if !world.path_cell(at).is_air() {
                 return BlockPos::new(target.x, y + 1, target.z);
             }
             y -= 1;
@@ -129,7 +129,7 @@ pub fn adjust_target<W: PathWorld + ?Sized>(world: &W, target: BlockPos) -> Bloc
         let mut y = target.y + 1;
         while y <= max_y {
             let at = BlockPos::new(target.x, y, target.z);
-            if !world.cell(at).is_air() {
+            if !world.path_cell(at).is_air() {
                 found = Some(at);
                 break;
             }
@@ -137,11 +137,11 @@ pub fn adjust_target<W: PathWorld + ?Sized>(world: &W, target: BlockPos) -> Bloc
         }
     }
     let mut p = found.unwrap_or(target);
-    if !world.cell(p).is_solid() {
+    if !world.path_cell(p).is_solid() {
         return p;
     }
     p = p.offset(0, 1, 0);
-    while p.y <= max_y && world.cell(p).is_solid() {
+    while p.y <= max_y && world.path_cell(p).is_solid() {
         p = p.offset(0, 1, 0);
     }
     p

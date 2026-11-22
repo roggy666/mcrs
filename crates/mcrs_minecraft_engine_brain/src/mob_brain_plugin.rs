@@ -57,6 +57,7 @@ use crate::BlockGoalWorld;
 use crate::BrainState;
 use crate::MobAi;
 use crate::MobHit;
+use crate::MobNavigation;
 use crate::RangedAttack;
 use crate::ai_window::AiWindow;
 use crate::mob_ai::Arrival;
@@ -64,6 +65,7 @@ use crate::mob_ai::BrainOut;
 use crate::mob_ai::Hitting;
 use crate::mob_ai::Thinking;
 use crate::panic_causes_in::panic_causes_in;
+use crate::recompute::flag_recomputes;
 
 const DAMAGE_TYPE: ResourceLocation<'static> = rl!("minecraft:damage_type");
 
@@ -132,6 +134,9 @@ where
                     )
                     .after(TickSet::ClientInput)
                     .before(MobBrainSet::Prepare),
+                flag_recomputes
+                    .in_set(MobBrainSet::Prepare)
+                    .before(prepare::<B>),
                 prepare::<B>.in_set(MobBrainSet::Prepare),
                 run_stage::<B>.in_set(MobBrainSet::Stage),
                 record_hurt_by::<B>
@@ -187,7 +192,9 @@ fn admit_brain<B>(
         phase: state.0.phase,
         brain,
     });
-    commands.entity(entity).insert(brain_state);
+    commands
+        .entity(entity)
+        .insert((brain_state, MobNavigation::default()));
 }
 
 fn release_brain<B: Send + Sync + 'static>(
@@ -238,7 +245,7 @@ fn prepare<B>(
     let Some(blocks) = world.get(*dimension) else {
         return;
     };
-    let goal_world = BlockGoalWorld::new(&blocks, tables.collision());
+    let goal_world = BlockGoalWorld::new(&blocks, tables.tables());
     ai.prepare(
         &goal_world,
         players.table().clone(),
@@ -281,7 +288,7 @@ fn run_stage<B>(
     let Some(blocks) = world.get(*dimension) else {
         return;
     };
-    let goal_world = BlockGoalWorld::new(&blocks, tables.collision());
+    let goal_world = BlockGoalWorld::new(&blocks, tables.tables());
     ai.run_stage(ComputeTaskPool::get(), &goal_world);
     window.add(ai.tick(), ai.stats());
 }

@@ -92,9 +92,13 @@ fn projectiles(server: &mut PlayServer) -> Vec<(Projectile, MotionState)> {
 }
 
 fn set_stone(server: &mut PlayServer, pos: BlockPos) {
+    set_block(server, pos, "minecraft:stone");
+}
+
+fn set_block(server: &mut PlayServer, pos: BlockPos, name: &str) {
     let stone = crate::support::standalone_corpus()
         .0
-        .default_state("minecraft:stone")
+        .default_state(name)
         .unwrap();
     let world = server.world();
     let dimension = world
@@ -511,5 +515,52 @@ fn prj_lch_004_an_arrow_inherits_the_walk_of_its_shooter() {
     assert!(
         velocity.y.abs() < 0.05,
         "a shooter on the ground gives no vertical motion: {velocity}"
+    );
+}
+
+#[test]
+fn path_a_zombie_walks_around_a_fence_to_its_target() {
+    let (mut server, operator) = start();
+    let player = server.player(operator);
+    server.world().get_mut::<PlayerGameMode>(player).unwrap().0 = GameMode::Survival;
+    let feet = server.world().get::<Transform>(player).unwrap().translation;
+    let wall_x = BlockPos::from(feet).x + 4;
+    for z in -5..=5 {
+        set_block(
+            &mut server,
+            BlockPos::new(wall_x, 64, BlockPos::from(feet).z + z),
+            "minecraft:oak_fence",
+        );
+    }
+    server.ticks(operator, 3);
+    run(
+        &mut server,
+        operator,
+        &format!(
+            "summon minecraft:zombie {} 64 {}",
+            wall_x + 2,
+            BlockPos::from(feet).z
+        ),
+    );
+    server.ticks(operator, 5);
+    let zombie = mob_entities(&mut server)[0].entity;
+    let mut best = f64::INFINITY;
+    for _ in 0..400 {
+        server.ticks(operator, 1);
+        let position = server
+            .world()
+            .get::<MotionState>(zombie)
+            .unwrap()
+            .0
+            .body
+            .position;
+        best = best.min(position.distance(feet));
+        if best < 2.5 {
+            break;
+        }
+    }
+    assert!(
+        best < 2.5,
+        "the zombie walks around the fence to the player: closest {best}"
     );
 }

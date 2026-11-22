@@ -3,16 +3,24 @@ use mcrs_minecraft_goal_world::BuildHeight;
 use mcrs_minecraft_goal_world::CellFlags;
 use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_minecraft_goal_world::GroundCell;
+use mcrs_minecraft_pathfind::CellBits;
+use mcrs_minecraft_pathfind::MobPath;
+use mcrs_minecraft_pathfind::PathCell;
+use mcrs_minecraft_pathfind::PathSearchWorld;
+use mcrs_minecraft_pathfind::PathWorld;
 use mcrs_minecraft_physics::BlockFlags;
 use mcrs_minecraft_physics::CollisionTable;
 use mcrs_minecraft_physics::PathType;
 use mcrs_minecraft_physics::ShapeClass;
 use mcrs_minecraft_physics::StateCollision;
+use mcrs_minecraft_physics::Tables;
 use mcrs_minecraft_physics::sight_clear;
 use mcrs_minecraft_volume::BlockVolume;
 use mcrs_minecraft_volume::Unavailable;
 use mcrs_voxel::BlockPos;
+use mcrs_voxel::SectionPos;
 
+use crate::SearchView;
 use crate::sight_blocks::SightBlocks;
 
 const GRASS_WALK_VALUE: f32 = 10.0;
@@ -29,22 +37,44 @@ const UNLOADED: StateCollision = StateCollision {
 #[derive(Debug)]
 pub struct BlockGoalWorld<'a, V> {
     blocks: &'a V,
+    tables: &'a Tables,
     table: &'a CollisionTable,
     height: BuildHeight,
 }
 
 impl<'a, V: BlockVolume> BlockGoalWorld<'a, V> {
     #[must_use]
-    pub fn new(blocks: &'a V, table: &'a CollisionTable) -> Self {
+    pub fn new(blocks: &'a V, tables: &'a Tables) -> Self {
         let bounds = blocks.bounds();
         Self {
             blocks,
-            table,
+            tables,
+            table: &tables.collision,
             height: BuildHeight {
                 min: bounds.min.y,
                 max: bounds.max.y,
             },
         }
+    }
+
+    #[must_use]
+    pub(crate) fn blocks(&self) -> &'a V {
+        self.blocks
+    }
+
+    #[must_use]
+    pub(crate) fn tables(&self) -> &'a Tables {
+        self.tables
+    }
+
+    #[must_use]
+    pub(crate) fn unloaded_cell(&self) -> PathCell {
+        path_cell_of(self.table, UNLOADED)
+    }
+
+    #[must_use]
+    pub fn is_cauldron(&self, at: BlockPos) -> bool {
+        self.state(at).flags.contains(BlockFlags::CAULDRON)
     }
 
     fn state(&self, at: BlockPos) -> StateCollision {
@@ -142,5 +172,74 @@ impl<V: BlockVolume> GoalWorld for BlockGoalWorld<'_, V> {
             return false;
         }
         sight_clear(&SightBlocks(self.blocks), self.table, start, end)
+    }
+}
+
+#[must_use]
+pub(crate) fn path_cell_of(table: &CollisionTable, state: StateCollision) -> PathCell {
+    let top = table
+        .shape_without_context(state.class)
+        .map_or(0.0, |shape| shape.top() as f32);
+    let bits = CellBits::NONE
+        .with(CellBits::AIR, state.flags.contains(BlockFlags::AIR))
+        .with(CellBits::SHAPE, state.class != ShapeClass::Empty)
+        .with(
+            CellBits::SOLID,
+            state.flags.contains(BlockFlags::LEGACY_SOLID),
+        )
+        .with(CellBits::FLOATABLE, state.flags.contains(BlockFlags::FLUID))
+        .with(
+            CellBits::CAULDRON,
+            state.flags.contains(BlockFlags::CAULDRON),
+        )
+        .with(
+            CellBits::DOOR_OR_FENCE,
+            state.flags.intersects(
+                BlockFlags::DOOR | BlockFlags::FENCE | BlockFlags::WALL | BlockFlags::FENCE_GATE,
+            ),
+        );
+    PathCell {
+        kind: state.path,
+        top,
+        bits,
+    }
+}
+
+impl<V: BlockVolume> PathWorld for BlockGoalWorld<'_, V> {
+    fn path_cell(&self, at: BlockPos) -> PathCell {
+        path_cell_of(self.table, self.state(at))
+    }
+
+    fn min_y(&self) -> i32 {
+        self.height.min
+    }
+
+    fn max_y(&self) -> i32 {
+        self.height.max
+    }
+
+    fn column_loaded(&self, at: BlockPos) -> bool {
+        self.blocks.section(SectionPos::from(at)).is_ok()
+    }
+
+    fn collides(&self, min: DVec3, max: DVec3) -> bool {
+        let mob = MobPath::standing(
+            DVec3::new((min.x + max.x) / 2.0, min.y, (min.z + max.z) / 2.0),
+            (max.x - min.x) as f32,
+            (max.y - min.y) as f32,
+            0.0,
+        );
+        SearchView::new(self, &mob).collides(min, max)
+    }
+}
+
+impl<'a, V: BlockVolume> PathSearchWorld for BlockGoalWorld<'a, V> {
+    type Search<'s>
+        = SearchView<'s, V>
+    where
+        Self: 's;
+
+    fn open(&self, mob: &MobPath) -> Self::Search<'_> {
+        SearchView::new(self, mob)
     }
 }

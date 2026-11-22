@@ -15,6 +15,7 @@ use mcrs_minecraft_brain::Decision;
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::Fact;
 use mcrs_minecraft_brain::FactKind;
+use mcrs_minecraft_brain::IssuedPath;
 use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::KindTable;
@@ -31,6 +32,8 @@ use mcrs_minecraft_brain::Stage;
 use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::Tables;
 use mcrs_minecraft_brain::TileSnapshot;
+use mcrs_minecraft_brain::find_path;
+use mcrs_minecraft_brain::sort_paths;
 use mcrs_minecraft_damage::DamageSource;
 use mcrs_minecraft_damage::Exposure;
 use mcrs_minecraft_damage::Fire;
@@ -61,6 +64,7 @@ use crate::AiStats;
 use crate::BlockGoalWorld;
 use crate::BrainState;
 use crate::MobHit;
+use crate::MobNavigation;
 use crate::RangedAttack;
 use crate::brain_state_ext::BrainStateExt;
 use crate::hit_queue::HitTarget;
@@ -88,6 +92,7 @@ pub(crate) type Thinking<'w, 's> = Query<
         Option<&'static Exposure>,
         &'static mut BrainState,
         &'static mut MobIntent,
+        &'static mut MobNavigation,
     ),
 >;
 
@@ -116,6 +121,7 @@ pub struct MobAi<B: Send + Sync + 'static> {
     arrivals: Vec<Arrival<B>>,
     departures: Vec<EntityId>,
     due: Vec<Decision>,
+    due_paths: Vec<IssuedPath>,
     ended: Vec<EntityId>,
     gathered: BrainOut,
     facts: Vec<TiledFact>,
@@ -166,6 +172,7 @@ struct Pass<'a, B, V> {
     players: &'a PlayerTable,
     panic_causes: &'a PanicCauses,
     due: &'a [Decision],
+    due_paths: &'a [IssuedPath],
     targets: Targets<'a, B>,
     world: &'a BlockGoalWorld<'a, V>,
 }
@@ -195,6 +202,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             arrivals: Vec::new(),
             departures: Vec::new(),
             due: Vec::new(),
+            due_paths: Vec::new(),
             ended: Vec::new(),
             gathered: BrainOut::default(),
             facts: Vec::new(),
@@ -287,6 +295,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             players: &players,
             panic_causes: &self.panic_causes,
             due: &self.due,
+            due_paths: &self.due_paths,
             targets: Targets {
                 replica: self.driver.replica(),
                 stage: self.driver.stage(),
@@ -299,15 +308,31 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let shared = &*threads;
         mobs.p0().par_iter_mut().for_each_init(
             || shared.borrow_local_mut(),
-            |out, (entity, id, state, attributes, vitals, hits, fire, exposure, brain, intent)| {
+            |out,
+             (
+                entity,
+                id,
+                state,
+                attributes,
+                vitals,
+                hits,
+                fire,
+                exposure,
+                brain,
+                intent,
+                navigation,
+            )| {
                 let sensed = Sensed {
                     state: &state.0,
                     vitals,
                     hits,
                     fire,
                     exposure,
+                    recompute_waiting: navigation.0.recompute_waiting,
                 };
-                pass.think(out, entity, id.0, sensed, attributes, brain, intent);
+                pass.think(
+                    out, entity, id.0, sensed, attributes, brain, intent, navigation,
+                );
             },
         );
         let ran = Instant::now();
@@ -371,15 +396,18 @@ impl<B: Send + Sync + 'static> MobAi<B> {
 
     fn take_due(&mut self) {
         self.due.clear();
+        self.due_paths.clear();
         let issued = self.driver.take_due();
         self.stats.waits = self.driver.waits();
-        for decisions in issued {
+        for mut decisions in issued {
+            self.due_paths.append(&mut decisions.paths);
             for decision in decisions.tiles.into_values().flatten() {
                 if self.driver.stage().tile_of(decision.mob).is_some() {
                     self.due.push(decision);
                 }
             }
         }
+        sort_paths(&mut self.due_paths);
         self.due
             .sort_by_key(|decision| (decision.key, decision.issue_tick));
     }
@@ -715,9 +743,11 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
         attributes: Option<&MobAttributes>,
         mut brain: Mut<'_, BrainState>,
         mut intent: Mut<'_, MobIntent>,
+        mut navigation: Mut<'_, MobNavigation>,
     ) {
         let state = sensed.state;
         let mut next = *brain;
+        let navigation = &mut navigation.bypass_change_detection().0;
         let observed = next.observe(
             self.panic_causes,
             self.players,
@@ -750,7 +780,11 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
             if decision.mob != id {
                 continue;
             }
-            next.apply(&decision.intents, state);
+            let found = decision
+                .intents
+                .path
+                .and_then(|path| find_path(self.due_paths, id, path.ticket()));
+            next.apply(&decision.intents, state, navigation, found, self.world);
             out.applied = out.applied.saturating_add(1);
             if let Some(proposal) = decision.intents.proposal {
                 out.proposals.push(Proposed {
@@ -761,7 +795,9 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
                 });
             }
         }
-        if let Some(steered) = next.steer(self.world, &self.targets, self.tick, id, sensed) {
+        if let Some(steered) =
+            next.steer(self.world, &self.targets, self.tick, id, sensed, navigation)
+        {
             intent.set_if_neq(steered.intent);
             if steered.ended.is_some() {
                 out.ended.push(id);

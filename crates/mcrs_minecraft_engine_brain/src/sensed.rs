@@ -11,6 +11,7 @@ pub(crate) struct Sensed<'a> {
     pub(crate) hits: Option<&'a HitRecord>,
     pub(crate) fire: Option<&'a Fire>,
     pub(crate) exposure: Option<&'a Exposure>,
+    pub(crate) recompute_waiting: bool,
 }
 
 impl Sensed<'_> {

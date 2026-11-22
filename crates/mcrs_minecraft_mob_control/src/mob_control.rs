@@ -2,6 +2,10 @@ use glam::DVec3;
 use mcrs_minecraft_brain::Applied;
 use mcrs_minecraft_brain::Intents;
 use mcrs_minecraft_brain::LookIntent;
+use mcrs_minecraft_pathfind::FoundPath;
+use mcrs_minecraft_pathfind::Navigation;
+use mcrs_minecraft_pathfind::PathWorld;
+use mcrs_voxel::BlockPos;
 
 use crate::BodyFlags;
 use crate::BodyRotation;
@@ -43,41 +47,46 @@ impl MobControl {
         self.follower.applied()
     }
 
-    #[must_use]
-    pub const fn has_path(&self) -> bool {
-        self.follower.is_running()
-    }
-
-    pub fn apply(&mut self, intents: &Intents, position: DVec3) {
+    pub fn apply(
+        &mut self,
+        intents: &Intents,
+        navigation: &mut Navigation,
+        found: Option<&FoundPath>,
+        position: DVec3,
+        is_cauldron: impl Fn(BlockPos) -> bool,
+    ) {
         if let Some(path) = &intents.path {
-            self.follower.apply(path, position);
+            self.follower
+                .apply(path, navigation, found, position, is_cauldron);
         }
         if let Some(look) = &intents.look {
             self.look.apply(look);
         }
-    }
-
-    pub fn set_speed_modifier(&mut self, speed_modifier: f32) {
-        self.follower.set_speed_modifier(speed_modifier);
+        if let Some(speed) = intents.speed {
+            self.follower.set_speed_modifier(navigation, speed);
+        }
     }
 
     pub fn look(&mut self, intent: &LookIntent) {
         self.look.apply(intent);
     }
 
-    pub fn before_travel(&mut self, input: &ControlInput) -> ControlOutput {
-        let followed = self.follower.step(input);
+    pub fn before_travel<W: PathWorld + ?Sized>(
+        &mut self,
+        input: &ControlInput,
+        navigation: &mut Navigation,
+        world: &W,
+    ) -> ControlOutput {
+        let followed = self.follower.step(input, navigation, world);
         if let Some(wanted) = followed.wanted {
             self.movement.set_wanted(wanted);
         }
         let moved = self.movement.step(input);
         let yaw = moved.yaw.unwrap_or(input.rotations.yaw);
-        let head = self.look.step(
-            input,
-            &self.defaults,
-            input.rotations.head_yaw,
-            self.follower.is_running(),
-        );
+        let running = navigation.is_running();
+        let head = self
+            .look
+            .step(input, &self.defaults, input.rotations.head_yaw, running);
         ControlOutput {
             steering: Some(ControlSteering {
                 sideways: input.sideways * DECAY,

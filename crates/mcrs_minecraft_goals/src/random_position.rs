@@ -1,7 +1,7 @@
+use crate::BrainWorld;
 use glam::DVec3;
 use mcrs_minecraft_brain::KeyedRandom;
 use mcrs_minecraft_goal_world::CellFlags;
-use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_voxel::BlockPos;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -22,7 +22,7 @@ impl SearchRange {
 
 const TRIES: u32 = 10;
 
-pub fn default_search<W: GoalWorld + ?Sized>(
+pub fn default_search<W: BrainWorld + ?Sized>(
     world: &W,
     feet: DVec3,
     range: SearchRange,
@@ -37,7 +37,7 @@ pub fn default_search<W: GoalWorld + ?Sized>(
     })
 }
 
-pub fn land_search<W: GoalWorld + ?Sized>(
+pub fn land_search<W: BrainWorld + ?Sized>(
     world: &W,
     feet: DVec3,
     range: SearchRange,
@@ -87,7 +87,7 @@ fn best_of_tries(
     best.map(|(position, _)| position.bottom_centre())
 }
 
-pub fn away_search<W: GoalWorld + ?Sized>(
+pub fn away_search<W: BrainWorld + ?Sized>(
     world: &W,
     feet: DVec3,
     away_from: DVec3,

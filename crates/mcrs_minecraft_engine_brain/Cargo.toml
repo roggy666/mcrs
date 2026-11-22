@@ -19,6 +19,7 @@ bevy_tasks.workspace = true
 bevy_utils.workspace = true
 glam = { workspace = true, features = ["std"] }
 mcrs_minecraft_brain.workspace = true
+mcrs_minecraft_collision_table.workspace = true
 mcrs_minecraft_damage = { workspace = true, features = ["bevy"] }
 mcrs_minecraft_engine.workspace = true
 mcrs_minecraft_engine_damage.workspace = true
@@ -35,6 +36,7 @@ mcrs_minecraft_goals.workspace = true
 mcrs_minecraft_inventory_player.workspace = true
 mcrs_minecraft_item_stack.workspace = true
 mcrs_minecraft_mob_control.workspace = true
+mcrs_minecraft_pathfind.workspace = true
 mcrs_minecraft_physics.workspace = true
 mcrs_minecraft_registries = { workspace = true, features = ["bevy"] }
 mcrs_minecraft_resource.workspace = true

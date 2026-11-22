@@ -4,9 +4,9 @@ use mcrs_minecraft_brain::MeleeIntent;
 use mcrs_minecraft_brain::PoseBits;
 use mcrs_minecraft_brain::PoseIntent;
 use mcrs_minecraft_brain::Pursuit;
-use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_voxel::BlockPos;
 
+use crate::BrainWorld;
 use crate::MELEE_PATH;
 use crate::MeleeState;
 use crate::query::Cx;
@@ -24,12 +24,12 @@ pub fn in_reach(my_min: glam::DVec3, my_max: glam::DVec3, candidate: &Candidate)
     candidate.intersects(min, max)
 }
 
-fn target_in_reach<W: GoalWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>, candidate: &Candidate) -> bool {
+fn target_in_reach<W: BrainWorld + ?Sized>(cx: &Cx<'_, '_, '_, W>, candidate: &Candidate) -> bool {
     let (min, max) = cx.grown_box(0.0, 0.0);
     in_reach(min, max, candidate)
 }
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &mut MeleeState,
 ) -> bool {
@@ -48,7 +48,7 @@ pub(crate) fn can_start<W: GoalWorld + ?Sized>(
     cx.has_route_to(&target) || target_in_reach(cx, &target)
 }
 
-pub(crate) fn start<W: GoalWorld + ?Sized>(
+pub(crate) fn start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     speed: f32,
     pursuit: Pursuit,
@@ -73,7 +73,7 @@ pub(crate) fn start<W: GoalWorld + ?Sized>(
     state.timer = 0;
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     pursuit: Pursuit,
 ) -> bool {
@@ -91,7 +91,7 @@ pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn tick<W: GoalWorld + ?Sized>(
+pub(crate) fn tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     speed: f32,
     pursuit: Pursuit,
@@ -127,7 +127,7 @@ pub(crate) fn tick<W: GoalWorld + ?Sized>(
     state.timer = timer;
 }
 
-pub(crate) fn stop<W: GoalWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
+pub(crate) fn stop<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>) {
     if let Some(id) = cx.target.get()
         && let Some(target) = cx.find(id)
         && target.is_player()

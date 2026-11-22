@@ -18,6 +18,7 @@ glam = { workspace = true, features = ["nostd-libm"] }
 libm.workspace = true
 mcrs_minecraft_brain.workspace = true
 mcrs_minecraft_goal_world.workspace = true
+mcrs_minecraft_pathfind.workspace = true
 
 [dev-dependencies]
 mcrs_minecraft_goals = { workspace = true, features = ["testing"] }

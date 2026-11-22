@@ -1,8 +1,8 @@
 use glam::DVec3;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::Turn;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::Gate;
 use crate::STROLL_SEARCH;
 use crate::STROLL_WAIT;
@@ -29,7 +29,7 @@ impl StrollGoal {
         !view.flags.contains(MobFlags::CONTROLLED) && idle < u64::from(STROLL_IDLE_LIMIT)
     }
 
-    pub fn start_destination<W: GoalWorld + ?Sized>(
+    pub fn start_destination<W: BrainWorld + ?Sized>(
         &mut self,
         turn: &Turn<'_, W>,
         search: StrollSearch,
@@ -59,7 +59,7 @@ impl StrollGoal {
     }
 }
 
-fn stroll_destination<W: GoalWorld + ?Sized>(
+fn stroll_destination<W: BrainWorld + ?Sized>(
     turn: &Turn<'_, W>,
     search: StrollSearch,
 ) -> Option<DVec3> {

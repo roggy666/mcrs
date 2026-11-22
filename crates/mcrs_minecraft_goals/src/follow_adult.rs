@@ -1,6 +1,6 @@
 use mcrs_minecraft_brain::EntityRef;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::FollowState;
 use crate::Kinds;
 use crate::breed::kind_set;
@@ -12,7 +12,7 @@ const START_DISTANCE_SQUARED: f64 = 9.0;
 const STOP_DISTANCE_SQUARED: f64 = 256.0;
 const PATH_UNITS: u8 = 5;
 
-pub(crate) fn can_start<W: GoalWorld + ?Sized>(
+pub(crate) fn can_start<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     kinds: Kinds,
     state: &mut FollowState,
@@ -44,7 +44,7 @@ pub(crate) fn start(state: &mut FollowState) {
     state.timer = 0;
 }
 
-pub(crate) fn tick<W: GoalWorld + ?Sized>(
+pub(crate) fn tick<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     speed: f32,
     state: &mut FollowState,
@@ -59,7 +59,7 @@ pub(crate) fn tick<W: GoalWorld + ?Sized>(
     }
 }
 
-pub(crate) fn can_continue<W: GoalWorld + ?Sized>(
+pub(crate) fn can_continue<W: BrainWorld + ?Sized>(
     cx: &mut Cx<'_, '_, '_, W>,
     state: &FollowState,
 ) -> bool {

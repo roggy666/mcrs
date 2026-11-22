@@ -570,7 +570,9 @@ changes an entity target into a block target (PATH-REQ-001), so it always uses t
 region of AIT-VAN-014 for an entity target, `L + 16` from the block above the mob, applies only to
 the other navigations. The region has the full
 height of the dimension. A read at a position outside the region, or in a column that is not
-loaded, gives air. A read above or below the build height gives air.
+loaded, gives air. A read above or below the build height gives air. In a world stored by
+sections, the column of a position is loaded when the section holding that position is loaded;
+the sections above and below it do not matter.
 
 **PATH-REQ-004** (`source_suggested`, semantic, confidence: medium). A navigation accepts a new path
 from a request in this way:
@@ -849,14 +851,15 @@ result at the issue tick plus 1. This is the mode `AiDelay::Fixed(1)` for search
 tests do not change when the AI stage replaces this runner. In the exact-parity mode,
 the search applies at once (AIT-LAG-011).
 
-**PATH-DET-005** (`design`, semantic, confidence: high). The navigation of a mob lives in its tile,
-next to the rows: `Tile` in `entity_rows.rs` gains `navigation: BTreeMap<EntityId, Navigation>`.
-Each mob with an AI has an entry, also when it has no path; a mob with `NoAI:1b` has none.
-`Navigation` holds the path, the stored target, the reach range, `L`, the speed modifier, the move
-operation, the wanted position, the timers of PATH-FOL-003 and PATH-FOL-004, the recompute state of
-PATH-RCP-002 and the pending request of PATH-REQ-005. `EntityRows::move_rows` moves the entry with
-its row. A despawn of the row removes the entry. The `BTreeMap` keeps the order of the entries
-independent of the thread count.
+**PATH-DET-005** (`design`, semantic, confidence: high). The navigation of a mob lives on the host
+as a component of the mob entity (`MobNavigation` of `mcrs_minecraft_engine_brain`, which holds the
+`Navigation` of `mcrs_minecraft_pathfind`). Each mob with an AI has one, also when it has no path;
+a mob with `NoAI:1b` has none. `Navigation` holds the path with its next node index, the stored
+target, the reach range, the speed modifier, the stuck window of PATH-FOL-003, the timeout of
+PATH-FOL-004, the recompute state of PATH-RCP-002 and the box of the path for the trigger of
+PATH-RCP-001. The guidance reads and writes it in the hot tick of its own entity only; a despawn
+of the entity removes it with the entity. The stored request of a recompute and the pending
+request of PATH-REQ-005 live in the brain of the mob, which issues the search.
 
 **PATH-DET-006** (`design`, semantic, confidence: high). A mob whose navigation has a path that is
 not done, a pending request or a waiting recompute does not rest (`physics-architecture.md`,
@@ -1001,6 +1004,22 @@ only where the reference depends on an order that is not part of the world, or o
 - **Visible to the client:** yes. A slow mob on a long path stops for 1 or 2 ticks at intervals.
 - **Test:** a differential test ignores a stop of 1 or 2 ticks that a timeout explains.
 
+### PATH-DEV-010: A deferred search restarts; no slice resumes
+
+- **Rule:** PATH-DET-002, PATH-SRC-001.
+- **Reference:** a search runs whole in the tick of its request.
+- **Visible to the client:** no, within AIT-DEC-005. A tile has a budget of node pops in each tick
+  (the stage distributes the budget of the dimension over the tiles: a base share per tile, and a
+  reserve for the tiles with deferred requests, in the order of the oldest deferral and the tile
+  key). A request whose budget does not fit in the remaining budget of its tile is deferred whole
+  and runs first in the next tick, in the order of the tick of its deferral and the key of the mob.
+  The deferred search restarts on the blocks of the tick in which it runs. A search does not stop
+  after a slice and resume, because the stage has no versioned copy of the blocks (PHY-CMP-009):
+  a resume would read the blocks of a later tick. The slices of PATH-DET-002 come with that copy.
+  A deferral adds one tick to the delay of the request, inside the allowed delay of 2.
+- **Test:** a differential test accepts a path that applies one tick later than the vanilla path
+  when the tile had more requests than its budget in the tick.
+
 ### PATH-DEV-009: A recompute is a request of the running path
 
 - **Rule:** PATH-RCP-002.
@@ -1033,6 +1052,10 @@ This server keeps these behaviours of the reference. A test must not report them
   triangle distribution of width 0.11485 around 0, and a second factor `1 + u` when `u = r × 1.5 ×
   m` is more than 1. Here `r` is a random value in `[0, 1)` and `m` is the special multiplier of the
   local difficulty.
+- **U6**: the search of this server reads the live blocks of the dimension in the stage of the
+  tick, which the stage runs before the world writes of the tick (the blocks at the start of the
+  tick). This equals the block copy of PHY-CMP-009 while the stage runs inside the tick. When the
+  stage runs beside the tick with `max_lag`, the search needs that copy (PATH-DEV-010).
 - **U5**: no rule states the sun rule of a ground navigation. A mob that avoids the sun, and that is
   not under the open sky, cuts its path before the first node under the open sky. The reference
   applies this rule at each request, as it does the cauldron rule (PATH-DEV-007). A goal sets the

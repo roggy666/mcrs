@@ -6,16 +6,27 @@ use core::fmt;
 
 use crate::AiDelay;
 use crate::Decision;
+use crate::IssuedPath;
 use crate::StageConfig;
+use crate::Ticket;
+use crate::find_path;
+use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::TileKey;
+use mcrs_minecraft_pathfind::FoundPath;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct IssuedDecisions {
     pub tick: u64,
     pub tiles: BTreeMap<TileKey, Vec<Decision>>,
+    pub paths: Vec<IssuedPath>,
 }
 
 impl IssuedDecisions {
+    #[must_use]
+    pub fn path(&self, mob: EntityId, ticket: Ticket) -> Option<&FoundPath> {
+        find_path(&self.paths, mob, ticket)
+    }
+
     #[must_use]
     pub fn len(&self) -> usize {
         self.tiles.values().map(Vec::len).sum()

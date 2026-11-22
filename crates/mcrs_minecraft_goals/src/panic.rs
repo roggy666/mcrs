@@ -4,9 +4,9 @@ use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::MobView;
 use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_goal_world::CellFlags;
-use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_voxel::BlockPos;
 
+use crate::BrainWorld;
 use crate::PANIC_SEARCH;
 use crate::SearchRange;
 use crate::random_position;
@@ -23,7 +23,7 @@ pub fn panic_record_fresh(view: &MobView, tick: u64) -> bool {
     })
 }
 
-pub fn panic_destination<W: GoalWorld + ?Sized>(turn: &Turn<'_, W>) -> Option<DVec3> {
+pub fn panic_destination<W: BrainWorld + ?Sized>(turn: &Turn<'_, W>) -> Option<DVec3> {
     let view = turn.view;
     let block = BlockPos::from(view.position);
     if view.flags.contains(MobFlags::ON_FIRE)
@@ -48,7 +48,7 @@ pub fn panic_destination<W: GoalWorld + ?Sized>(turn: &Turn<'_, W>) -> Option<DV
     )
 }
 
-fn nearest_water<W: GoalWorld + ?Sized>(world: &W, centre: BlockPos) -> Option<BlockPos> {
+fn nearest_water<W: BrainWorld + ?Sized>(world: &W, centre: BlockPos) -> Option<BlockPos> {
     let mut best: Option<(WaterRank, BlockPos)> = None;
     for dx in -WATER_REACH..=WATER_REACH {
         for dy in -1..=1 {

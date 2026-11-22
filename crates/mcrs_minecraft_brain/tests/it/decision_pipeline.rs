@@ -17,6 +17,7 @@ fn ready(tick: u64) -> IssuedDecisions {
     IssuedDecisions {
         tick,
         tiles: BTreeMap::new(),
+        paths: Vec::new(),
     }
 }
 

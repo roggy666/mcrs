@@ -95,6 +95,7 @@ impl MobFlags {
     pub const SWELLING: Self = Self(1 << 16);
     pub const AFLOAT: Self = Self(1 << 17);
     pub const IN_SUN: Self = Self(1 << 18);
+    pub const RECOMPUTE_PATH: Self = Self(1 << 19);
     pub const MOVE_DISABLED: Self = Self(1 << 19);
     pub const LOOK_DISABLED: Self = Self(1 << 20);
     pub const JUMP_DISABLED: Self = Self(1 << 21);

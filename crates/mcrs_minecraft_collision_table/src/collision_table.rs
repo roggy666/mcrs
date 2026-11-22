@@ -20,7 +20,8 @@ use crate::inside_shape::inside_shape;
 use crate::named_block::NamedBlock;
 use crate::path_types::PathTypes;
 
-const TAG_FLAGS: [(TagKey<'static, Block>, BlockFlags); 12] = [
+const TAG_FLAGS: [(TagKey<'static, Block>, BlockFlags); 13] = [
+    (block_tag_keys::CAULDRONS, BlockFlags::CAULDRON),
     (block_tag_keys::DOORS, BlockFlags::DOOR),
     (block_tag_keys::CLIMBABLE, BlockFlags::CLIMBABLE),
     (block_tag_keys::FENCES, BlockFlags::FENCE),
@@ -96,6 +97,9 @@ pub fn collision_table(definitions: &BlockDefinitions, tags: &Tags<Block>) -> Co
         }
         if state.flags.contains(BlockStateFlags::IS_SOLID_RENDER) {
             flags |= BlockFlags::SOLID_RENDER;
+        }
+        if state.flags.contains(BlockStateFlags::IS_AIR) {
+            flags |= BlockFlags::AIR;
         }
         if state.flags.contains(BlockStateFlags::LEGACY_SOLID) {
             flags |= BlockFlags::LEGACY_SOLID;

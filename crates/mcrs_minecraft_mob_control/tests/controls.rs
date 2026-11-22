@@ -15,6 +15,13 @@ use mcrs_minecraft_mob_control::MobControl;
 use mcrs_minecraft_mob_control::PathEnd;
 use mcrs_minecraft_mob_control::Rotations;
 use mcrs_minecraft_numeric::wrap_degrees;
+use mcrs_minecraft_pathfind::FoundPath;
+use mcrs_minecraft_pathfind::Navigation;
+use mcrs_minecraft_pathfind::PathCell;
+use mcrs_minecraft_pathfind::PathNode;
+use mcrs_minecraft_pathfind::PathType;
+use mcrs_minecraft_pathfind::PathWorld;
+use mcrs_voxel::BlockPos;
 
 const PIG_LOOK: LookDefaults = LookDefaults {
     turn_speed: MobData::DEFAULT.head_turn_speed,
@@ -30,14 +37,54 @@ const PIG: BodyData = BodyData {
 
 struct Walker {
     control: MobControl,
+    navigation: Navigation,
     input: ControlInput,
     moves: bool,
+}
+struct Open;
+
+impl PathWorld for Open {
+    fn path_cell(&self, _: BlockPos) -> PathCell {
+        PathCell::AIR
+    }
+
+    fn min_y(&self) -> i32 {
+        -64
+    }
+
+    fn max_y(&self) -> i32 {
+        319
+    }
+
+    fn column_loaded(&self, _: BlockPos) -> bool {
+        true
+    }
+
+    fn collides(&self, _: DVec3, _: DVec3) -> bool {
+        false
+    }
+}
+
+fn found_for(intents: &Intents) -> Option<FoundPath> {
+    match intents.path? {
+        PathIntent::Walk { target, .. } => {
+            let block = BlockPos::from(target);
+            Some(FoundPath {
+                nodes: vec![PathNode::new(block, PathType::Walkable)],
+                target: block,
+                reach: 1,
+                reached: true,
+            })
+        }
+        PathIntent::Clear { .. } => None,
+    }
 }
 
 impl Walker {
     fn new(position: DVec3) -> Self {
         Self {
             control: MobControl::new(PIG_LOOK),
+            navigation: Navigation::default(),
             input: ControlInput {
                 tick: 0,
                 position,
@@ -54,11 +101,20 @@ impl Walker {
     }
 
     fn apply(&mut self, intents: Intents) {
-        self.control.apply(&intents, self.input.position);
+        let found = found_for(&intents);
+        self.control.apply(
+            &intents,
+            &mut self.navigation,
+            found.as_ref(),
+            self.input.position,
+            |_| false,
+        );
     }
 
     fn tick(&mut self) -> ControlOutput {
-        let output = self.control.before_travel(&self.input);
+        let output = self
+            .control
+            .before_travel(&self.input, &mut self.navigation, &Open);
         let input = &mut self.input;
         let mut rotations = input.rotations;
         rotations.yaw = output.yaw.unwrap_or(rotations.yaw);
@@ -166,7 +222,10 @@ fn fol_003_zero_speed_does_not_report_stuck() {
         walker.apply(walk_to(DVec3::new(10.5, 0.0, 0.5)));
         assert_eq!(walker.tick().path_ended, None);
     }
-    assert!(walker.control.has_path(), "zero speed must keep the route");
+    assert!(
+        walker.navigation.is_running(),
+        "zero speed must keep the route"
+    );
 }
 
 #[test]

@@ -21,6 +21,8 @@ use crate::TileBrains;
 use crate::Turn;
 use crate::TurnScratch;
 use crate::WakeMode;
+use crate::sort_paths;
+use crate::tile_brains::Deferred;
 use crate::tile_brains::Removed;
 use glam::DVec3;
 use mcrs_minecraft_entity_key::EntityId;
@@ -53,8 +55,13 @@ pub struct TickContext<'a, W: ?Sized> {
 #[derive(Debug)]
 pub struct TileWork<'a, B> {
     tile: TileKey,
+    budget: u32,
     brains: &'a mut TileBrains<B>,
 }
+
+const SEARCH_COST: usize = 16;
+const MIN_TILE_BUDGET: u32 = 560;
+const RESERVE_SHARE: u32 = 4;
 
 impl<B> Stage<B> {
     #[must_use]
@@ -196,9 +203,37 @@ impl<B> Stage<B> {
     }
 
     pub fn work(&mut self) -> Vec<TileWork<'_, B>> {
+        let (dimension, tile) = (self.config.path_budget(), self.config.tile_path_budget());
+        self.work_budgeted(dimension, tile)
+    }
+
+    pub fn work_budgeted(&mut self, dimension_budget: u32, tile_cap: u32) -> Vec<TileWork<'_, B>> {
+        let mut order: Vec<(u64, TileKey)> = self
+            .tiles
+            .iter()
+            .map(|(&tile, brains)| (brains.oldest_deferral().unwrap_or(u64::MAX), tile))
+            .collect();
+        order.sort_unstable();
+        let tiles = u32::try_from(self.tiles.len().max(1)).unwrap_or(u32::MAX);
+        let base = (dimension_budget / tiles).clamp(MIN_TILE_BUDGET.min(tile_cap), tile_cap);
+        let mut reserve = dimension_budget / RESERVE_SHARE;
+        let mut budgets: BTreeMap<TileKey, u32> = BTreeMap::new();
+        for (oldest, tile) in order {
+            let mut given = base;
+            if oldest != u64::MAX {
+                let extra = tile_cap.saturating_sub(base).min(reserve);
+                reserve = reserve.saturating_sub(extra);
+                given = given.saturating_add(extra);
+            }
+            budgets.insert(tile, given);
+        }
         self.tiles
             .iter_mut()
-            .map(|(&tile, brains)| TileWork { tile, brains })
+            .map(|(&tile, brains)| TileWork {
+                tile,
+                budget: budgets.get(&tile).copied().unwrap_or(0),
+                brains,
+            })
             .collect()
     }
 
@@ -206,12 +241,15 @@ impl<B> Stage<B> {
         let mut issued = IssuedDecisions {
             tick,
             tiles: BTreeMap::new(),
+            paths: Vec::new(),
         };
         for (&tile, brains) in &mut self.tiles {
             if !brains.decisions.is_empty() {
                 issued.tiles.insert(tile, mem::take(&mut brains.decisions));
             }
+            issued.paths.append(&mut brains.paths);
         }
+        sort_paths(&mut issued.paths);
         issued
     }
 }
@@ -222,6 +260,13 @@ impl<B> TileWork<'_, B> {
         self.tile
     }
 
+    #[must_use]
+    pub fn cost(&self) -> usize {
+        self.brains
+            .len()
+            .saturating_add(self.brains.pending_searches().saturating_mul(SEARCH_COST))
+    }
+
     pub fn run<W: ?Sized>(&mut self, cx: &TickContext<'_, W>, scratch: &mut TurnScratch)
     where
         B: MobBrain<W>,
@@ -230,6 +275,8 @@ impl<B> TileWork<'_, B> {
         let brains = &mut *self.brains;
         brains.decisions.clear();
         brains.near_players.clear();
+        brains.paths.clear();
+        scratch.budget = self.budget;
         for fact in cx.replica.facts(self.tile, tick) {
             if let Some(at) = brains.position(&fact.key)
                 && let (Some(wake), Some(cadence)) =
@@ -244,6 +291,8 @@ impl<B> TileWork<'_, B> {
         let empty = PlayerTable::default();
         let table = table.unwrap_or(&empty);
         let mut loaded_range: Option<f64> = None;
+        let mut deferred = mem::take(&mut brains.deferred);
+        deferred.sort_unstable();
         let TileBrains {
             ids,
             keys,
@@ -252,8 +301,33 @@ impl<B> TileWork<'_, B> {
             brains: states,
             near_players,
             decisions,
+            paths,
+            deferred: still_deferred,
             evaluations,
         } = brains;
+        let mut turns = Turns {
+            cx,
+            views,
+            neighbours: &neighbours,
+            table,
+            near_players,
+            loaded_range: &mut loaded_range,
+        };
+        retry_deferred(
+            deferred,
+            &mut turns,
+            scratch,
+            tick,
+            Retrying {
+                ids,
+                keys,
+                cadences,
+                states,
+                paths,
+                still_deferred,
+                decisions,
+            },
+        );
         let rows = ids.iter().zip(keys.iter()).zip(cadences.iter());
         for (index, (((mob, key), cadence), (wake, brain))) in rows
             .zip(wakes.iter_mut().zip(states.iter_mut()))
@@ -266,28 +340,9 @@ impl<B> TileWork<'_, B> {
                 *wake = cadence.next_evaluation(tick);
                 continue;
             }
-            let Some(view) = view_of(views, index, *mob, key) else {
+            let Some(turn) = turns.turn(index, *mob, key, *cadence, brain) else {
                 *wake = cadence.next_evaluation(tick.saturating_add(1));
                 continue;
-            };
-            let range = brain.rules().player_range;
-            if loaded_range.is_none_or(|loaded| loaded < range) {
-                loaded_range = Some(range);
-                near_players.clear();
-                load_players(table, views, range, near_players);
-            }
-            let turn = Turn {
-                tick,
-                seed: cx.config.seed(),
-                max_lag: cx.config.max_lag(),
-                cadence: *cadence,
-                view,
-                players: near_players,
-                table,
-                neighbours: &neighbours,
-                items: cx.items,
-                kinds: cx.kinds,
-                world: cx.world,
             };
             let mut intents = Intents::default();
             scratch.clear();
@@ -297,6 +352,10 @@ impl<B> TileWork<'_, B> {
                 WakeMode::Sleep => next.max(tick.saturating_add(1)),
                 WakeMode::Poll => turn.next_evaluation(),
             };
+            paths.append(&mut scratch.paths);
+            if scratch.deferred {
+                still_deferred.push(Deferred { tick, key: *key });
+            }
             if !intents.is_empty() {
                 decisions.push(Decision {
                     mob: *mob,
@@ -306,6 +365,106 @@ impl<B> TileWork<'_, B> {
                 });
             }
         }
+    }
+}
+
+struct Retrying<'r, B> {
+    ids: &'r [EntityId],
+    keys: &'r [EntityUuid],
+    cadences: &'r [Cadence],
+    states: &'r mut [B],
+    paths: &'r mut Vec<crate::IssuedPath>,
+    still_deferred: &'r mut Vec<Deferred>,
+    decisions: &'r mut Vec<Decision>,
+}
+
+fn retry_deferred<B, W: ?Sized>(
+    deferred: Vec<Deferred>,
+    turns: &mut Turns<'_, '_, W>,
+    scratch: &mut TurnScratch,
+    tick: u64,
+    retrying: Retrying<'_, B>,
+) where
+    B: MobBrain<W>,
+{
+    let Retrying {
+        ids,
+        keys,
+        cadences,
+        states,
+        paths,
+        still_deferred,
+        decisions,
+    } = retrying;
+    for retry in deferred {
+        let Some(index) = keys.binary_search(&retry.key).ok() else {
+            continue;
+        };
+        let (Some(mob), Some(cadence), Some(brain)) =
+            (ids.get(index), cadences.get(index), states.get_mut(index))
+        else {
+            continue;
+        };
+        let Some(turn) = turns.turn(index, *mob, &retry.key, *cadence, brain) else {
+            still_deferred.push(retry);
+            continue;
+        };
+        let mut intents = Intents::default();
+        scratch.clear();
+        brain.retry_search(&turn, scratch, &mut intents);
+        paths.append(&mut scratch.paths);
+        if scratch.deferred {
+            still_deferred.push(retry);
+        }
+        if !intents.is_empty() {
+            decisions.push(Decision {
+                mob: *mob,
+                key: retry.key,
+                issue_tick: tick,
+                intents,
+            });
+        }
+    }
+}
+
+struct Turns<'t, 'a, W: ?Sized> {
+    cx: &'t TickContext<'a, W>,
+    views: &'t [MobView],
+    neighbours: &'t Neighbours<'t>,
+    table: &'t PlayerTable,
+    near_players: &'t mut Vec<PlayerRow>,
+    loaded_range: &'t mut Option<f64>,
+}
+
+impl<'t, 'a, W: ?Sized> Turns<'t, 'a, W> {
+    fn turn<B: MobBrain<W>>(
+        &mut self,
+        index: usize,
+        mob: EntityId,
+        key: &EntityUuid,
+        cadence: Cadence,
+        brain: &B,
+    ) -> Option<Turn<'_, W>> {
+        let view = view_of(self.views, index, mob, key)?;
+        let range = brain.rules().player_range;
+        if self.loaded_range.is_none_or(|loaded| loaded < range) {
+            *self.loaded_range = Some(range);
+            self.near_players.clear();
+            load_players(self.table, self.views, range, self.near_players);
+        }
+        Some(Turn {
+            tick: self.cx.tick,
+            seed: self.cx.config.seed(),
+            max_lag: self.cx.config.max_lag(),
+            cadence,
+            view,
+            players: self.near_players,
+            table: self.table,
+            neighbours: self.neighbours,
+            items: self.cx.items,
+            kinds: self.cx.kinds,
+            world: self.cx.world,
+        })
     }
 }
 

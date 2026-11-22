@@ -4,8 +4,8 @@ use mcrs_minecraft_brain::PlayerFlags;
 use mcrs_minecraft_brain::PlayerRow;
 use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_entity_key::EntityId;
-use mcrs_minecraft_goal_world::GoalWorld;
 
+use crate::BrainWorld;
 use crate::Gate;
 use crate::LOOK_AT_PLAYER_COUNT;
 use crate::LOOK_AT_PLAYER_WAIT;
@@ -20,7 +20,7 @@ pub struct LookAtPlayerGoal {
 }
 
 impl LookAtPlayerGoal {
-    pub fn can_start<W: GoalWorld + ?Sized>(&mut self, turn: &Turn<'_, W>, range: f64) -> bool {
+    pub fn can_start<W: BrainWorld + ?Sized>(&mut self, turn: &Turn<'_, W>, range: f64) -> bool {
         if !self.gate.passes(turn, LOOK_AT_PLAYER_WAIT, LOOK_CHANCE) {
             return false;
         }
@@ -80,7 +80,7 @@ pub fn look_hold(max_lag: u8) -> u8 {
     max_lag.saturating_add(1)
 }
 
-pub fn nearest_player<'a, W: GoalWorld + ?Sized>(
+pub fn nearest_player<'a, W: BrainWorld + ?Sized>(
     turn: &Turn<'a, W>,
     range: f64,
 ) -> Option<&'a PlayerRow> {

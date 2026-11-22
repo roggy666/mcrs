@@ -22,4 +22,5 @@ pub enum FactKind {
     Alerted,
     TargetLost,
     Tamed,
+    PathRecompute,
 }

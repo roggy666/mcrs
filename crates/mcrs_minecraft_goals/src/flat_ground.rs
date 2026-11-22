@@ -3,7 +3,12 @@ use mcrs_minecraft_goal_world::BuildHeight;
 use mcrs_minecraft_goal_world::CellFlags;
 use mcrs_minecraft_goal_world::GoalWorld;
 use mcrs_minecraft_goal_world::GroundCell;
-use mcrs_minecraft_goal_world::straight_route;
+use mcrs_minecraft_pathfind::CellBits;
+use mcrs_minecraft_pathfind::MobPath;
+use mcrs_minecraft_pathfind::PathCell;
+use mcrs_minecraft_pathfind::PathSearchWorld;
+use mcrs_minecraft_pathfind::PathType;
+use mcrs_minecraft_pathfind::PathWorld;
 use mcrs_voxel::BlockPos;
 
 const WATER_MALUS: f32 = 8.0;
@@ -78,32 +83,59 @@ impl GoalWorld for FlatGround {
     fn line_of_sight(&self, _from: DVec3, _to: DVec3) -> bool {
         true
     }
+}
 
-    fn route(&self, from: DVec3, target: BlockPos) -> Option<DVec3> {
-        match self.pond {
-            Some(_) => straight_route(&Wading(self), from, target),
-            None => straight_route(self, from, target),
+impl PathWorld for FlatGround {
+    fn path_cell(&self, at: BlockPos) -> PathCell {
+        let cell = GoalWorld::cell(self, at);
+        if cell.flags.contains(CellFlags::LEGACY_SOLID) {
+            PathCell {
+                kind: PathType::Blocked,
+                top: 1.0,
+                bits: CellBits::SHAPE.union(CellBits::SOLID),
+            }
+        } else if cell.flags.contains(CellFlags::WATER) {
+            PathCell {
+                kind: PathType::Water,
+                top: 0.0,
+                bits: CellBits::FLOATABLE,
+            }
+        } else {
+            PathCell::AIR
         }
+    }
+
+    fn min_y(&self) -> i32 {
+        -64
+    }
+
+    fn max_y(&self) -> i32 {
+        319
+    }
+
+    fn column_loaded(&self, _: BlockPos) -> bool {
+        true
+    }
+
+    fn collides(&self, min: DVec3, max: DVec3) -> bool {
+        let low = BlockPos::from(min);
+        let high = BlockPos::from(max - DVec3::splat(1.0e-7));
+        (low.x..=high.x).any(|x| {
+            (low.y..=high.y).any(|y| {
+                (low.z..=high.z).any(|z| {
+                    GoalWorld::cell(self, BlockPos::new(x, y, z))
+                        .flags
+                        .contains(CellFlags::LEGACY_SOLID)
+                })
+            })
+        })
     }
 }
 
-struct Wading<'a>(&'a FlatGround);
+impl PathSearchWorld for FlatGround {
+    type Search<'a> = &'a FlatGround;
 
-impl GoalWorld for Wading<'_> {
-    fn build_height(&self) -> BuildHeight {
-        self.0.build_height()
-    }
-
-    fn cell(&self, at: BlockPos) -> GroundCell {
-        let cell = self.0.cell(at);
-        if cell.flags.contains(CellFlags::WATER) {
-            GroundCell { malus: 0.0, ..cell }
-        } else {
-            cell
-        }
-    }
-
-    fn line_of_sight(&self, from: DVec3, to: DVec3) -> bool {
-        self.0.line_of_sight(from, to)
+    fn open(&self, _: &MobPath) -> Self::Search<'_> {
+        self
     }
 }

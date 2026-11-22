@@ -29,5 +29,7 @@ bitflags::bitflags! {
         const FIRE = 1 << 25;
         const SOUL_FIRE = 1 << 26;
         const LAVA = 1 << 27;
+        const AIR = 1 << 28;
+        const CAULDRON = 1 << 29;
     }
 }

@@ -2,6 +2,13 @@ use glam::DVec3;
 use mcrs_minecraft_brain::Applied;
 use mcrs_minecraft_brain::PathIntent;
 use mcrs_minecraft_brain::Progress;
+use mcrs_minecraft_pathfind::Acceptance;
+use mcrs_minecraft_pathfind::FollowInput;
+use mcrs_minecraft_pathfind::FoundPath;
+use mcrs_minecraft_pathfind::Navigation;
+use mcrs_minecraft_pathfind::PathWorld;
+use mcrs_minecraft_pathfind::RequestKind;
+use mcrs_minecraft_pathfind::follow;
 use mcrs_voxel::BlockPos;
 
 use crate::BodyFlags;
@@ -11,46 +18,6 @@ use crate::PathEnd;
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Follower {
     applied: Applied,
-    route: Option<Route>,
-    ticks: u64,
-    stuck: StuckCheck,
-    timeout: Timeout,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct Route {
-    node: BlockPos,
-    floor: f64,
-    speed_modifier: f32,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum Acceptance {
-    Changed,
-    Same,
-    Dropped,
-}
-
-fn acceptance(current: Option<Route>, result: Option<Route>) -> Acceptance {
-    match (current, result) {
-        (_, None) => Acceptance::Dropped,
-        (Some(current), Some(result)) if current.node == result.node => Acceptance::Same,
-        (_, Some(_)) => Acceptance::Changed,
-    }
-}
-
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
-struct StuckCheck {
-    tick: u64,
-    position: DVec3,
-}
-
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
-struct Timeout {
-    node: Option<BlockPos>,
-    time: u64,
-    timer: u64,
-    limit: f64,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -65,46 +32,39 @@ pub struct Wanted {
     pub speed_modifier: f32,
 }
 
-const STUCK_TICKS: u64 = 100;
-
 impl Follower {
     #[must_use]
     pub const fn applied(&self) -> Applied {
         self.applied
     }
 
-    #[must_use]
-    pub const fn is_running(&self) -> bool {
-        self.route.is_some()
-    }
-
-    pub fn apply(&mut self, intent: &PathIntent, position: DVec3) {
-        let (ticket, route) = match *intent {
-            PathIntent::Walk {
-                ticket,
-                target,
-                speed_modifier,
-            } => (
-                ticket,
-                Some(Route {
-                    node: BlockPos::from(target),
-                    floor: target.y,
+    pub fn apply(
+        &mut self,
+        intent: &PathIntent,
+        navigation: &mut Navigation,
+        found: Option<&FoundPath>,
+        position: DVec3,
+        is_cauldron: impl Fn(BlockPos) -> bool,
+    ) {
+        let ticket = intent.ticket();
+        match *intent {
+            PathIntent::Walk { speed_modifier, .. } => {
+                let acceptance = navigation.accept(
+                    RequestKind::Point,
+                    found.cloned(),
                     speed_modifier,
-                }),
-            ),
-            PathIntent::Clear { ticket } => (ticket, None),
-        };
-        if acceptance(self.route, route) == Acceptance::Changed {
-            self.stuck = StuckCheck {
-                tick: self.ticks,
-                position,
-            };
-            self.timeout = Timeout::default();
+                    position,
+                    is_cauldron,
+                );
+                if acceptance == Acceptance::Dropped {
+                    navigation.drop_path();
+                }
+            }
+            PathIntent::Clear { .. } => navigation.drop_path(),
         }
-        self.route = route;
         self.applied = Applied {
             ticket,
-            progress: if route.is_some() {
+            progress: if navigation.is_running() {
                 Progress::Running
             } else {
                 Progress::Ended
@@ -112,100 +72,43 @@ impl Follower {
         };
     }
 
-    pub fn set_speed_modifier(&mut self, speed_modifier: f32) {
-        if let Some(route) = self.route.as_mut() {
-            route.speed_modifier = speed_modifier;
-        }
+    pub fn set_speed_modifier(&mut self, navigation: &mut Navigation, speed_modifier: f32) {
+        navigation.keep_current(speed_modifier);
     }
 
-    pub fn step(&mut self, input: &ControlInput) -> FollowerStep {
-        let Some(route) = self.route else {
-            return FollowerStep::default();
-        };
-        self.ticks = self.ticks.saturating_add(1);
-        if self.reached(input, route.node) {
-            return self.end(PathEnd::Done);
-        }
-        if self.ticks.saturating_sub(self.stuck.tick) > STUCK_TICKS {
-            let speed = input.speed;
-            let scale = if speed >= 1.0 { speed } else { speed * speed };
-            let reach = f64::from(scale * STUCK_TICKS as f32 * 0.25);
-            let moved = input.position.distance_squared(self.stuck.position);
-            self.stuck = StuckCheck {
-                tick: self.ticks,
-                position: input.position,
-            };
-            if moved < reach * reach {
-                return self.end(PathEnd::Stuck);
-            }
-        }
-        if self.timed_out(input, route.node) {
-            self.timeout = Timeout::default();
-            return self.end(PathEnd::TimedOut);
-        }
-        let side = (input.body.width + 1.0) as i32;
-        let offset = f64::from(side) * 0.5;
-        FollowerStep {
-            wanted: Some(Wanted {
-                position: DVec3::new(
-                    f64::from(route.node.x) + offset,
-                    route.floor,
-                    f64::from(route.node.z) + offset,
-                ),
-                speed_modifier: route.speed_modifier,
-            }),
-            ended: None,
-        }
-    }
-
-    fn reached(&self, input: &ControlInput, node: BlockPos) -> bool {
+    pub fn step<W: PathWorld + ?Sized>(
+        &mut self,
+        input: &ControlInput,
+        navigation: &mut Navigation,
+        world: &W,
+    ) -> FollowerStep {
         let flags = input.flags;
-        let position = input.position;
-        let can_update = flags.contains(BodyFlags::ON_GROUND)
-            || flags.contains(BodyFlags::IN_LIQUID)
-            || flags.contains(BodyFlags::PASSENGER);
-        if !can_update {
-            let block = BlockPos::from(position);
-            return position.y > f64::from(node.y) && block.x == node.x && block.z == node.z;
+        let step = follow(
+            navigation,
+            &FollowInput {
+                position: input.position,
+                on_ground: flags.contains(BodyFlags::ON_GROUND),
+                in_liquid: flags.contains(BodyFlags::IN_LIQUID),
+                passenger: flags.contains(BodyFlags::PASSENGER),
+                width: input.body.width,
+                speed: input.speed,
+                time: input.tick,
+            },
+            world,
+        );
+        if step.ended.is_some() {
+            self.applied.progress = Progress::Ended;
         }
-        let width = input.body.width;
-        let limit = f64::from(if width > 0.75 {
-            width / 2.0
-        } else {
-            0.75 - width / 2.0
-        });
-        (position.x - (f64::from(node.x) + 0.5)).abs() < limit
-            && (position.z - (f64::from(node.z) + 0.5)).abs() < limit
-            && (position.y - f64::from(node.y)).abs() < 1.0
-    }
-
-    fn timed_out(&mut self, input: &ControlInput, node: BlockPos) -> bool {
-        let time = input.tick;
-        if self.timeout.node == Some(node) {
-            self.timeout.timer = self
-                .timeout
-                .timer
-                .saturating_add(time.saturating_sub(self.timeout.time));
-        } else {
-            self.timeout.node = Some(node);
-            let distance = input.position.distance_squared(node.bottom_centre()).sqrt();
-            let speed = f64::from(input.speed);
-            self.timeout.limit = if speed > 0.0 {
-                distance / speed * 20.0
-            } else {
-                0.0
-            };
-        }
-        self.timeout.time = time;
-        self.timeout.limit > 0.0 && self.timeout.timer as f64 > 3.0 * self.timeout.limit
-    }
-
-    fn end(&mut self, end: PathEnd) -> FollowerStep {
-        self.route = None;
-        self.applied.progress = Progress::Ended;
         FollowerStep {
-            wanted: None,
-            ended: Some(end),
+            wanted: step.wanted.map(|position| Wanted {
+                position,
+                speed_modifier: step.speed_modifier,
+            }),
+            ended: step.ended.map(|end| match end {
+                mcrs_minecraft_pathfind::PathEnd::Done => PathEnd::Done,
+                mcrs_minecraft_pathfind::PathEnd::Stuck => PathEnd::Stuck,
+                mcrs_minecraft_pathfind::PathEnd::TimedOut => PathEnd::TimedOut,
+            }),
         }
     }
 }
