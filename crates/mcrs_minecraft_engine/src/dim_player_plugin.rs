@@ -64,6 +64,7 @@ impl Plugin for DimPlayerPlugin {
             tracing::error!("a player does not require its sprint state: {error}");
         }
         app.add_observer(handle_player_command);
+        app.add_plugins(crate::player_fire::PlayerFirePlugin);
         if let Err(error) = app.try_register_required_components::<Player, ShiftKey>() {
             tracing::error!("a player does not require its shift key state: {error}");
         }

@@ -63,6 +63,7 @@ mod player_pose;
 mod probe_bans;
 mod projectile;
 mod proxy_forwarding;
+mod fire;
 mod redstone;
 mod respawn;
 mod run_server_loop_exit;

@@ -565,8 +565,32 @@ to 0.
 
 ## 11. Intentional deviations
 
-See DMG-DEV-003 of `entity-damage.md`. It records the one deviation of this document, in
-ENV-FIR-010.
+See DMG-DEV-003 of `entity-damage.md`. It records the deviation of ENV-FIR-010.
+
+### ENV-DEV-001: Fire blocks and lava do not ignite an entity
+
+- **Rule**: ENV-FIR-004, ENV-FIR-006, ENV-FIR-010 steps 2 to 4, ENV-FIR-009.
+- **Reference**: the inside action of `fire`, `soul_fire`, lava and `lava_cauldron` ignites and
+  hits the entity; a burning entity destroys `powder_snow`.
+- **Reason**: the motion pass exposes no fire or lava contact of a body yet (its inside effects
+  are the cobweb, the berry bush, powder snow and honey). The fire state of ENV-FIR-001 to
+  ENV-FIR-003, the hit sequence of ENV-FIR-002, the grace of ENV-FIR-005, the clear of ENV-FIR-007
+  in water and rain and the burning flag exist; the sun of `mob-monsters.md` (MON-SUN-004) is the
+  one source of ignition. The lava test of ENV-FIR-002 reads "not in lava".
+- **Visible to the client**: yes, a mob in fire or lava does not burn.
+- **Bug reference**: none.
+- **Test**: none; a differential test reports the difference.
+
+### ENV-DEV-002: Rain at a block ignores the biome
+
+- **Rule**: ENV-FIR-007 step 2.
+- **Reference**: rain at a block needs a biome that gives rain, and not snow, at that position.
+- **Reason**: the dimension world has no biome lookup at a position. Rain at a block is: the
+  dimension has weather, it rains, and no motion-blocking block is above the block. The rain
+  strength is 1 while it rains (the weather keeps no gradual strength).
+- **Visible to the client**: yes, a burning mob in a snowy or dry biome goes out in rain.
+- **Bug reference**: none.
+- **Test**: none; a differential test reports the difference.
 
 ## 12. Unresolved
 

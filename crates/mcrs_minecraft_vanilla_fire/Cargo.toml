@@ -1,0 +1,39 @@
+[package]
+name = "mcrs_minecraft_vanilla_fire"
+description = "The fire state of the entities of a dimension: the exposure to the sun, water and rain, the burn of the undead in the sun, the on_fire hits through the hit queue and the burning flag of the entity data"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+test = false
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+bevy_app.workspace = true
+bevy_ecs.workspace = true
+glam.workspace = true
+mcrs_engine_muxer.workspace = true
+mcrs_minecraft_chunk = { workspace = true, features = ["bevy"] }
+mcrs_minecraft_damage = { workspace = true, features = ["bevy"] }
+mcrs_minecraft_engine.workspace = true
+mcrs_minecraft_engine_damage.workspace = true
+mcrs_minecraft_engine_entity_motion.workspace = true
+mcrs_minecraft_engine_entity_motion_replication.workspace = true
+mcrs_minecraft_engine_physics.workspace = true
+mcrs_minecraft_engine_world.workspace = true
+mcrs_minecraft_entity.workspace = true
+mcrs_minecraft_entity_key.workspace = true
+mcrs_minecraft_environment = { workspace = true, features = ["bevy"] }
+mcrs_minecraft_heightmap = { workspace = true, features = ["bevy"] }
+mcrs_minecraft_physics.workspace = true
+mcrs_minecraft_protocol_game.workspace = true
+mcrs_minecraft_registries = { workspace = true, features = ["bevy"] }
+mcrs_minecraft_replication.workspace = true
+mcrs_minecraft_resource.workspace = true
+mcrs_minecraft_sound.workspace = true
+mcrs_minecraft_volume.workspace = true
+mcrs_voxel.workspace = true
+tracing.workspace = true

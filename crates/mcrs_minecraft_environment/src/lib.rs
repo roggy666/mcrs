@@ -17,6 +17,7 @@ mod attribute_value;
 mod clock_markers;
 mod clock_time;
 mod color;
+pub mod daylight;
 mod easing;
 mod kind;
 mod mob_spawns;

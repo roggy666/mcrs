@@ -1,11 +1,13 @@
 use core::f64::consts::{PI, TAU};
 
+use mcrs_minecraft_engine::daylight::day_ticks;
+use mcrs_minecraft_environment::daylight::sun_angle;
+
 use bevy_ecs::entity::Entity;
 use bevy_ecs::query::With;
 use bevy_ecs::system::{Query, Res, ResMut};
 use mcrs_minecraft_block::block_keys::Block;
 use mcrs_minecraft_chunk::SkyLight;
-use mcrs_minecraft_dimension_environment::dimension_type::DimensionTypeFile;
 use mcrs_minecraft_engine::block_simulation::{BlockMemory, BlockShared, BlockSimulation};
 use mcrs_minecraft_engine::coordinator::clock::GameTime;
 use mcrs_minecraft_engine::world_kinds::WorldKinds;
@@ -16,21 +18,11 @@ use mcrs_minecraft_redstone::{
     AnalogSource, HasRedstoneMemory, HasRedstoneSnapshot, MAX_SIGNAL, Sensor,
 };
 use mcrs_minecraft_registries::CurrentRegistries;
-use mcrs_minecraft_resource::Id;
 use mcrs_minecraft_simulation::{BlockBehaviour, UpdateRequest};
 use mcrs_voxel::{BlockPos, LocalPos, SectionPos};
 
 pub const CHECK_PERIOD: i64 = 20;
-const DAY_LENGTH: i64 = 24_000;
 const SUN_PULL: f64 = 0.2;
-
-#[must_use]
-pub fn sun_angle(ticks: i64) -> f64 {
-    let fraction = (ticks.rem_euclid(DAY_LENGTH) as f64 / DAY_LENGTH as f64 - 0.25).rem_euclid(1.0);
-    let eased = 1.0 - ((fraction * PI).cos() + 1.0) / 2.0;
-    let angle = fraction + (eased - fraction) / 3.0;
-    angle * TAU
-}
 
 #[must_use]
 pub fn sun_power(sky: u8, angle: f64) -> u8 {
@@ -44,23 +36,6 @@ pub fn sun_power(sky: u8, angle: f64) -> u8 {
             .unwrap_or(MAX_SIGNAL)
             .min(MAX_SIGNAL)
     }
-}
-
-fn day_ticks(
-    registries: Option<&CurrentRegistries>,
-    clocks: Option<&WorldClocks>,
-    dimension_type: Option<&DimensionTypeId>,
-    fallback: i64,
-) -> i64 {
-    let clock = registries
-        .and_then(|registries| registries.registry::<DimensionTypeFile>())
-        .and_then(|types| {
-            let id = Id::checked(dimension_type?.0.number(), types.len())?;
-            types.get(id)?.default_clock
-        });
-    clock
-        .and_then(|clock| clocks?.get(clock))
-        .map_or(fallback, |time| time.total_ticks)
 }
 
 fn sky_light(index: &SectionIndex, lights: &Query<&SkyLight>, pos: BlockPos) -> u8 {

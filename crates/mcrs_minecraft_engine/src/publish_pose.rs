@@ -3,13 +3,16 @@ use bevy_ecs::message::MessageWriter;
 use bevy_ecs::query::{Changed, Or};
 use bevy_ecs::system::{Query, ResMut};
 use mcrs_engine_muxer::EntityEvent;
+use mcrs_minecraft_damage::Fire;
 use mcrs_minecraft_damage::Vitals;
 use mcrs_minecraft_engine_world::session::Owner;
 use mcrs_minecraft_pose::Pose;
 use mcrs_minecraft_protocol::VarInt;
 use mcrs_minecraft_protocol_game::clientbound::ClientboundSetEntityData;
 use mcrs_minecraft_protocol_game::entity::Metadata;
-use mcrs_minecraft_protocol_game::entity_data_index::{SHARED_FLAG_SHIFT, SHARED_FLAG_SPRINT};
+use mcrs_minecraft_protocol_game::entity_data_index::{
+    SHARED_FLAG_ON_FIRE, SHARED_FLAG_SHIFT, SHARED_FLAG_SPRINT,
+};
 use mcrs_minecraft_replication::{PlayerData, PlayerEntries};
 
 use crate::bus::{OutboundPlayerPacket, send_own_entity_state};
@@ -27,6 +30,7 @@ type PoseInputsChanged = Or<(
     Changed<ShiftKey>,
     Changed<PlayerSprinting>,
     Changed<Vitals>,
+    Changed<Fire>,
 )>;
 
 pub(crate) fn publish_pose(
@@ -37,6 +41,7 @@ pub(crate) fn publish_pose(
             &ShiftKey,
             &PlayerSprinting,
             Option<&Vitals>,
+            Option<&Fire>,
             &mut OwnPoseEntries,
             Option<&Replicated>,
         ),
@@ -45,8 +50,10 @@ pub(crate) fn publish_pose(
     mut writer: MessageWriter<OutboundPlayerPacket>,
     mut events: Option<ResMut<TileEvents>>,
 ) {
-    for (&Owner(session), &pose, &shift, &sprinting, vitals, mut own, replicated) in &mut players {
-        let entries = pose_entries(pose, shift, sprinting, vitals);
+    for (&Owner(session), &pose, &shift, &sprinting, vitals, fire, mut own, replicated) in
+        &mut players
+    {
+        let entries = pose_entries(pose, shift, sprinting, vitals, fire);
         let changed = entries.changed_from(&own.0);
         if changed.is_empty() {
             continue;
@@ -73,6 +80,7 @@ pub(crate) fn pose_entries(
     shift: ShiftKey,
     sprinting: PlayerSprinting,
     vitals: Option<&Vitals>,
+    fire: Option<&Fire>,
 ) -> PlayerEntries {
     let mut entries = PlayerEntries {
         pose,
@@ -83,6 +91,9 @@ pub(crate) fn pose_entries(
     }
     if sprinting.0 {
         entries.shared_flags |= SHARED_FLAG_SPRINT;
+    }
+    if fire.is_some_and(Fire::burning) {
+        entries.shared_flags |= SHARED_FLAG_ON_FIRE;
     }
     if let Some(vitals) = vitals {
         entries.health = vitals.health;

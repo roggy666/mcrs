@@ -32,6 +32,8 @@ use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::Tables;
 use mcrs_minecraft_brain::TileSnapshot;
 use mcrs_minecraft_damage::DamageSource;
+use mcrs_minecraft_damage::Exposure;
+use mcrs_minecraft_damage::Fire;
 use mcrs_minecraft_damage::Hit;
 use mcrs_minecraft_damage::HitRecord;
 use mcrs_minecraft_damage::Vitals;
@@ -82,6 +84,8 @@ pub(crate) type Thinking<'w, 's> = Query<
         Option<&'static MobAttributes>,
         Option<&'static Vitals>,
         Option<&'static HitRecord>,
+        Option<&'static Fire>,
+        Option<&'static Exposure>,
         &'static mut BrainState,
         &'static mut MobIntent,
     ),
@@ -295,11 +299,13 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let shared = &*threads;
         mobs.p0().par_iter_mut().for_each_init(
             || shared.borrow_local_mut(),
-            |out, (entity, id, state, attributes, vitals, hits, brain, intent)| {
+            |out, (entity, id, state, attributes, vitals, hits, fire, exposure, brain, intent)| {
                 let sensed = Sensed {
                     state: &state.0,
                     vitals,
                     hits,
+                    fire,
+                    exposure,
                 };
                 pass.think(out, entity, id.0, sensed, attributes, brain, intent);
             },

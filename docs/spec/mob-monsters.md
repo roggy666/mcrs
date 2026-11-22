@@ -141,12 +141,36 @@ malus 8. The goal starts when the sun is up, and stops when it is down. The enve
 mob with this goal does not enter the sun while a path of equal length in the shade exists.
 
 **MON-SUN-003** (`design`, semantic, confidence: medium, fidelity: exact under the condition
-below). A server without the day cycle and the sky light on the server side uses "not in the sun"
-for each mob (GOAL-FLT-003 states the same form for the fluids). Then the flee-sun goal never starts
-and the restrict-sun goal never starts. The rule is exact at night and under a roof. The start
+below). The server computes "in the sun" once per sun-sensitive mob in each tick, in the hot tick
+after the motion pass and before the hit queue collects: the sun is up (MON-SUN-005), the sky light
+at the block position of the mob is 15, no motion-blocking block is above that position (the
+motion heightmap of the column), and the mob is not in water or rain. A mob that is not
+sun-sensitive (MON-SUN-004) is never in the sun; the brain reads "not in the sun" for it. The start
 condition of the restrict-sun goal on this server is "the mob is in the sun", not "the sun is up":
 a skeleton under a roof by day does not start it. The difference is not observable while the path
 malus of MON-SUN-002 is a hook; U4 keeps it.
+
+**MON-SUN-004** (`source_suggested`, semantic, confidence: medium, fidelity: envelope). The
+sun-sensitive types are the `zombie`, the `zombie_villager`, the `drowned`, the `skeleton`, the
+`stray`, the `bogged`, the `parched` and the `phantom`. The `husk` and the `wither_skeleton` are
+not. In each tick in which a sun-sensitive mob is in the sun, it ignites for 8 seconds
+(`environment-damage.md`, ENV-FIR-003) with the chance `(b − 0.4) × 2 / 30` when `b > 0.5`, where
+`b` is the sun brightness of the dimension: `1 − d / 11` for the sky darkening `d` of MON-SUN-005.
+The draw comes from the keyed stream of the mob and the tick. The reference lets a helmet take the
+burn instead of the mob; the mobs of this server wear no equipment, so the mob burns (hook: the
+equipment of mobs). The burn is the hit sequence of ENV-FIR-002: one `on_fire` hit of 1.0 in the
+tick after the ignition and every 20 ticks while it burns; a mob that stays in the sun re-ignites
+and burns on.
+
+**MON-SUN-005** (`source_suggested`, semantic, confidence: medium). The sky darkening `d` of a
+dimension at the day time `t` (the total ticks of the clock of its dimension type, `DAY_LENGTH =
+24000`): let `a` be the sun angle of `t` (the eased angle of the daylight sensor, `redstone`), `f =
+clamp(1 − (cos(a) × 2 + 0.5), 0, 1)`, then `f × (1 − r × 5/16) × (1 − h × 5/16)` for the rain
+strength `r` and the thunder strength `h` (1 while it rains or thunders, else 0); `d = floor((1 −
+f) × 11)`. The sun is up when `d < 4` and the dimension has a sky. At `t = 0` and `t = 6000` `d` is
+0; at `t = 13500` the sun is down; at midnight `d` is 11. The attribute pipeline of the dimension
+types (`predicates.md`, PRED-LOC-007) will give `d` once the server resolves environment attributes;
+until then this formula stands.
 
 ## 3. The zombie kind
 
@@ -548,8 +572,8 @@ empty goal list and an empty target list. It stands still.
 - **U3**: the type set "each monster" of the golems needs the entity type tag of the monsters; the
   server reads the mob category `monster` of the spawn data of each type.
 - **U4**: the restrict-sun goal starts on "the mob is in the sun" (MON-SUN-003); when the path
-  malus exists, the start condition must become "the sun is up in a dimension with a sky", a
-  value of the dimension that the snapshot does not hold yet.
+  malus exists, the start condition must become "the sun is up in a dimension with a sky"
+  (MON-SUN-005), a value of the dimension that the snapshot does not hold yet.
 - **U5**: the melee part of the blaze (MON-BLZ-003) runs on the server as the melee goal that
   stops when the target is not seen; the fireball goal of the reference continues while the
   target is alive. The choice is the conservative reading until the fireballs exist.

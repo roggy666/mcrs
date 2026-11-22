@@ -25,9 +25,9 @@ use mcrs_minecraft_engine_world::world::sub_app::AddDimensionPlugins;
 use mcrs_minecraft_entity::damage_type_tag_keys::PANIC_CAUSES;
 use mcrs_minecraft_vanilla_attributes::{CreativeRangePlugin, SprintAttributePlugin};
 use mcrs_minecraft_vanilla_block_place::{BlockPlacePlugin, SpawnEggPlugin};
-use mcrs_minecraft_vanilla_projectile::ProjectilePlugin;
 use mcrs_minecraft_vanilla_inventory::InventoryPersistencePlugin;
 use mcrs_minecraft_vanilla_light::LightingPlugin;
+use mcrs_minecraft_vanilla_projectile::ProjectilePlugin;
 use mcrs_minecraft_vanilla_respawn::RespawnPlugin;
 
 pub use falling_blocks::VanillaFallingBlockPlugin;
@@ -94,6 +94,7 @@ impl PluginGroup for MinecraftServerPlugins {
             .add(VanillaBlocksPlugin::default())
             .add(VanillaMobBrainPlugin)
             .add(VanillaProjectilePlugin)
+            .add(VanillaFirePlugin)
             .add(VanillaItemPlugin)
             .add(VanillaBlockPlacePlugin)
             .add(VanillaSwingPlugin)
@@ -183,6 +184,14 @@ pub struct VanillaProjectilePlugin;
 impl Plugin for VanillaProjectilePlugin {
     fn build(&self, app: &mut App) {
         app.add_dimension_plugin(ProjectilePlugin);
+    }
+}
+
+pub struct VanillaFirePlugin;
+
+impl Plugin for VanillaFirePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_dimension_plugin(mcrs_minecraft_vanilla_fire::FirePlugin);
     }
 }
 

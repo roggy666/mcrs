@@ -4,7 +4,7 @@ use mcrs_minecraft_protocol::{Result, VarInt, write_record};
 use mcrs_minecraft_protocol_game::clientbound::ClientboundSetEntityData;
 use mcrs_minecraft_protocol_game::entity::{MetaDataValue, Metadata, MetadataEntry};
 use mcrs_minecraft_protocol_game::entity_data_index::{
-    HEALTH, MOB_FLAG_LEFT_HANDED, MOB_FLAG_NO_AI, MOB_FLAGS, POSE,
+    HEALTH, MOB_FLAG_LEFT_HANDED, MOB_FLAG_NO_AI, MOB_FLAGS, POSE, SHARED_FLAGS,
 };
 
 use crate::encode::record;
@@ -25,6 +25,7 @@ const NO_START: BlockPos = BlockPos::new(0, 0, 0);
 pub(crate) struct LivingEntries {
     pub(crate) health: f32,
     pub(crate) dying: bool,
+    pub(crate) shared_flags: u8,
 }
 
 impl LivingEntries {
@@ -32,13 +33,16 @@ impl LivingEntries {
         Self {
             health: state.health,
             dying: state.dying,
+            shared_flags: 0,
         }
     }
 }
 
 impl PartialEq for LivingEntries {
     fn eq(&self, other: &Self) -> bool {
-        self.health.to_bits() == other.health.to_bits() && self.dying == other.dying
+        self.health.to_bits() == other.health.to_bits()
+            && self.dying == other.dying
+            && self.shared_flags == other.shared_flags
     }
 }
 
@@ -58,6 +62,14 @@ impl Entries {
     }
 
     pub(crate) fn merge(&mut self, entries: &[MetadataEntry<'static>]) {
+        if let Self::Living(living) = self {
+            for entry in entries {
+                if let (SHARED_FLAGS, MetaDataValue::Byte(flags)) = (entry.index, &entry.value) {
+                    living.shared_flags = flags.cast_unsigned();
+                }
+            }
+            return;
+        }
         let Self::Custom(custom) = self else {
             return;
         };
@@ -77,6 +89,9 @@ impl Entries {
         match self {
             Self::Living(living) => {
                 let mut entries = Vec::new();
+                if living.shared_flags != 0 {
+                    entries.push(shared_flags_entry(living.shared_flags));
+                }
                 if living.dying {
                     entries.push(pose_entry());
                 }
@@ -98,6 +113,9 @@ impl Entries {
                 }
                 if now.health.to_bits() != sent.health.to_bits() {
                     changed.push(health_entry(now.health));
+                }
+                if now.shared_flags != sent.shared_flags {
+                    changed.push(shared_flags_entry(now.shared_flags));
                 }
                 changed
             }
@@ -132,6 +150,13 @@ pub(crate) fn spawn_data(looks: &MobLooks, living: LivingEntries) -> Metadata<'s
     }
     entries.extend(looks.type_entries.iter().cloned());
     Metadata(entries)
+}
+
+pub(crate) fn shared_flags_entry(flags: u8) -> MetadataEntry<'static> {
+    MetadataEntry {
+        index: SHARED_FLAGS,
+        value: MetaDataValue::Byte(flags.cast_signed()),
+    }
 }
 
 pub(crate) fn pose_entry() -> MetadataEntry<'static> {
