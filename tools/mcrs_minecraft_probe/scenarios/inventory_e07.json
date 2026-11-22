@@ -1,0 +1,1287 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve07probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve07probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival inve07probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "give_stone_1",
+      "console": {
+        "lines": [
+          "give inve07probeplyr stone 1"
+        ]
+      }
+    },
+    {
+      "id": "give_stone_2",
+      "console": {
+        "lines": [
+          "give inve07probeplyr stone 1"
+        ]
+      }
+    },
+    {
+      "id": "give_stone_3",
+      "console": {
+        "lines": [
+          "give inve07probeplyr stone 1"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_with_current_state_id",
+      "click": {
+        "client": "inve07probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": null
+          }
+        ],
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "put_back_with_stale_state_id",
+      "click": {
+        "client": "inve07probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "state_id_offset": -1,
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pick_up_with_future_state_id",
+      "click": {
+        "client": "inve07probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "state_id_offset": 1,
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": null
+          }
+        ],
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "put_back_with_current_state_id",
+      "click": {
+        "client": "inve07probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "place_stonecutter",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 stonecutter"
+        ]
+      }
+    },
+    {
+      "id": "open_menu_001",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_002",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_003",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_004",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_005",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_006",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_007",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_008",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_009",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_010",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_011",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_012",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_013",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_014",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_015",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_016",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_017",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_018",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_019",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_020",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_021",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_022",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_023",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_024",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_025",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_026",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_027",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_028",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_029",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_030",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_031",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_032",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_033",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_034",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_035",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_036",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_037",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_038",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_039",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_040",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_041",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_042",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_043",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_044",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_045",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_046",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_047",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_048",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_049",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_050",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_051",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_052",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_053",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_054",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_055",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_056",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_057",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_058",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_059",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_060",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_061",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_062",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_063",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_064",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_065",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_066",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_067",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_068",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_069",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_070",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_071",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_072",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_073",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_074",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_075",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_076",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_077",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_078",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_079",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_080",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_081",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_082",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_083",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_084",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_085",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_086",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_087",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_088",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_089",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_090",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_091",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_092",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_093",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_094",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_095",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_096",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_097",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_098",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_099",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_100",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "open_menu_101",
+      "use_block": {
+        "client": "inve07probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "close_last_menu",
+      "close": {
+        "client": "inve07probeplyr"
+      }
+    },
+    {
+      "id": "to_creative",
+      "console": {
+        "lines": [
+          "gamemode creative inve07probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "to_nether",
+      "console": {
+        "lines": [
+          "execute in minecraft:the_nether run tp inve07probeplyr 0.5 40.5 0.5"
+        ]
+      }
+    },
+    {
+      "id": "back_to_overworld",
+      "console": {
+        "lines": [
+          "execute in minecraft:overworld run tp inve07probeplyr 0.5 -60 0.5"
+        ]
+      }
+    }
+  ]
+}

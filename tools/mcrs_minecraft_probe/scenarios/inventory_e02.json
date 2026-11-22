@@ -1,0 +1,548 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve02probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve02probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival inve02probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "helmet_to_own_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "helmet_to_own_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_helmet"
+        ]
+      }
+    },
+    {
+      "id": "helmet_to_own_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_helmet",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "helmet_to_own_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "chestplate_to_own_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "chestplate_to_own_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_chestplate"
+        ]
+      }
+    },
+    {
+      "id": "chestplate_to_own_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 6,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_chestplate",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "chestplate_to_own_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "leggings_to_own_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "leggings_to_own_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_leggings"
+        ]
+      }
+    },
+    {
+      "id": "leggings_to_own_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 7,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_leggings",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "leggings_to_own_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "boots_to_own_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "boots_to_own_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_boots"
+        ]
+      }
+    },
+    {
+      "id": "boots_to_own_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 8,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_boots",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "boots_to_own_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "helmet_to_chest_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "helmet_to_chest_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_helmet"
+        ]
+      }
+    },
+    {
+      "id": "helmet_to_chest_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 6,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_helmet",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "helmet_to_chest_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_head_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_head_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_head_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "stone_to_head_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_helmet[equippable={slot:\"head\",allowed_entities:\"minecraft:zombie\"}]"
+        ]
+      }
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_helmet",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "zombie_helmet_to_head_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_helmet[equippable={slot:\"head\",allowed_entities:[\"minecraft:zombie\",\"minecraft:player\"]}]"
+        ]
+      }
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_helmet",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "player_tag_helmet_to_head_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "two_helmets_to_head_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "two_helmets_to_head_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with iron_helmet 2"
+        ]
+      }
+    },
+    {
+      "id": "two_helmets_to_head_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_helmet",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "two_helmets_to_head_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "pumpkin_to_head_slot_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "pumpkin_to_head_slot_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with carved_pumpkin 1"
+        ]
+      }
+    },
+    {
+      "id": "pumpkin_to_head_slot_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:carved_pumpkin",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "pumpkin_to_head_slot_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "pumpkins_quick_move_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve02probeplyr inventory.0 with carved_pumpkin 64"
+        ]
+      }
+    },
+    {
+      "id": "pumpkins_quick_move_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "pumpkins_quick_move_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "pumpkins_quick_move_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "binding_survival_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve02probeplyr armor.head with iron_helmet[enchantments={\"minecraft:binding_curse\":1}]"
+        ]
+      }
+    },
+    {
+      "id": "binding_survival_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "binding_survival_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "binding_creative_gamemode",
+      "console": {
+        "lines": [
+          "gamemode creative inve02probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "binding_creative_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "binding_creative_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "binding_creative_clear_cursor",
+      "console": {
+        "lines": [
+          "item replace entity inve02probeplyr player.cursor with air"
+        ]
+      }
+    },
+    {
+      "id": "stored_binding_survival_gamemode",
+      "console": {
+        "lines": [
+          "gamemode survival inve02probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "stored_binding_survival_reset",
+      "console": {
+        "lines": [
+          "clear inve02probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve02probeplyr armor.head with iron_helmet[stored_enchantments={\"minecraft:binding_curse\":1}]"
+        ]
+      }
+    },
+    {
+      "id": "stored_binding_survival_click",
+      "click": {
+        "client": "inve02probeplyr",
+        "slot": 5,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "stored_binding_survival_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve02probeplyr equipment"
+        ]
+      }
+    }
+  ]
+}

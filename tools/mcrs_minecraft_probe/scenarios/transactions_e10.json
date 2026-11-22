@@ -1,0 +1,320 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe10probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe10probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe10probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_brewing_stand",
+      "console": {
+        "lines": [
+          "setblock -1 -60 0 brewing_stand"
+        ]
+      }
+    },
+    {
+      "id": "potions_16_in_hotbar_0",
+      "console": {
+        "lines": [
+          "item replace entity itxe10probeplyr hotbar.0 with potion[max_stack_size=16] 16"
+        ]
+      }
+    },
+    {
+      "id": "swiftness_in_bottle_slot",
+      "console": {
+        "lines": [
+          "item replace block -1 -60 0 container.0 with potion[potion_contents={potion:\"minecraft:swiftness\"}]"
+        ]
+      }
+    },
+    {
+      "id": "open_brewing_stand",
+      "use_block": {
+        "client": "itxe10probeplyr",
+        "position": [
+          -1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "swap_bottle_slot_button_0",
+      "click": {
+        "client": "itxe10probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "swap_bottle_slot_button_0_read_stand",
+      "console": {
+        "lines": [
+          "data get block -1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "swap_bottle_slot_button_0_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "close_1",
+      "close": {
+        "client": "itxe10probeplyr"
+      }
+    },
+    {
+      "id": "full_inventory_reset",
+      "console": {
+        "lines": [
+          "clear itxe10probeplyr",
+          "kill @e[type=minecraft:item]",
+          "give itxe10probeplyr dirt 2304",
+          "item replace entity itxe10probeplyr hotbar.0 with potion[max_stack_size=16] 16",
+          "item replace block -1 -60 0 container.0 with potion[potion_contents={potion:\"minecraft:swiftness\"}]"
+        ]
+      }
+    },
+    {
+      "id": "full_inventory_open_brewing_stand",
+      "use_block": {
+        "client": "itxe10probeplyr",
+        "position": [
+          -1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "full_inventory_swap_bottle_slot_button_0",
+      "sequence": {
+        "steps": [
+          {
+            "click": {
+              "client": "itxe10probeplyr",
+              "slot": 0,
+              "button": 0,
+              "mode": "swap"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "full_inventory_read_stand",
+      "console": {
+        "lines": [
+          "data get block -1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "full_inventory_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "full_inventory_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "close_2",
+      "close": {
+        "client": "itxe10probeplyr"
+      }
+    },
+    {
+      "id": "off_hand_reset",
+      "console": {
+        "lines": [
+          "clear itxe10probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe10probeplyr weapon.offhand with potion[max_stack_size=16] 16",
+          "item replace block -1 -60 0 container.0 with potion[potion_contents={potion:\"minecraft:swiftness\"}]"
+        ]
+      }
+    },
+    {
+      "id": "off_hand_open_brewing_stand",
+      "use_block": {
+        "client": "itxe10probeplyr",
+        "position": [
+          -1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "off_hand_swap_bottle_slot_button_40",
+      "click": {
+        "client": "itxe10probeplyr",
+        "slot": 0,
+        "button": 40,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "off_hand_read_stand",
+      "console": {
+        "lines": [
+          "data get block -1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "off_hand_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "off_hand_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "empty_bottle_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe10probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe10probeplyr hotbar.0 with stone 10",
+          "item replace block -1 -60 0 container.0 with air"
+        ]
+      }
+    },
+    {
+      "id": "empty_bottle_slot_swap_button_0",
+      "click": {
+        "client": "itxe10probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "empty_bottle_slot_read_stand",
+      "console": {
+        "lines": [
+          "data get block -1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "empty_bottle_slot_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "empty_hotbar_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe10probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe10probeplyr hotbar.0 with air",
+          "item replace block -1 -60 0 container.0 with potion[potion_contents={potion:\"minecraft:swiftness\"}]"
+        ]
+      }
+    },
+    {
+      "id": "empty_hotbar_slot_swap_button_0",
+      "click": {
+        "client": "itxe10probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "swap"
+      }
+    },
+    {
+      "id": "empty_hotbar_slot_read_stand",
+      "console": {
+        "lines": [
+          "data get block -1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "empty_hotbar_slot_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe10probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "close_3",
+      "close": {
+        "client": "itxe10probeplyr"
+      }
+    }
+  ]
+}

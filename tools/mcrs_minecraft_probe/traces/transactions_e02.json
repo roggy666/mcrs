@@ -1,0 +1,587 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe02probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_furnace",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at 1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_furnace",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:furnace",
+          "title": {
+            "translate": "container.furnace"
+          }
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 0,
+          "value": 0
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 1,
+          "value": 0
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 2,
+          "value": 0
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 3,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "stone_40_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe02probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 40,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "wait_after_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_primary_on_fuel_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_secondary_on_fuel_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_primary_on_result_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_secondary_on_result_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_stone_clicks_read_furnace",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "one_stone_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe02probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "one_stone_primary_on_fuel_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "coal_10_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe02probeplyr with [Coal]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:coal",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "coal_primary_on_fuel_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 2,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:coal",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "ingots_5_in_result_slot",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) at 1, -60, 0 with [Iron Ingot]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 3,
+          "slot": 2,
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "clear_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe02probeplyr with [Air]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_cursor_primary_on_result_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 4,
+          "slot": 2,
+          "stack": null
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "after_result_take_read_furnace",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 10, Slot: 1b, id: \"minecraft:coal\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "ingots_5_in_result_slot_again",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) at 1, -60, 0 with [Iron Ingot]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 5,
+          "slot": 2,
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 5,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ingots_3_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe02probeplyr with [Iron Ingot]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ingots_primary_on_result_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 6,
+          "slot": 2,
+          "stack": null
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 8,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "after_result_merge_read_furnace",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 10, Slot: 1b, id: \"minecraft:coal\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_furnace",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe02probeplyr",
+          "kind": "set_player_inventory",
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 8,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe02probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:iron_ingot",
+            "count": 8,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

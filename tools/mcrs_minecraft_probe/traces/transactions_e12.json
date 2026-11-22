@@ -1,0 +1,597 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe12probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "creative",
+      "observed": {
+        "console": {
+          "output": [
+            "Set itxe12probeplyr's game mode to Creative Mode"
+          ],
+          "chat": [
+            {
+              "client": "itxe12probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.creative"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at 1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_5_in_chest_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) at 1, -60, 0 with [Stone]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_chest",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:stone",
+              "count": 5,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "clone_stone_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "clone_stone_slot_read_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 5, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clone_with_full_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clone_with_full_cursor_read_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 5, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_start",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_add_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_add_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_add_3",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_end",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 2,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 3,
+          "slot": 2,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 4,
+          "slot": 3,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "drag_kind_2_read_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 5, Slot: 0b, id: \"minecraft:stone\"}, {count: 64, Slot: 1b, id: \"minecraft:stone\"}, {count: 64, Slot: 2b, id: \"minecraft:stone\"}, {count: 64, Slot: 3b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_60_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe12probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 60,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone_62_in_chest_4",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) at 1, -60, 0 with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 5,
+          "slot": 4,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 62,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "drag_kind_2_partial_start",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_partial_add_4",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_partial_add_5",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "drag_kind_2_partial_end",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 6,
+          "slot": 4,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe12probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 7,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "drag_kind_2_partial_read_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 5, Slot: 0b, id: \"minecraft:stone\"}, {count: 64, Slot: 1b, id: \"minecraft:stone\"}, {count: 64, Slot: 2b, id: \"minecraft:stone\"}, {count: 64, Slot: 3b, id: \"minecraft:stone\"}, {count: 64, Slot: 4b, id: \"minecraft:stone\"}, {count: 64, Slot: 5b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clear_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe12probeplyr with [Air]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clone_empty_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": [
+            "Set itxe12probeplyr's game mode to Survival Mode"
+          ],
+          "chat": [
+            {
+              "client": "itxe12probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.survival"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clone_in_survival",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clone_in_survival_read_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{count: 5, Slot: 0b, id: \"minecraft:stone\"}, {count: 64, Slot: 1b, id: \"minecraft:stone\"}, {count: 64, Slot: 2b, id: \"minecraft:stone\"}, {count: 64, Slot: 3b, id: \"minecraft:stone\"}, {count: 64, Slot: 4b, id: \"minecraft:stone\"}, {count: 64, Slot: 5b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_chest",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

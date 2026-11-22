@@ -1,0 +1,249 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe02probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe02probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe02probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_furnace",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 furnace"
+        ]
+      }
+    },
+    {
+      "id": "open_furnace",
+      "use_block": {
+        "client": "itxe02probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "stone_40_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe02probeplyr player.cursor with stone 40"
+        ]
+      }
+    },
+    {
+      "id": "wait_after_cursor",
+      "wait": {
+        "ms": 2000
+      }
+    },
+    {
+      "id": "stone_primary_on_fuel_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 40
+        }
+      }
+    },
+    {
+      "id": "stone_secondary_on_fuel_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 1,
+        "button": 1,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 40
+        }
+      }
+    },
+    {
+      "id": "stone_primary_on_result_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 2,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 40
+        }
+      }
+    },
+    {
+      "id": "stone_secondary_on_result_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 2,
+        "button": 1,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 40
+        }
+      }
+    },
+    {
+      "id": "after_stone_clicks_read_furnace",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "one_stone_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe02probeplyr player.cursor with stone 1"
+        ]
+      }
+    },
+    {
+      "id": "one_stone_primary_on_fuel_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "coal_10_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe02probeplyr player.cursor with coal 10"
+        ]
+      }
+    },
+    {
+      "id": "coal_primary_on_fuel_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:coal",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "ingots_5_in_result_slot",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.2 with iron_ingot 5"
+        ]
+      }
+    },
+    {
+      "id": "clear_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe02probeplyr player.cursor with air"
+        ]
+      }
+    },
+    {
+      "id": "empty_cursor_primary_on_result_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 2,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "after_result_take_read_furnace",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "ingots_5_in_result_slot_again",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.2 with iron_ingot 5"
+        ]
+      }
+    },
+    {
+      "id": "ingots_3_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe02probeplyr player.cursor with iron_ingot 3"
+        ]
+      }
+    },
+    {
+      "id": "ingots_primary_on_result_slot",
+      "click": {
+        "client": "itxe02probeplyr",
+        "slot": 2,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_ingot",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "after_result_merge_read_furnace",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_furnace",
+      "close": {
+        "client": "itxe02probeplyr"
+      }
+    }
+  ]
+}

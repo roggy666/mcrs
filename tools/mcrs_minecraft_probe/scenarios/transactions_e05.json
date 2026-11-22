@@ -1,0 +1,179 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe05probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe05probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe05probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "stone_10_in_hotbar_0",
+      "console": {
+        "lines": [
+          "item replace entity itxe05probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_with_wrong_changed_slot",
+      "click": {
+        "client": "itxe05probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 10
+            }
+          }
+        ],
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "put_back_with_wrong_cursor",
+      "click": {
+        "client": "itxe05probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 10
+            }
+          }
+        ],
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "pick_up_with_wrong_changed_count",
+      "click": {
+        "client": "itxe05probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 2
+            }
+          }
+        ],
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 8
+        }
+      }
+    },
+    {
+      "id": "put_back_with_future_state_id",
+      "click": {
+        "client": "itxe05probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "state_id_offset": 1,
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pick_up_with_unlisted_changed_slot",
+      "click": {
+        "client": "itxe05probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 37,
+            "stack": {
+              "item": "minecraft:dirt",
+              "count": 1
+            }
+          }
+        ],
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "put_back_correct",
+      "click": {
+        "client": "itxe05probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "changed_slots": [
+          {
+            "slot": 36,
+            "stack": {
+              "item": "minecraft:stone",
+              "count": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "end_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe05probeplyr Inventory"
+        ]
+      }
+    }
+  ]
+}

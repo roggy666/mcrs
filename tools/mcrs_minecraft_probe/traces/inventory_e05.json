@@ -1,0 +1,847 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve05probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_gamemode",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_drop_one_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve05probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve05probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "survival_drop_one_action",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{count: 1, id: \"minecraft:stone\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_drop_one_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: [{count: 9, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_drop_all_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 9 item(s) from player inve05probeplyr",
+            "Killed Stone",
+            "Replaced 1 slot(s) on inve05probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "survival_drop_all_action",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Modified storage mcrs:probe",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{count: 10, id: \"minecraft:stone\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_drop_all_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_drop_empty_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve05probeplyr",
+            "Killed Stone"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "survival_drop_empty_action",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Modified storage mcrs:probe",
+            "Found no elements matching items",
+            "Test failed"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_swap_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve05probeplyr",
+            "No entity was found",
+            "inve05probeplyr has made the advancement [Suit Up]",
+            "Replaced 1 slot(s) on inve05probeplyr with [Iron Helmet]",
+            "Replaced 1 slot(s) on inve05probeplyr with [Shield]"
+          ],
+          "chat": [
+            {
+              "client": "inve05probeplyr",
+              "text": {
+                "translate": "chat.type.advancement.task",
+                "with": [
+                  {
+                    "text": "inve05probeplyr",
+                    "click_event": {
+                      "action": "suggest_command",
+                      "command": "/tell inve05probeplyr "
+                    },
+                    "hover_event": {
+                      "action": "show_entity",
+                      "id": "minecraft:player",
+                      "uuid": [
+                        -564798856,
+                        -1643302663,
+                        -1472567900,
+                        -1312386633
+                      ],
+                      "name": "inve05probeplyr"
+                    },
+                    "insertion": "inve05probeplyr"
+                  },
+                  {
+                    "translate": "chat.square_brackets",
+                    "with": [
+                      {
+                        "translate": "advancements.story.obtain_armor.title",
+                        "hover_event": {
+                          "action": "show_text",
+                          "value": {
+                            "translate": "advancements.story.obtain_armor.title",
+                            "extra": [
+                              "\n",
+                              {
+                                "translate": "advancements.story.obtain_armor.description"
+                              }
+                            ],
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ],
+                    "color": "green"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:shield",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "survival_swap_action",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:shield",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "survival_swap_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: [{count: 1, Slot: 0b, id: \"minecraft:shield\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_swap_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: {offhand: {count: 1, id: \"minecraft:iron_helmet\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_swap_empty_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 2 item(s) from player inve05probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 45,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "survival_swap_empty_action",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_swap_empty_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_gamemode",
+      "observed": {
+        "console": {
+          "output": [
+            "Set inve05probeplyr's game mode to Spectator Mode"
+          ],
+          "chat": [
+            {
+              "client": "inve05probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.spectator"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_drop_one_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve05probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve05probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spectator_drop_one_action",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Found no elements matching items",
+            "Test failed"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_drop_one_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_drop_all_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 10 item(s) from player inve05probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve05probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 18,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 19,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 20,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spectator_drop_all_action",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Found no elements matching items",
+            "Test failed"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_drop_all_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_drop_empty_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 10 item(s) from player inve05probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 21,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 22,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "spectator_drop_empty_action",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Found no elements matching items",
+            "Test failed"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_swap_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve05probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on inve05probeplyr with [Iron Helmet]",
+            "Replaced 1 slot(s) on inve05probeplyr with [Shield]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 23,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 24,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 25,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:shield",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "spectator_swap_action",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_swap_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: [{count: 1, Slot: 0b, id: \"minecraft:iron_helmet\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_swap_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: {offhand: {count: 1, id: \"minecraft:shield\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_swap_empty_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 2 item(s) from player inve05probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 26,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 27,
+          "slot": 45,
+          "stack": null
+        },
+        {
+          "client": "inve05probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 28,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "spectator_swap_empty_action",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator_swap_empty_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve05probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

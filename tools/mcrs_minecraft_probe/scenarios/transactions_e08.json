@@ -1,0 +1,161 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe08probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe08probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe08probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_crafting_table",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 crafting_table"
+        ]
+      }
+    },
+    {
+      "id": "open_crafting_table",
+      "use_block": {
+        "client": "itxe08probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "logs_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe08probeplyr player.cursor with oak_log 4"
+        ]
+      }
+    },
+    {
+      "id": "logs_to_grid",
+      "click": {
+        "client": "itxe08probeplyr",
+        "slot": 1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:oak_log",
+          "count": 4
+        }
+      }
+    },
+    {
+      "id": "result_primary_empty_cursor",
+      "click": {
+        "client": "itxe08probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "result_secondary_planks_cursor",
+      "click": {
+        "client": "itxe08probeplyr",
+        "slot": 0,
+        "button": 1,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:oak_planks",
+          "count": 4
+        }
+      }
+    },
+    {
+      "id": "planks_62_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe08probeplyr player.cursor with oak_planks 62"
+        ]
+      }
+    },
+    {
+      "id": "result_primary_planks_62_cursor",
+      "click": {
+        "client": "itxe08probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:oak_planks",
+          "count": 62
+        }
+      }
+    },
+    {
+      "id": "clear_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe08probeplyr player.cursor with air"
+        ]
+      }
+    },
+    {
+      "id": "result_secondary_empty_cursor",
+      "click": {
+        "client": "itxe08probeplyr",
+        "slot": 0,
+        "button": 1,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "result_quick_move",
+      "click": {
+        "client": "itxe08probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "end_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe08probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "close_crafting_table",
+      "close": {
+        "client": "itxe08probeplyr"
+      }
+    }
+  ]
+}

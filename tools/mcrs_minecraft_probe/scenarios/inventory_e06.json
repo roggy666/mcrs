@@ -1,0 +1,346 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve06probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve06probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "creative",
+      "console": {
+        "lines": [
+          "gamemode creative inve06probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "datapacks_available",
+      "console": {
+        "lines": [
+          "datapack list available"
+        ]
+      }
+    },
+    {
+      "id": "datapacks_enabled",
+      "console": {
+        "lines": [
+          "datapack list enabled"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_slot_0",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 0,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "stone_to_slot_1",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 1,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "stone_to_slot_5",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 5,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "stone_to_slot_36",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 36,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "stone_to_slot_45",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 45,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "stone_to_slot_46",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 46,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "stone_to_slots_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_slots_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_slots_read_grid",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr Inventory[{Slot:9b}]"
+        ]
+      }
+    },
+    {
+      "id": "stone_65_to_slot_36",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 36,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 65
+        }
+      }
+    },
+    {
+      "id": "stone_65_to_slot_36_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "empty_to_slot_36",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 36,
+        "stack": null
+      }
+    },
+    {
+      "id": "empty_to_slot_36_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "two_helmets_to_slot_5",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 5,
+        "stack": {
+          "item": "minecraft:iron_helmet",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "two_helmets_to_slot_5_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_slot_minus_1",
+      "sequence": {
+        "steps": [
+          {
+            "creative_slot": {
+              "client": "inve06probeplyr",
+              "slot": -1,
+              "stack": {
+                "item": "minecraft:stone",
+                "count": 4
+              }
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "survival_case_reset",
+      "console": {
+        "lines": [
+          "clear inve06probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "survival_case_gamemode",
+      "console": {
+        "lines": [
+          "gamemode survival inve06probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "survival_case_stone_to_slot_36",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 36,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "survival_case_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "chest_case_gamemode",
+      "console": {
+        "lines": [
+          "gamemode creative inve06probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "chest_case_reset",
+      "console": {
+        "lines": [
+          "clear inve06probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "chest_case_place_chest",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 chest"
+        ]
+      }
+    },
+    {
+      "id": "chest_case_open_chest",
+      "use_block": {
+        "client": "inve06probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "chest_case_stone_to_slot_36",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 36,
+        "stack": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "chest_case_dirt_to_slot_5",
+      "creative_slot": {
+        "client": "inve06probeplyr",
+        "slot": 5,
+        "stack": {
+          "item": "minecraft:dirt",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "chest_case_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "chest_case_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve06probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "chest_case_close",
+      "close": {
+        "client": "inve06probeplyr"
+      }
+    }
+  ]
+}
