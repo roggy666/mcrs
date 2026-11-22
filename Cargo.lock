@@ -6407,6 +6407,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "mcrs_minecraft_nav_projection"
+version = "0.5.8"
+dependencies = [
+ "mcrs_minecraft_physics",
+ "mcrs_minecraft_volume",
+ "mcrs_voxel",
+ "rustc-hash 2.1.1",
+]
+
+[[package]]
 name = "mcrs_minecraft_nbt"
 version = "0.5.8"
 dependencies = [

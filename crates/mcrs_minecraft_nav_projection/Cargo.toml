@@ -1,0 +1,17 @@
+[package]
+name = "mcrs_minecraft_nav_projection"
+description = "The navigation projection of the blocks for the AI stage: one small navigation row per distinct collision row, sections without arrays when uniform, and versions per section that live for the lag of the stage"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+mcrs_minecraft_physics.workspace = true
+mcrs_minecraft_volume.workspace = true
+mcrs_voxel.workspace = true
+rustc-hash.workspace = true
