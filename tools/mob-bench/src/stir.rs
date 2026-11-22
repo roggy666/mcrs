@@ -3,6 +3,7 @@ use std::str::FromStr;
 use anyhow::bail;
 use serde::Serialize;
 
+use crate::scene::Mob;
 use crate::scene::{self, Area, FLOOR_Y};
 
 pub const PERIOD: i64 = 80;
@@ -29,6 +30,7 @@ impl FromStr for Mode {
 
 #[derive(Clone, Copy, Debug)]
 pub struct Stir {
+    pub mob: Mob,
     pub mode: Mode,
     pub area: Area,
     pub margin: i32,
@@ -52,7 +54,8 @@ impl Stir {
             Mode::Strip => {
                 let strip = self.strip(slot);
                 vec![format!(
-                    "execute as @e[type=minecraft:pig,x={},y={},z={},dx={},dy=8,dz={}] run damage @s 0 minecraft:drown",
+                    "execute as @e[type={},x={},y={},z={},dx={},dy=8,dz={}] run damage @s 0 minecraft:drown",
+                    self.mob.id(),
                     strip.min_x,
                     FLOOR_Y - 4,
                     strip.min_z,
@@ -96,6 +99,7 @@ mod tests {
     fn the_strips_of_one_period_tile_the_area_and_its_margin_once() {
         for area in [PEN, ROAM] {
             let stir = Stir {
+                mob: Mob::Pig,
                 mode: Mode::Strip,
                 area,
                 margin: 8,
@@ -131,6 +135,7 @@ mod tests {
     #[test]
     fn the_uuid_lines_of_one_period_hit_every_pig_once() {
         let stir = Stir {
+            mob: Mob::Pig,
             mode: Mode::Uuid,
             area: PEN,
             margin: 0,

@@ -8,6 +8,8 @@ servers="${SERVERS:-vanilla horizon mcrs}"
 clients="${CLIENTS:-watcher none}"
 phases="${PHASES:-idle,roam-still,roam-stir,crowd-still,crowd-stir,stimulus,cost-still,cost-stir}"
 pigs="${PIGS:-50000}"
+mob="${MOB:-pig}"
+layout="${LAYOUT:-spread}"
 samples="${SAMPLES:-32}"
 idle_warmup="${IDLE_WARMUP:-10}"
 warmup="${WARMUP:-30}"
@@ -36,11 +38,18 @@ horizon_resources="${HORIZON_RESOURCES:-$horizon_dir/.local/horizon-client/26.3}
 mcrs_bin="${MCRS_BIN:-$root/target/release/mcrs}"
 bench="${BENCH:-$root/target/release/mob-bench}"
 
-if [ "${MINECRAFT_EULA:-}" != true ]; then
+load() {
+    sysctl -n vm.loadavg 2>/dev/null || echo "n/a"
+}
+
+if [ "${MINECRAFT_EULA:-}" != true ] && case " $servers " in *" vanilla "*) true ;; *) false ;; esac; then
     echo "set MINECRAFT_EULA=true to accept the Minecraft EULA for the vanilla server" >&2
     exit 3
 fi
-vanilla_jar="${VANILLA_JAR:-$("$root/tools/vanilla-server/run.sh" fetch)}"
+vanilla_jar=""
+case " $servers $scaling_servers " in
+    *" vanilla "*) vanilla_jar="${VANILLA_JAR:-$("$root/tools/vanilla-server/run.sh" fetch)}" ;;
+esac
 mkdir -p "$out" "$work/logs"
 
 client_mode() {
@@ -53,7 +62,7 @@ run_one() {
     rm -rf "$dir"
     mkdir -p "$dir"
     local args=(run --server "$server" --client "$(client_mode "$server" "$client")" --repo "$root"
-        --dir "$dir" --out "$out/$name.json" --port "$port" --phases "$run_phases" --pigs "$pigs"
+        --dir "$dir" --out "$out/$name.json" --port "$port" --phases "$run_phases" --pigs "$pigs" --mob "$mob" --layout "$layout"
         --samples "$samples" --idle-warmup "$idle_warmup" --warmup "$warmup" --measure "$measure"
         --probe-interval "$probe_interval" --summon-rate "$summon_rate" --sprint-ticks "$sprint_ticks"
         --stimulus-pigs "$stimulus_pigs" --stimulus-period "$stimulus_period" --stimulus-warmup "$stimulus_warmup"
@@ -65,11 +74,11 @@ run_one() {
         mcrs) args+=(--binary "$mcrs_bin") ;;
     esac
     [ -n "$threads" ] && args+=(--threads "$threads")
-    echo "[$(date -u +%T)] $name start, load $(sysctl -n vm.loadavg)" | tee -a "$out/runs.txt"
+    echo "[$(date -u +%T)] $name start, load $(load)" | tee -a "$out/runs.txt"
     "$bench" "${args[@]}" >"$work/logs/$name.stdout" 2>&1 ||
         echo "$name failed, see $work/logs/$name.stdout" | tee -a "$out/runs.txt"
     cp "$dir/server.log" "$work/logs/$name.server.log" 2>/dev/null || true
-    echo "[$(date -u +%T)] $name end, load $(sysctl -n vm.loadavg)" | tee -a "$out/runs.txt"
+    echo "[$(date -u +%T)] $name end, load $(load)" | tee -a "$out/runs.txt"
     rm -rf "$dir"
 }
 

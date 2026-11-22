@@ -137,7 +137,12 @@ impl Drift {
             min_z: -half,
             size: options.side,
         };
-        let lines = [scene::settings(), scene::forceload(pen), scene::fence(pen)].concat();
+        let lines = [
+            scene::settings(scene::Mob::Pig),
+            scene::forceload(pen),
+            scene::fence(pen),
+        ]
+        .concat();
         for line in &lines {
             self.answered(line);
         }
@@ -159,7 +164,15 @@ impl Drift {
         self.idle(Duration::from_secs(2));
 
         let count = (DENSITY * f64::from(options.side * options.side)).round() as usize;
-        let summons = scene::summons(pen, 1, count, 0, scene::Ai::On);
+        let summons = scene::summons(
+            pen,
+            1,
+            count,
+            0,
+            scene::Ai::On,
+            scene::Mob::Pig,
+            scene::Layout::Spread,
+        );
         for chunk in summons.chunks(100) {
             for line in chunk {
                 self.server.send(line)?;
@@ -169,7 +182,7 @@ impl Drift {
         let wait = Instant::now() + Duration::from_secs(300);
         loop {
             let sent = Instant::now();
-            self.server.send(scene::COUNT_PIGS)?;
+            self.server.send(&scene::count(scene::Mob::Pig))?;
             let counted = self
                 .server
                 .wait_for(sent, CONSOLE_TIMEOUT, probe::count_or_zero);
@@ -220,6 +233,7 @@ impl Drift {
             &mut self.server,
             &self.runtime,
             address,
+            scene::Mob::Pig.kind(),
         )?);
         Ok(())
     }

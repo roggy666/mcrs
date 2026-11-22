@@ -152,6 +152,7 @@ where
         let blocks = std::mem::take(&mut input.blocks);
         self.project(tick, blocks);
         let before = self.stage.evaluations();
+        let pops_before = self.stage.pops();
         let max_lag = u64::from(self.stage.config().max_lag());
         let Some(tables) = self.tables.as_deref() else {
             return AiOutput {
@@ -184,6 +185,9 @@ where
             run: RunStats {
                 stage: started.elapsed(),
                 evaluations: self.stage.evaluations().saturating_sub(before),
+                pops: self.stage.pops().saturating_sub(pops_before),
+                deferred: self.stage.deferred(),
+                slices: self.stage.slices(),
                 decisions: decisions.len(),
                 mobs: self.stage.len(),
                 sections: self.projection.sections(),

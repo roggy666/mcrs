@@ -8083,6 +8083,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tracing-subscriber",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

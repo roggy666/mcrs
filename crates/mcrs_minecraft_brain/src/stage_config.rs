@@ -12,6 +12,7 @@ pub struct StageConfig {
     wake: WakeMode,
     path_budget: u32,
     tile_path_budget: u32,
+    tile_split: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -32,11 +33,26 @@ impl StageConfig {
             wake: WakeMode::Sleep,
             path_budget: Self::DEFAULT_PATH_BUDGET,
             tile_path_budget: Self::DEFAULT_TILE_PATH_BUDGET,
+            tile_split: Self::DEFAULT_TILE_SPLIT,
         }
     }
 
     pub const DEFAULT_PATH_BUDGET: u32 = 65_536;
     pub const DEFAULT_TILE_PATH_BUDGET: u32 = 4096;
+    pub const DEFAULT_TILE_SPLIT: usize = 256;
+
+    #[must_use]
+    pub const fn tile_split(&self) -> usize {
+        self.tile_split
+    }
+
+    #[must_use]
+    pub const fn with_tile_split(self, tile_split: usize) -> Self {
+        Self {
+            tile_split: if tile_split == 0 { 1 } else { tile_split },
+            ..self
+        }
+    }
 
     #[must_use]
     pub const fn path_budget(&self) -> u32 {

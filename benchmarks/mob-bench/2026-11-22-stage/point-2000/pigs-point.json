@@ -1,0 +1,466 @@
+{
+  "server": "mcrs",
+  "client": "watcher",
+  "threads": null,
+  "threads_note": "Bevy default compute pool",
+  "pigs": 2000,
+  "mob": "pig",
+  "layout": "point",
+  "pen": {
+    "min_x": -125,
+    "min_z": -125,
+    "size": 250
+  },
+  "roam": {
+    "min_x": 380,
+    "min_z": -320,
+    "size": 640
+  },
+  "tick_metric": "mcrs_trace",
+  "start_seconds": 2.95,
+  "console": true,
+  "settings": [
+    {
+      "line": "gamerule spawn_mobs false",
+      "answer": "2026-11-22T12:55:59.724606Z  INFO mcrs_console: Game rule spawn_mobs is now set to false"
+    },
+    {
+      "line": "gamerule spawn_monsters false",
+      "answer": "2026-11-22T12:55:59.771233Z  INFO mcrs_console: Game rule spawn_monsters is now set to false"
+    },
+    {
+      "line": "gamerule spawn_patrols false",
+      "answer": "2026-11-22T12:55:59.821421Z  INFO mcrs_console: Game rule spawn_patrols is now set to false"
+    },
+    {
+      "line": "gamerule spawn_wandering_traders false",
+      "answer": "2026-11-22T12:55:59.872019Z  INFO mcrs_console: Game rule spawn_wandering_traders is now set to false"
+    },
+    {
+      "line": "gamerule advance_time false",
+      "answer": "2026-11-22T12:55:59.921950Z  INFO mcrs_console: Game rule advance_time is now set to false"
+    },
+    {
+      "line": "gamerule advance_weather false",
+      "answer": "2026-11-22T12:55:59.971632Z  INFO mcrs_console: Game rule advance_weather is now set to false"
+    },
+    {
+      "line": "gamerule max_entity_cramming 0",
+      "answer": "2026-11-22T12:56:00.021267Z  INFO mcrs_console: Game rule max_entity_cramming is now set to 0"
+    },
+    {
+      "line": "gamerule mob_drops false",
+      "answer": "2026-11-22T12:56:00.073184Z  INFO mcrs_console: Game rule mob_drops is now set to false"
+    },
+    {
+      "line": "time set noon",
+      "answer": "2026-11-22T12:56:00.122392Z  INFO mcrs_console: Set minecraft:overworld to time marker minecraft:noon"
+    },
+    {
+      "line": "weather clear",
+      "answer": "2026-11-22T12:56:00.171693Z  INFO mcrs_console: Set the weather to clear"
+    },
+    {
+      "line": "forceload add -144 -144 111 111",
+      "answer": "2026-11-22T12:56:00.223375Z  INFO mcrs_console: Marked 256 chunks in minecraft:overworld from [-9, -9] to [6, 6] to be force loaded"
+    },
+    {
+      "line": "forceload add -144 112 111 143",
+      "answer": "2026-11-22T12:56:00.275965Z  INFO mcrs_console: Marked 32 chunks in minecraft:overworld from [-9, 7] to [6, 8] to be force loaded"
+    },
+    {
+      "line": "forceload add 112 -144 143 111",
+      "answer": "2026-11-22T12:56:00.334673Z  INFO mcrs_console: Marked 32 chunks in minecraft:overworld from [7, -9] to [8, 6] to be force loaded"
+    },
+    {
+      "line": "forceload add 112 112 143 143",
+      "answer": "2026-11-22T12:56:00.385742Z  INFO mcrs_console: Marked 4 chunks in minecraft:overworld from [7, 7] to [8, 8] to be force loaded"
+    },
+    {
+      "line": "forceload add 352 -336 607 -81",
+      "answer": "2026-11-22T12:56:00.432743Z  INFO mcrs_console: Marked 256 chunks in minecraft:overworld from [22, -21] to [37, -6] to be force loaded"
+    },
+    {
+      "line": "forceload add 352 -80 607 175",
+      "answer": "2026-11-22T12:56:00.475816Z  INFO mcrs_console: Marked 256 chunks in minecraft:overworld from [22, -5] to [37, 10] to be force loaded"
+    },
+    {
+      "line": "forceload add 352 176 607 335",
+      "answer": "2026-11-22T12:56:00.538302Z  INFO mcrs_console: Marked 160 chunks in minecraft:overworld from [22, 11] to [37, 20] to be force loaded"
+    },
+    {
+      "line": "forceload add 608 -336 863 -81",
+      "answer": "2026-11-22T12:56:00.585550Z  INFO mcrs_console: Marked 256 chunks in minecraft:overworld from [38, -21] to [53, -6] to be force loaded"
+    },
+    {
+      "line": "forceload add 608 -80 863 175",
+      "answer": "2026-11-22T12:56:00.638042Z  INFO mcrs_console: Marked 256 chunks in minecraft:overworld from [38, -5] to [53, 10] to be force loaded"
+    },
+    {
+      "line": "forceload add 608 176 863 335",
+      "answer": "2026-11-22T12:56:00.688487Z  INFO mcrs_console: Marked 160 chunks in minecraft:overworld from [38, 11] to [53, 20] to be force loaded"
+    },
+    {
+      "line": "forceload add 864 -336 1039 -81",
+      "answer": "2026-11-22T12:56:00.738534Z  INFO mcrs_console: Marked 176 chunks in minecraft:overworld from [54, -21] to [64, -6] to be force loaded"
+    },
+    {
+      "line": "forceload add 864 -80 1039 175",
+      "answer": "2026-11-22T12:56:00.791362Z  INFO mcrs_console: Marked 176 chunks in minecraft:overworld from [54, -5] to [64, 10] to be force loaded"
+    },
+    {
+      "line": "forceload add 864 176 1039 335",
+      "answer": "2026-11-22T12:56:00.836056Z  INFO mcrs_console: Marked 110 chunks in minecraft:overworld from [54, 11] to [64, 20] to be force loaded"
+    },
+    {
+      "line": "fill -126 -60 -126 125 -60 -126 minecraft:oak_fence",
+      "answer": "2026-11-22T12:56:00.884761Z  INFO mcrs_console: Successfully filled 252 block(s)"
+    },
+    {
+      "line": "fill -126 -60 125 125 -60 125 minecraft:oak_fence",
+      "answer": "2026-11-22T12:56:00.939319Z  INFO mcrs_console: Successfully filled 252 block(s)"
+    },
+    {
+      "line": "fill -126 -60 -126 -126 -60 125 minecraft:oak_fence",
+      "answer": "2026-11-22T12:56:00.995492Z  INFO mcrs_console: Successfully filled 252 block(s)"
+    },
+    {
+      "line": "fill 125 -60 -126 125 -60 125 minecraft:oak_fence",
+      "answer": "2026-11-22T12:56:01.036512Z  INFO mcrs_console: Successfully filled 252 block(s)"
+    }
+  ],
+  "watcher_error": null,
+  "player_mode": {
+    "command": {
+      "line": "gamemode survival mobbench",
+      "answer": null
+    },
+    "spectators": 0,
+    "watcher_game_mode": "Survival"
+  },
+  "stir_mode": "uuid",
+  "machine": {
+    "cpu": "Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz",
+    "logical_cpus": "8",
+    "performance_cpus": "",
+    "efficiency_cpus": "",
+    "memory_bytes": "",
+    "os": "windows x86_64"
+  },
+  "started_unix": 1795352153,
+  "command": [
+    "C:/Users/GZ/Documents/Working/Projects/mcrs/upstream/target-bench/release/mcrs.exe"
+  ],
+  "env": [
+    [
+      "MCRS_WORLD_SEED",
+      "12345"
+    ],
+    [
+      "MCRS_WORLD_PRESET",
+      "flat"
+    ],
+    [
+      "MCRS_COMPRESSION_THRESHOLD",
+      "-1"
+    ],
+    [
+      "MCRS_DEFAULT_GAMEMODE",
+      "survival"
+    ],
+    [
+      "MCRS_LAN_ANNOUNCE",
+      "off"
+    ],
+    [
+      "BEVY_ASSET_ROOT",
+      "C:/Users/GZ/Documents/Working/Projects/mcrs/upstream"
+    ],
+    [
+      "RUST_LOG",
+      "info,mcrs_tick=trace,mcrs_ai=debug"
+    ],
+    [
+      "MCRS_PORT",
+      "25612"
+    ]
+  ],
+  "phases": [
+    {
+      "phase": "crowd-still",
+      "skipped": null,
+      "pigs_before": 2000,
+      "pigs_after": 2000,
+      "setup_seconds": 29.73,
+      "warmup_seconds": 203.25,
+      "measure_seconds": 40.01,
+      "server_mspt": {
+        "samples": 673,
+        "mean": 24.31,
+        "p50": 5.64,
+        "p95": 144.48,
+        "p99": 226.19,
+        "worst": 270.78
+      },
+      "external": {
+        "console_game_time": {
+          "ticks": 672,
+          "seconds": 39.74,
+          "tps": 16.91,
+          "mean_ms_per_tick": 59.13
+        },
+        "watcher_set_time": null,
+        "sprint": {
+          "ticks": 100,
+          "wall_ms_per_tick": 4.08,
+          "server_ms_per_tick": 3.61
+        }
+      },
+      "motion": {
+        "console": {
+          "pigs": 32,
+          "moved_fraction": 1.0,
+          "mean_path_blocks_per_second": 0.5292,
+          "mean_net_blocks_per_second": 0.3319,
+          "mean_net_blocks": 13.1876,
+          "displaced_fraction": 0.97
+        },
+        "watcher": {
+          "pigs": 2000,
+          "moved_fraction": 1.0,
+          "mean_path_blocks_per_second": 1.3349,
+          "mean_net_blocks_per_second": 0.3375,
+          "mean_net_blocks": 13.5054,
+          "displaced_fraction": 1.0
+        },
+        "watcher_move_packets_per_second": 10104.36
+      },
+      "stir": null,
+      "ai": {
+        "windows": 4,
+        "mobs": 2000.0,
+        "prepare_mean_us": 838.25,
+        "prepare_max_us": 2640.0,
+        "stage_mean_us": 1524.25,
+        "stage_max_us": 26537.0,
+        "wait_mean_us": 0.0,
+        "wait_max_us": 0.0,
+        "waits_in_windows": 0.0,
+        "waits_total": 0.0,
+        "lag_max": 1.0,
+        "evaluations_per_tick": 108.25,
+        "decisions_per_tick": 27.25,
+        "pops_per_tick": 65.0,
+        "deferred": 0.0,
+        "slices": 0.0,
+        "projection_sections": 69384.0,
+        "projection_kib": 7521.0
+      },
+      "cpu": {
+        "per_core_percent": [
+          43.0,
+          43.0,
+          43.0,
+          43.0,
+          43.0,
+          43.0,
+          43.0,
+          43.0
+        ],
+        "busy_cores": 3.44,
+        "server_cores": 2.47,
+        "harness_cores": 0.04,
+        "other_cores": 0.94,
+        "top_other_processes": [
+          {
+            "pid": 11256,
+            "name": "hxn-srv-communication-hub.exe",
+            "cores": 0.09
+          },
+          {
+            "pid": 29132,
+            "name": "claude.exe",
+            "cores": 0.08
+          },
+          {
+            "pid": 17360,
+            "name": "msedgewebview2.exe",
+            "cores": 0.07
+          },
+          {
+            "pid": 7236,
+            "name": "Taskmgr.exe",
+            "cores": 0.06
+          },
+          {
+            "pid": 28792,
+            "name": "javaw.exe",
+            "cores": 0.03
+          },
+          {
+            "pid": 20552,
+            "name": "Telegram.exe",
+            "cores": 0.02
+          }
+        ]
+      },
+      "server_rss_mib_mean": 459.23,
+      "server_rss_mib_max": 460.03,
+      "load_average_start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "load_average_end": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "load_average_1m_max": 0.0,
+      "contended": false,
+      "probe_rounds_skipped": 0
+    },
+    {
+      "phase": "crowd-stir",
+      "skipped": null,
+      "pigs_before": 2000,
+      "pigs_after": 2000,
+      "setup_seconds": 0.45,
+      "warmup_seconds": 20.11,
+      "measure_seconds": 40.03,
+      "server_mspt": {
+        "samples": 800,
+        "mean": 4.26,
+        "p50": 4.08,
+        "p95": 5.42,
+        "p99": 6.48,
+        "worst": 18.71
+      },
+      "external": {
+        "console_game_time": {
+          "ticks": 859,
+          "seconds": 42.95,
+          "tps": 20.0,
+          "mean_ms_per_tick": 50.0
+        },
+        "watcher_set_time": null,
+        "sprint": {
+          "ticks": 100,
+          "wall_ms_per_tick": 3.67,
+          "server_ms_per_tick": 3.42
+        }
+      },
+      "motion": {
+        "console": {
+          "pigs": 32,
+          "moved_fraction": 1.0,
+          "mean_path_blocks_per_second": 0.699,
+          "mean_net_blocks_per_second": 0.3085,
+          "mean_net_blocks": 12.3395,
+          "displaced_fraction": 1.0
+        },
+        "watcher": {
+          "pigs": 2000,
+          "moved_fraction": 1.0,
+          "mean_path_blocks_per_second": 1.1689,
+          "mean_net_blocks_per_second": 0.3138,
+          "mean_net_blocks": 12.5594,
+          "displaced_fraction": 1.0
+        },
+        "watcher_move_packets_per_second": 10920.46
+      },
+      "stir": {
+        "mode": "uuid",
+        "pacing": "game time",
+        "ticks_served": 801,
+        "lines_sent": 20025,
+        "panic_lines_sent": 0,
+        "damage_answers": 20025,
+        "damage_answers_per_second": 500.29
+      },
+      "ai": {
+        "windows": 5,
+        "mobs": 2000.0,
+        "prepare_mean_us": 947.0,
+        "prepare_max_us": 3572.0,
+        "stage_mean_us": 683.4,
+        "stage_max_us": 6364.0,
+        "wait_mean_us": 0.0,
+        "wait_max_us": 0.0,
+        "waits_in_windows": 0.0,
+        "waits_total": 0.0,
+        "lag_max": 1.0,
+        "evaluations_per_tick": 121.4,
+        "decisions_per_tick": 30.8,
+        "pops_per_tick": 64.8,
+        "deferred": 0.0,
+        "slices": 0.0,
+        "projection_sections": 69384.0,
+        "projection_kib": 7521.0
+      },
+      "cpu": {
+        "per_core_percent": [
+          21.66,
+          21.66,
+          21.66,
+          21.66,
+          21.66,
+          21.66,
+          21.66,
+          21.66
+        ],
+        "busy_cores": 1.73,
+        "server_cores": 0.31,
+        "harness_cores": 0.05,
+        "other_cores": 1.38,
+        "top_other_processes": [
+          {
+            "pid": 29132,
+            "name": "claude.exe",
+            "cores": 0.18
+          },
+          {
+            "pid": 11256,
+            "name": "hxn-srv-communication-hub.exe",
+            "cores": 0.11
+          },
+          {
+            "pid": 17360,
+            "name": "msedgewebview2.exe",
+            "cores": 0.06
+          },
+          {
+            "pid": 7236,
+            "name": "Taskmgr.exe",
+            "cores": 0.06
+          },
+          {
+            "pid": 8852,
+            "name": "Modrinth App.exe",
+            "cores": 0.04
+          },
+          {
+            "pid": 20468,
+            "name": "WindowsTerminal.exe",
+            "cores": 0.04
+          }
+        ]
+      },
+      "server_rss_mib_mean": 460.63,
+      "server_rss_mib_max": 460.83,
+      "load_average_start": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "load_average_end": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "load_average_1m_max": 0.0,
+      "contended": true,
+      "probe_rounds_skipped": 0
+    }
+  ]
+}

@@ -8,6 +8,62 @@ const FORCELOAD_MARGIN: i32 = 16;
 pub const SAMPLE_PREFIX: &str = "mbs";
 pub const WATCHER_NAME: &str = "mobbench";
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Mob {
+    Pig,
+    Zombie,
+}
+
+impl Mob {
+    #[must_use]
+    pub fn id(self) -> &'static str {
+        match self {
+            Mob::Pig => "minecraft:pig",
+            Mob::Zombie => "minecraft:zombie",
+        }
+    }
+
+    #[must_use]
+    pub fn kind(self) -> mcrs_minecraft_entity::entity_type_keys::EntityType {
+        match self {
+            Mob::Pig => mcrs_minecraft_entity::entity_type_keys::EntityType::Pig,
+            Mob::Zombie => mcrs_minecraft_entity::entity_type_keys::EntityType::Zombie,
+        }
+    }
+}
+
+impl std::str::FromStr for Mob {
+    type Err = anyhow::Error;
+
+    fn from_str(name: &str) -> anyhow::Result<Self> {
+        Ok(match name {
+            "pig" => Mob::Pig,
+            "zombie" => Mob::Zombie,
+            other => anyhow::bail!("unknown mob {other}; pig or zombie"),
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Layout {
+    Spread,
+    Point,
+}
+
+impl std::str::FromStr for Layout {
+    type Err = anyhow::Error;
+
+    fn from_str(name: &str) -> anyhow::Result<Self> {
+        Ok(match name {
+            "spread" => Layout::Spread,
+            "point" => Layout::Point,
+            other => anyhow::bail!("unknown layout {other}; spread or point"),
+        })
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Ai {
     On,
@@ -44,10 +100,20 @@ pub const ROAM: Area = Area {
     size: 640,
 };
 
+pub const TILE: Area = Area {
+    min_x: 0,
+    min_z: 0,
+    size: 32,
+};
+
 pub const PEN_WATCH: DVec3 = DVec3::new(-130.5, -58.0, 0.5);
 
 #[must_use]
-pub fn settings() -> Vec<String> {
+pub fn settings(mob: Mob) -> Vec<String> {
+    let time = match mob {
+        Mob::Pig => "time set noon",
+        Mob::Zombie => "time set midnight",
+    };
     [
         "gamerule spawn_mobs false",
         "gamerule spawn_monsters false",
@@ -57,7 +123,7 @@ pub fn settings() -> Vec<String> {
         "gamerule advance_weather false",
         "gamerule max_entity_cramming 0",
         "gamerule mob_drops false",
-        "time set noon",
+        time,
         "weather clear",
     ]
     .map(str::to_owned)
@@ -126,7 +192,17 @@ pub fn sample_index(count: usize, samples: usize, sample: usize) -> usize {
 }
 
 #[must_use]
-pub fn summons(area: Area, generation: u32, count: usize, samples: usize, ai: Ai) -> Vec<String> {
+pub fn summons(
+    area: Area,
+    generation: u32,
+    count: usize,
+    samples: usize,
+    ai: Ai,
+    mob: Mob,
+    layout: Layout,
+) -> Vec<String> {
+    let id = mob.id();
+    let centre = area.center();
     let side = (count as f64).sqrt().ceil().max(1.0) as usize;
     let spacing = f64::from(area.size) / side as f64;
     let named: Vec<usize> = (0..samples)
@@ -134,8 +210,13 @@ pub fn summons(area: Area, generation: u32, count: usize, samples: usize, ai: Ai
         .collect();
     (0..count)
         .map(|index| {
-            let x = f64::from(area.min_x) + ((index % side) as f64 + 0.5) * spacing;
-            let z = f64::from(area.min_z) + ((index / side) as f64 + 0.5) * spacing;
+            let (x, z) = match layout {
+                Layout::Spread => (
+                    f64::from(area.min_x) + ((index % side) as f64 + 0.5) * spacing,
+                    f64::from(area.min_z) + ((index / side) as f64 + 0.5) * spacing,
+                ),
+                Layout::Point => (centre.x, centre.z),
+            };
             let no_ai = match ai {
                 Ai::On => "",
                 Ai::Off => ",NoAI:1b",
@@ -147,16 +228,53 @@ pub fn summons(area: Area, generation: u32, count: usize, samples: usize, ai: Ai
             );
             match named.iter().position(|named| *named == index) {
                 Some(sample) => format!(
-                    "summon minecraft:pig {x:.2} {FLOOR_Y} {z:.2} {{{uuid},CustomName:\"{SAMPLE_PREFIX}{sample}\"}}"
+                    "summon {id} {x:.2} {FLOOR_Y} {z:.2} {{{uuid},CustomName:\"{SAMPLE_PREFIX}{sample}\"}}"
                 ),
-                None => format!("summon minecraft:pig {x:.2} {FLOOR_Y} {z:.2} {{{uuid}}}"),
+                None => format!("summon {id} {x:.2} {FLOOR_Y} {z:.2} {{{uuid}}}"),
             }
         })
         .collect()
 }
 
-pub const KILL_PIGS: &str = "kill @e[type=minecraft:pig]";
-pub const COUNT_PIGS: &str = "execute if entity @e[type=minecraft:pig]";
+#[must_use]
+pub fn kill(mob: Mob) -> String {
+    format!("kill @e[type={}]", mob.id())
+}
+
+#[must_use]
+pub fn count(mob: Mob) -> String {
+    format!("execute if entity @e[type={}]", mob.id())
+}
+
+const GUARD_RADIUS: i32 = 3;
+const GUARD_HEIGHT: i32 = 2;
+
+#[must_use]
+pub fn guard(at: DVec3) -> Vec<String> {
+    let (cx, cz) = (at.x.floor() as i32, at.z.floor() as i32);
+    let (low_x, low_z) = (cx - GUARD_RADIUS, cz - GUARD_RADIUS);
+    let (high_x, high_z) = (cx + GUARD_RADIUS, cz + GUARD_RADIUS);
+    let mut lines = Vec::new();
+    for layer in 0..GUARD_HEIGHT {
+        let y = FLOOR_Y + layer;
+        for (x1, z1, x2, z2) in [
+            (low_x, low_z, high_x, low_z),
+            (low_x, high_z, high_x, high_z),
+            (low_x, low_z, low_x, high_z),
+            (high_x, low_z, high_x, high_z),
+        ] {
+            lines.push(format!(
+                "fill {x1} {y} {z1} {x2} {y} {z2} minecraft:oak_fence"
+            ));
+        }
+    }
+    lines
+}
+
+#[must_use]
+pub fn resistance(player: &str) -> String {
+    format!("effect give {player} minecraft:resistance infinite 255 true")
+}
 pub const COUNT_SPECTATORS: &str = "execute if entity @a[gamemode=spectator]";
 
 #[must_use]
@@ -226,7 +344,7 @@ mod tests {
 
     #[test]
     fn the_summons_stay_in_the_area_and_keep_the_sample_and_uuid_formats() {
-        let lines = summons(PEN, 1, 50_000, 32, Ai::On);
+        let lines = summons(PEN, 1, 50_000, 32, Ai::On, Mob::Pig, Layout::Spread);
         assert_eq!(lines.len(), 50_000);
         let named = lines
             .iter()

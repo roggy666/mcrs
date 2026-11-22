@@ -22,6 +22,8 @@ pub struct RunReport {
     pub threads: Option<usize>,
     pub threads_note: String,
     pub pigs: usize,
+    pub mob: crate::scene::Mob,
+    pub layout: crate::scene::Layout,
     pub pen: Area,
     pub roam: Area,
     pub tick_metric: TickMetric,
@@ -74,6 +76,7 @@ pub struct PhaseReport {
     pub external: External,
     pub motion: Motion,
     pub stir: Option<StirReport>,
+    pub ai: Option<AiReport>,
     pub cpu: Option<CpuReport>,
     pub server_rss_mib_mean: Option<f64>,
     pub server_rss_mib_max: Option<f64>,
@@ -99,6 +102,7 @@ impl PhaseReport {
             external: External::default(),
             motion: Motion::default(),
             stir: None,
+            ai: None,
             cpu: None,
             server_rss_mib_mean: None,
             server_rss_mib_max: None,
@@ -109,6 +113,91 @@ impl PhaseReport {
             probe_rounds_skipped: 0,
         }
     }
+}
+
+#[derive(Serialize, Default, Clone, Debug)]
+pub struct AiReport {
+    pub windows: usize,
+    pub mobs: f64,
+    pub prepare_mean_us: f64,
+    pub prepare_max_us: f64,
+    pub stage_mean_us: f64,
+    pub stage_max_us: f64,
+    pub wait_mean_us: f64,
+    pub wait_max_us: f64,
+    pub waits_in_windows: f64,
+    pub waits_total: f64,
+    pub lag_max: f64,
+    pub evaluations_per_tick: f64,
+    pub decisions_per_tick: f64,
+    pub pops_per_tick: f64,
+    pub deferred: f64,
+    pub slices: f64,
+    pub projection_sections: f64,
+    pub projection_kib: f64,
+}
+
+#[must_use]
+pub fn ai_report<'a>(lines: impl Iterator<Item = &'a str>) -> Option<AiReport> {
+    let mut rows: Vec<HashMap<&str, f64>> = Vec::new();
+    for line in lines {
+        if !line.contains("mcrs_ai") || !line.contains("mob AI") {
+            continue;
+        }
+        let row: HashMap<&str, f64> = line
+            .split_whitespace()
+            .filter_map(|token| {
+                let (key, value) = token.split_once('=')?;
+                Some((key, value.parse::<f64>().ok()?))
+            })
+            .collect();
+        if row.contains_key("stage_mean_us") {
+            rows.push(row);
+        }
+    }
+    if rows.is_empty() {
+        return None;
+    }
+    let count = rows.len() as f64;
+    let mean = |key: &str| round(rows.iter().filter_map(|row| row.get(key)).sum::<f64>() / count);
+    let max = |key: &str| {
+        round(
+            rows.iter()
+                .filter_map(|row| row.get(key))
+                .copied()
+                .fold(0.0, f64::max),
+        )
+    };
+    let last = |key: &str| {
+        rows.last()
+            .and_then(|row| row.get(key))
+            .copied()
+            .unwrap_or(0.0)
+    };
+    Some(AiReport {
+        windows: rows.len(),
+        mobs: mean("mobs"),
+        prepare_mean_us: mean("prepare_mean_us"),
+        prepare_max_us: max("prepare_max_us"),
+        stage_mean_us: mean("stage_mean_us"),
+        stage_max_us: max("stage_max_us"),
+        wait_mean_us: mean("wait_mean_us"),
+        wait_max_us: max("wait_max_us"),
+        waits_in_windows: round(
+            rows.iter()
+                .filter_map(|row| row.get("waits_in_window"))
+                .sum(),
+        ),
+        waits_total: last("waits"),
+        lag_max: max("lag_max"),
+        evaluations_per_tick: mean("evaluations_per_tick"),
+        decisions_per_tick: mean("decisions_per_tick"),
+        pops_per_tick: mean("pops_per_tick"),
+        deferred: mean("deferred"),
+        slices: mean("slices"),
+        projection_sections: last("projection_sections"),
+        projection_kib: last("projection_kib"),
+    })
 }
 
 #[derive(Serialize)]

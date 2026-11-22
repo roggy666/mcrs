@@ -507,3 +507,33 @@ fn the_open_air_path_equals_the_general_path() {
         assert_eq!(fast.rest, general.rest);
     }
 }
+
+#[test]
+fn ord_005_a_flier_keeps_its_height_and_moves_by_its_input_with_the_air_drag_on_all_axes() {
+    let mut fixture = TestFixture::new();
+    floor(&mut fixture.world, fixture.blocks.stone);
+    let row = MotionRow {
+        gravity: 0.0,
+        ..MotionRow::living(
+            mcrs_minecraft_physics::Category::Flier,
+            mcrs_minecraft_pose::Dimensions::scalable(4.0, 4.0),
+        )
+    };
+    let mut ghast = entity(DVec3::new(0.5, 10.0, 0.5), DVec3::ZERO, true);
+    for _ in 0..40 {
+        tick(&mut fixture, &row, &mut ghast, true);
+    }
+    assert_eq!(ghast.body.position.y, 10.0, "no gravity acts on a flier");
+    assert_eq!(ghast.body.velocity, DVec3::ZERO);
+    let living = ghast.living.as_mut().expect("a living row");
+    living.input.forward = 1.0;
+    living.input.vertical = 1.0;
+    living.speed = 0.1;
+    tick(&mut fixture, &row, &mut ghast, true);
+    let drag = f64::from(0.91_f32);
+    assert_eq!(ghast.body.velocity.z, 0.1 * drag, "forward input along +z at yaw 0, then the drag");
+    assert_eq!(ghast.body.velocity.y, 0.1 * drag, "the vertical input moves a flier up");
+    assert_eq!(ghast.body.position.y, 10.1, "the move happens before the drag");
+    living = ghast.living.as_mut().expect("a living row");
+    let _ = living;
+}

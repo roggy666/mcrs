@@ -106,6 +106,7 @@ struct Setup {
     delay: AiDelay,
     host_only: bool,
     slow: Duration,
+    tile_split: usize,
 }
 
 const INLINE: Setup = Setup {
@@ -113,6 +114,7 @@ const INLINE: Setup = Setup {
     delay: AiDelay::AtLeast(1),
     host_only: false,
     slow: Duration::ZERO,
+    tile_split: StageConfig::DEFAULT_TILE_SPLIT,
 };
 
 const SLOW_STAGE: Duration = Duration::from_millis(80);
@@ -138,6 +140,7 @@ impl Run {
             kind_table,
         ));
         let config = StageConfig::new(WorldSeed(42))
+            .with_tile_split(setup.tile_split)
             .with_delay(StageConfig::DEFAULT_MAX_LAG, setup.delay)
             .unwrap_or_else(|_| StageConfig::new(WorldSeed(42)));
         let mut ai = MobAi::new(
@@ -376,6 +379,16 @@ fn the_ai_of_a_crowd_ends_on_the_golden_state_at_8_threads_in_any_spawn_order() 
 }
 
 #[test]
+fn the_goldens_hold_when_every_tile_is_split_to_one_brain() {
+    let split = Setup {
+        tile_split: 1,
+        ..INLINE
+    };
+    use_threads(8);
+    assert_short_crowd(&run_orders(SHORT_TICKS, &[forward()], split));
+}
+
+#[test]
 fn a_stage_on_its_own_thread_with_a_fixed_delay_ends_on_the_inline_state() {
     use_threads(4);
     let fixed = AiDelay::Fixed(1);
@@ -387,6 +400,7 @@ fn a_stage_on_its_own_thread_with_a_fixed_delay_ends_on_the_inline_state() {
             delay: fixed,
             host_only: true,
             slow: Duration::ZERO,
+            tile_split: StageConfig::DEFAULT_TILE_SPLIT,
         },
     );
     let threaded = run_orders(
@@ -397,6 +411,7 @@ fn a_stage_on_its_own_thread_with_a_fixed_delay_ends_on_the_inline_state() {
             delay: fixed,
             host_only: true,
             slow: Duration::ZERO,
+            tile_split: StageConfig::DEFAULT_TILE_SPLIT,
         },
     );
     assert_eq!(
@@ -421,6 +436,7 @@ fn a_stage_on_its_own_thread_with_the_default_delay_keeps_every_decision_in_the_
             delay: AiDelay::AtLeast(1),
             host_only: true,
             slow: Duration::ZERO,
+            tile_split: StageConfig::DEFAULT_TILE_SPLIT,
         },
     );
     assert!(
@@ -446,6 +462,7 @@ fn a_slow_stage_waits_only_at_the_lag_and_ends_on_the_state_of_the_fixed_delay()
             delay: AiDelay::Fixed(StageConfig::DEFAULT_MAX_LAG),
             host_only: true,
             slow: Duration::ZERO,
+            tile_split: StageConfig::DEFAULT_TILE_SPLIT,
         },
     );
     let slow = run_orders(
@@ -456,6 +473,7 @@ fn a_slow_stage_waits_only_at_the_lag_and_ends_on_the_state_of_the_fixed_delay()
             delay: AiDelay::AtLeast(1),
             host_only: true,
             slow: SLOW_STAGE,
+            tile_split: StageConfig::DEFAULT_TILE_SPLIT,
         },
     );
     assert_eq!(

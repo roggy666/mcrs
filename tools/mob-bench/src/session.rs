@@ -58,8 +58,9 @@ pub fn join_watcher(
     server: &mut ServerProcess,
     runtime: &tokio::runtime::Runtime,
     address: SocketAddr,
+    kind: mcrs_minecraft_entity::entity_type_keys::EntityType,
 ) -> anyhow::Result<Watcher> {
-    let watcher = Watcher::spawn(runtime, address);
+    let watcher = Watcher::spawn(runtime, address, kind);
     let deadline = Instant::now() + JOIN_TIMEOUT;
     while Instant::now() < deadline {
         if watcher.finished() {

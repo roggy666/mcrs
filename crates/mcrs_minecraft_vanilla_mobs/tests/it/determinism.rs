@@ -150,6 +150,55 @@ fn assert_sleep_matches_poll(ticks: u32, hit_tick: u64) {
     );
 }
 
+fn run_split_on(
+    pool: &ThreadPool,
+    tiles_per_task: usize,
+    ticks: u32,
+    hit_tick: u64,
+) -> (Vec<u64>, u64) {
+    let config = PenConfig {
+        hurt_chance: 1.0 / 400.0,
+        players: 0,
+        ..scene()
+    };
+    let stage = stage_config(WakeMode::Sleep)
+        .with_tile_split(1)
+        .with_path_budgets(2048, 128);
+    let mut pen = PigPen::new(config, stage);
+    let hashes = (0..ticks)
+        .map(|_| {
+            let tick = pen.tick();
+            walk_and_hit(&mut pen, tick, hit_tick);
+            pen.step(
+                |work: &mut [TileWork<'_, TableBrain>], cx: &TickContext<'_, FlatGround>| {
+                    pool.install(|| {
+                        work.par_chunks_mut(tiles_per_task)
+                            .for_each(|tasks| run_tiles(tasks, cx));
+                    });
+                },
+            );
+            pen.state_hash(HashScope::Decisions)
+        })
+        .collect();
+    (hashes, pen.stage().pops())
+}
+
+#[test]
+fn a_tile_split_to_one_brain_under_a_scarce_budget_gives_the_same_decisions_on_one_and_eight_threads()
+ {
+    let one = ThreadPoolBuilder::new().num_threads(1).build().unwrap();
+    let eight = ThreadPoolBuilder::new().num_threads(8).build().unwrap();
+    let (serial, serial_pops) = run_split_on(&one, 64, 40, 10);
+    let (parallel, parallel_pops) = run_split_on(&eight, 1, 40, 10);
+    let first_difference = serial.iter().zip(&parallel).position(|(a, b)| a != b);
+    assert_eq!(
+        first_difference, None,
+        "the first tick where the thread counts differ"
+    );
+    assert_eq!(serial_pops, parallel_pops);
+    assert!(serial_pops > 0, "the hit pigs search for paths");
+}
+
 #[test]
 fn one_and_eight_threads_give_equal_hashes_in_a_short_run() {
     let decisions = assert_thread_layouts_agree(40, &[(1, 64), (8, 1)]);

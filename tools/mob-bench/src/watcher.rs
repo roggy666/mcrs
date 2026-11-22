@@ -67,9 +67,9 @@ pub struct Watcher {
 }
 
 impl Watcher {
-    pub fn spawn(runtime: &tokio::runtime::Runtime, address: SocketAddr) -> Self {
+    pub fn spawn(runtime: &tokio::runtime::Runtime, address: SocketAddr, kind: EntityType) -> Self {
         let (requests, receiver) = mpsc::unbounded_channel();
-        let task = runtime.spawn(run(address, receiver));
+        let task = runtime.spawn(run(address, receiver, kind));
         Self { requests, task }
     }
 
@@ -101,6 +101,7 @@ impl Watcher {
 }
 
 struct State {
+    kind: EntityType,
     pigs: HashMap<i32, PigTrack>,
     move_packets: u64,
     log: WatcherLog,
@@ -108,8 +109,13 @@ struct State {
     game_mode: Option<String>,
 }
 
-async fn run(address: SocketAddr, mut requests: mpsc::UnboundedReceiver<Request>) -> WatcherLog {
+async fn run(
+    address: SocketAddr,
+    mut requests: mpsc::UnboundedReceiver<Request>,
+    kind: EntityType,
+) -> WatcherLog {
     let mut state = State {
+        kind,
         pigs: HashMap::new(),
         move_packets: 0,
         log: WatcherLog::default(),
@@ -185,7 +191,7 @@ fn receive(connection: &mut RawConnection, state: &mut State) -> anyhow::Result<
         let id = packet.id;
         if id == ClientboundAddEntity::ID {
             let add = ClientboundAddEntity::decode(body)?;
-            if add.kind == EntityType::Pig {
+            if add.kind == state.kind {
                 state.pigs.insert(
                     add.id.0,
                     PigTrack {

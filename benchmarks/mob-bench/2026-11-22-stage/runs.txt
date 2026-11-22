@@ -1,0 +1,10 @@
+[12:38:52] baseline start; other processes: javaw:28792 
+[12:40:23] baseline end; other processes: javaw:28792 
+[12:40:24] pigs-spread start; other processes: javaw:28792 
+[12:43:52] pigs-spread end; other processes: javaw:28792 
+[12:43:52] pigs-point start; other processes: javaw:28792 
+[12:46:27] pigs-point end; other processes: javaw:28792 
+[12:46:27] zombies-spread start; other processes: javaw:28792 
+[12:48:22] zombies-spread end; other processes: javaw:28792 
+[12:48:23] zombies-point start; other processes: javaw:28792 
+[12:49:49] zombies-point end; other processes: javaw:28792 

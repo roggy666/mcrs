@@ -31,6 +31,7 @@ impl FromStr for Target {
 pub enum PlayerMode {
     Spectator,
     Creative,
+    Survival,
 }
 
 impl FromStr for PlayerMode {
@@ -40,6 +41,7 @@ impl FromStr for PlayerMode {
         Ok(match name {
             "spectator" => PlayerMode::Spectator,
             "creative" => PlayerMode::Creative,
+            "survival" => PlayerMode::Survival,
             other => bail!("unknown player mode {other}"),
         })
     }
@@ -51,6 +53,7 @@ impl PlayerMode {
         match self {
             PlayerMode::Spectator => "spectator",
             PlayerMode::Creative => "creative",
+            PlayerMode::Survival => "survival",
         }
     }
 }
@@ -168,7 +171,7 @@ impl Target {
                     ),
                     ("MCRS_LAN_ANNOUNCE", "off".to_owned()),
                     ("BEVY_ASSET_ROOT", options.repo.display().to_string()),
-                    ("RUST_LOG", "info,mcrs_tick=trace".to_owned()),
+                    ("RUST_LOG", "info,mcrs_tick=trace,mcrs_ai=debug".to_owned()),
                     ("MCRS_PORT", options.port.to_string()),
                 ]
                 .map(|(key, value)| (key.to_owned(), value))

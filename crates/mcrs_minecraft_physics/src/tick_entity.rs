@@ -67,7 +67,7 @@ pub fn tick_entity<W: CollisionWorld, B: BodyView>(
     let before = entity.body;
     let first_action = actions.len();
     let outcome = match row.category {
-        Category::Walker | Category::Omnidirectional => {
+        Category::Walker | Category::Omnidirectional | Category::Flier => {
             tick_living(view, side, row, entity, actions, scratch)
         }
         Category::Item | Category::FallingBlock | Category::PrimedTnt | Category::ExperienceOrb => {
@@ -170,7 +170,20 @@ fn tick_living<W: CollisionWorld, B: BodyView>(
     }
     let start = body.position;
     let mut dy = 0.0;
-    if living.travel == Travel::Open {
+    let flier = row.category == Category::Flier;
+    if living.travel == Travel::Open && flier {
+        mover.gravity = 0.0;
+        let moved = travel::fly(
+            view,
+            &mover,
+            living.input,
+            living.speed,
+            living.orientation.yaw,
+            body,
+            scratch,
+        );
+        dy = applied_dy(&moved.resolved, start, body.position);
+    } else if living.travel == Travel::Open {
         mover.gravity = if entity.no_gravity {
             0.0
         } else {
@@ -202,7 +215,7 @@ fn tick_living<W: CollisionWorld, B: BodyView>(
         },
         dy,
         flying: false,
-        updates_fall: true,
+        updates_fall: !flier,
         weaving: living.effects.weaving,
     };
     entity.contact = block_effects::apply(view, &context, body, Some(&mut living), actions);
@@ -395,7 +408,7 @@ fn drag_and_ground_rule<W: CollisionWorld, B: BodyView>(
             }
         }
         Category::FallingBlock => body.velocity *= drag,
-        Category::Walker | Category::Omnidirectional | Category::Projectile => {}
+        Category::Walker | Category::Omnidirectional | Category::Flier | Category::Projectile => {}
     }
 }
 

@@ -19,6 +19,8 @@ pub(crate) struct AiWindow {
     wait_max: Duration,
     evaluations: u64,
     decisions: u64,
+    pops: u64,
+    waits: u64,
 }
 
 impl AiWindow {
@@ -34,6 +36,10 @@ impl AiWindow {
         self.wait = self.wait.saturating_add(stats.wait);
         self.wait_max = self.wait_max.max(stats.wait);
         self.evaluations = self.evaluations.saturating_add(stats.evaluations);
+        self.pops = self.pops.saturating_add(stats.pops);
+        self.waits = self
+            .waits
+            .saturating_add(u64::from(stats.wait > std::time::Duration::ZERO));
         self.decisions = self
             .decisions
             .saturating_add(u64::try_from(stats.decisions).unwrap_or(u64::MAX));
@@ -59,6 +65,11 @@ impl AiWindow {
                 projection_kib = stats.projection_bytes / 1024,
                 evaluations_per_tick = window.evaluations / window.ticks,
                 decisions_per_tick = window.decisions / window.ticks,
+                pops_per_tick = window.pops / window.ticks,
+                deferred = stats.deferred,
+                slices = stats.slices,
+                waits_in_window = window.waits,
+                lag_max = stats.lag_max_seen,
                 waits = stats.waits,
                 "mob AI"
             );

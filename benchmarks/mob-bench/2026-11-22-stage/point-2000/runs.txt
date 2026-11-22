@@ -1,0 +1,4 @@
+[12:55:53] pigs-point start; other processes: javaw:28792 
+[13:01:51] pigs-point end; other processes: javaw:28792 
+[13:01:51] zombies-point start; other processes: javaw:28792 
+[13:11:54] zombies-point end; other processes: javaw:28792 

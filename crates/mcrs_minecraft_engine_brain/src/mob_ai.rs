@@ -1,3 +1,4 @@
+use std::time::Duration;
 use std::time::Instant;
 
 use bevy_ecs::change_detection::DetectChangesMut;
@@ -373,6 +374,7 @@ where
         self.collect_outputs();
         self.follow_life_cycle();
         let followed = Instant::now();
+        self.stats.wait = Duration::ZERO;
         self.take_due(tick);
         let waited = Instant::now();
         let pass = Pass {
@@ -431,7 +433,6 @@ where
             },
         );
         self.stats.life_cycle = followed.duration_since(started);
-        self.stats.wait = waited.duration_since(followed);
         self.stats.tile_tasks = ran.duration_since(waited);
         self.stats.publish = ran.elapsed();
         self.stats.prepare = started.elapsed();
@@ -446,6 +447,9 @@ where
                 .stats
                 .evaluations_total
                 .saturating_add(output.run.evaluations);
+            self.stats.pops = output.run.pops;
+            self.stats.deferred = output.run.deferred;
+            self.stats.slices = output.run.slices;
             self.stats.decisions = output.run.decisions;
             self.stats.projection_sections = output.run.sections;
             self.stats.projection_bytes = output.run.projection_bytes;
@@ -492,7 +496,11 @@ where
                         continue;
                     }
                     self.stats.waits = self.stats.waits.saturating_add(1);
-                    if self.link.is_answered() || !self.link.wait_output() {
+                    let blocked = Instant::now();
+                    let answered = self.link.is_answered();
+                    let alive = answered || self.link.wait_output();
+                    self.stats.wait = self.stats.wait.saturating_add(blocked.elapsed());
+                    if !alive || answered {
                         self.collect_outputs();
                         if self.pipeline.take_due(tick).is_ok() {
                             continue;

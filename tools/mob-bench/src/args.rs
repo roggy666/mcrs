@@ -5,6 +5,7 @@ use anyhow::{Context, bail};
 
 use crate::adapter::{PlayerMode, Target};
 use crate::phase::Phase;
+use crate::scene::{Layout, Mob};
 use crate::stir;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -27,6 +28,8 @@ pub struct Args {
     pub threads: Option<usize>,
     pub phases: Vec<Phase>,
     pub pigs: usize,
+    pub mob: Mob,
+    pub layout: Layout,
     pub samples: usize,
     pub idle_warmup: Duration,
     pub warmup: Duration,
@@ -74,6 +77,8 @@ pub fn parse(options: &[String]) -> anyhow::Result<Args> {
             Phase::CostStir,
         ],
         pigs: 50_000,
+        mob: Mob::Pig,
+        layout: Layout::Spread,
         samples: 32,
         idle_warmup: Duration::from_secs(10),
         warmup: Duration::from_secs(30),
@@ -120,6 +125,8 @@ pub fn parse(options: &[String]) -> anyhow::Result<Args> {
                     .collect::<anyhow::Result<Vec<Phase>>>()?;
             }
             "--pigs" => args.pigs = value.parse()?,
+            "--mob" => args.mob = value.parse()?,
+            "--layout" => args.layout = value.parse()?,
             "--samples" => args.samples = value.parse()?,
             "--idle-warmup" => args.idle_warmup = seconds(value)?,
             "--warmup" => args.warmup = seconds(value)?,

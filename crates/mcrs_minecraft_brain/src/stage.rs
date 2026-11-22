@@ -23,6 +23,7 @@ use crate::TurnScratch;
 use crate::WakeMode;
 use crate::sort_paths;
 use crate::tile_brains::Deferred;
+use crate::tile_brains::RangeOut;
 use crate::tile_brains::Removed;
 use glam::DVec3;
 use mcrs_minecraft_entity_key::EntityId;
@@ -56,7 +57,18 @@ pub struct TickContext<'a, W: ?Sized> {
 pub struct TileWork<'a, B> {
     tile: TileKey,
     budget: u32,
-    brains: &'a mut TileBrains<B>,
+    range: TileRange<'a, B>,
+}
+
+#[derive(Debug)]
+struct TileRange<'a, B> {
+    first: usize,
+    ids: &'a [EntityId],
+    keys: &'a [EntityUuid],
+    cadences: &'a [Cadence],
+    wakes: &'a mut [u64],
+    brains: &'a mut [B],
+    out: &'a mut RangeOut,
 }
 
 const SEARCH_COST: usize = 16;
@@ -202,6 +214,24 @@ impl<B> Stage<B> {
         self.tiles.values().map(TileBrains::evaluations).sum()
     }
 
+    #[must_use]
+    pub fn pops(&self) -> u64 {
+        self.tiles.values().map(TileBrains::pops).sum()
+    }
+
+    #[must_use]
+    pub fn deferred(&self) -> usize {
+        self.tiles.values().map(TileBrains::deferred).sum()
+    }
+
+    #[must_use]
+    pub fn slices(&self) -> usize {
+        self.tiles
+            .values()
+            .filter(|brains| brains.has_open_slice())
+            .count()
+    }
+
     pub fn work(&mut self) -> Vec<TileWork<'_, B>> {
         let (dimension, tile) = (self.config.path_budget(), self.config.tile_path_budget());
         self.work_budgeted(dimension, tile)
@@ -227,14 +257,13 @@ impl<B> Stage<B> {
             }
             budgets.insert(tile, given);
         }
-        self.tiles
-            .iter_mut()
-            .map(|(&tile, brains)| TileWork {
-                tile,
-                budget: budgets.get(&tile).copied().unwrap_or(0),
-                brains,
-            })
-            .collect()
+        let split = self.config.tile_split().max(1);
+        let mut work = Vec::new();
+        for (&tile, brains) in &mut self.tiles {
+            let budget = budgets.get(&tile).copied().unwrap_or(0);
+            split_work(tile, brains, budget, split, &mut work);
+        }
+        work
     }
 
     pub fn collect(&mut self, tick: u64) -> IssuedDecisions {
@@ -244,10 +273,26 @@ impl<B> Stage<B> {
             paths: Vec::new(),
         };
         for (&tile, brains) in &mut self.tiles {
-            if !brains.decisions.is_empty() {
-                issued.tiles.insert(tile, mem::take(&mut brains.decisions));
+            let mut decisions = Vec::new();
+            for out in &mut brains.outs {
+                if decisions.is_empty() {
+                    decisions = mem::take(&mut out.decisions);
+                } else {
+                    decisions.append(&mut out.decisions);
+                }
+                issued.paths.append(&mut out.paths);
+                brains.deferred.append(&mut out.deferred);
+                if out.slice.is_some() {
+                    brains.slice = out.slice.take();
+                }
+                brains.evaluations = brains.evaluations.saturating_add(out.evaluations);
+                brains.pops = brains.pops.saturating_add(out.pops);
+                out.evaluations = 0;
+                out.pops = 0;
             }
-            issued.paths.append(&mut brains.paths);
+            if !decisions.is_empty() {
+                issued.tiles.insert(tile, decisions);
+            }
         }
         sort_paths(&mut issued.paths);
         issued
@@ -262,9 +307,10 @@ impl<B> TileWork<'_, B> {
 
     #[must_use]
     pub fn cost(&self) -> usize {
-        self.brains
+        self.range
+            .ids
             .len()
-            .saturating_add(self.brains.pending_searches().saturating_mul(SEARCH_COST))
+            .saturating_add(self.range.out.pending().saturating_mul(SEARCH_COST))
     }
 
     pub fn run<W: ?Sized>(&mut self, cx: &TickContext<'_, W>, scratch: &mut TurnScratch)
@@ -272,15 +318,12 @@ impl<B> TileWork<'_, B> {
         B: MobBrain<W>,
     {
         let tick = cx.tick;
-        let brains = &mut *self.brains;
-        brains.decisions.clear();
-        brains.near_players.clear();
-        brains.paths.clear();
+        let range = &mut self.range;
         scratch.budget = self.budget;
         for fact in cx.replica.facts(self.tile, tick) {
-            if let Some(at) = brains.position(&fact.key)
+            if let Ok(at) = range.keys.binary_search(&fact.key)
                 && let (Some(wake), Some(cadence)) =
-                    (brains.wakes.get_mut(at), brains.cadences.get(at))
+                    (range.wakes.get_mut(at), range.cadences.get(at))
             {
                 *wake = (*wake).min(cadence.next_evaluation(tick));
             }
@@ -291,20 +334,16 @@ impl<B> TileWork<'_, B> {
         let empty = PlayerTable::default();
         let table = table.unwrap_or(&empty);
         let mut loaded_range: Option<f64> = None;
-        let deferred = take_deferred(brains, scratch);
-        let TileBrains {
-            ids,
-            keys,
-            cadences,
-            wakes,
-            brains: states,
+        let deferred = take_deferred(range.out, range.keys, scratch);
+        let RangeOut {
             near_players,
             decisions,
             paths,
             deferred: still_deferred,
             slice,
             evaluations,
-        } = brains;
+            pops,
+        } = &mut *range.out;
         let mut turns = Turns {
             cx,
             views,
@@ -318,19 +357,24 @@ impl<B> TileWork<'_, B> {
             &mut turns,
             scratch,
             tick,
+            range.first,
             Retrying {
-                ids,
-                keys,
-                cadences,
-                states,
+                ids: range.ids,
+                keys: range.keys,
+                cadences: range.cadences,
+                states: range.brains,
                 paths,
                 still_deferred,
                 decisions,
             },
         );
-        let rows = ids.iter().zip(keys.iter()).zip(cadences.iter());
+        let rows = range
+            .ids
+            .iter()
+            .zip(range.keys.iter())
+            .zip(range.cadences.iter());
         for (index, (((mob, key), cadence), (wake, brain))) in rows
-            .zip(wakes.iter_mut().zip(states.iter_mut()))
+            .zip(range.wakes.iter_mut().zip(range.brains.iter_mut()))
             .enumerate()
         {
             if *wake > tick {
@@ -340,7 +384,7 @@ impl<B> TileWork<'_, B> {
                 *wake = cadence.next_evaluation(tick);
                 continue;
             }
-            let Some(turn) = turns.turn(index, *mob, key, *cadence, brain) else {
+            let Some(turn) = turns.turn(range.first + index, *mob, key, *cadence, brain) else {
                 *wake = cadence.next_evaluation(tick.saturating_add(1));
                 continue;
             };
@@ -366,17 +410,117 @@ impl<B> TileWork<'_, B> {
             }
         }
         *slice = scratch.slice.take();
+        *pops += u64::from(self.budget.saturating_sub(scratch.budget));
     }
 }
 
-fn take_deferred<B>(brains: &mut TileBrains<B>, scratch: &mut TurnScratch) -> Vec<Deferred> {
-    let mut deferred = mem::take(&mut brains.deferred);
+fn split_work<'a, B>(
+    tile: TileKey,
+    brains: &'a mut TileBrains<B>,
+    budget: u32,
+    split: usize,
+    work: &mut Vec<TileWork<'a, B>>,
+) {
+    let TileBrains {
+        ids,
+        keys,
+        cadences,
+        wakes,
+        brains: states,
+        outs,
+        deferred,
+        slice,
+        ..
+    } = brains;
+    let len = ids.len();
+    if len == 0 {
+        return;
+    }
+    let parts = len.div_ceil(split).max(1);
+    let chunk = len.div_ceil(parts).max(1);
+    let parts = len.div_ceil(chunk);
+    outs.resize_with(parts, RangeOut::default);
+    outs.truncate(parts);
+    for out in outs.iter_mut() {
+        out.clear();
+    }
+    let mut routed = mem::take(deferred);
+    routed.sort_unstable();
+    for retry in routed {
+        if let Ok(at) = keys.binary_search(&retry.key)
+            && let Some(out) = outs.get_mut(at / chunk)
+        {
+            out.deferred.push(retry);
+        }
+    }
+    if let Some(open) = slice.take()
+        && let Ok(at) = keys.binary_search(&open.key)
+        && let Some(out) = outs.get_mut(at / chunk)
+    {
+        out.slice = Some(open);
+    }
+    let shares = share_budget(budget, outs);
+    let rows = ids
+        .chunks(chunk)
+        .zip(keys.chunks(chunk))
+        .zip(cadences.chunks(chunk))
+        .zip(wakes.chunks_mut(chunk))
+        .zip(states.chunks_mut(chunk))
+        .zip(outs.iter_mut())
+        .zip(shares);
+    for (index, ((((((ids, keys), cadences), wakes), brains), out), share)) in rows.enumerate() {
+        work.push(TileWork {
+            tile,
+            budget: share,
+            range: TileRange {
+                first: index * chunk,
+                ids,
+                keys,
+                cadences,
+                wakes,
+                brains,
+                out,
+            },
+        });
+    }
+}
+
+fn share_budget(budget: u32, outs: &[RangeOut]) -> Vec<u32> {
+    let parts = u32::try_from(outs.len().max(1)).unwrap_or(u32::MAX);
+    let pending: Vec<u64> = outs
+        .iter()
+        .map(|out| u64::try_from(out.pending()).unwrap_or(u64::MAX))
+        .collect();
+    let total: u64 = pending.iter().sum();
+    let mut shares: Vec<u32> = if total == 0 {
+        pending.iter().map(|_| budget / parts).collect()
+    } else {
+        pending
+            .iter()
+            .map(|count| u32::try_from(u64::from(budget) * count / total).unwrap_or(u32::MAX))
+            .collect()
+    };
+    let given: u32 = shares
+        .iter()
+        .fold(0, |sum, share| sum.saturating_add(*share));
+    if let Some(first) = shares.first_mut() {
+        *first = first.saturating_add(budget.saturating_sub(given));
+    }
+    shares
+}
+
+fn take_deferred(
+    out: &mut RangeOut,
+    keys: &[EntityUuid],
+    scratch: &mut TurnScratch,
+) -> Vec<Deferred> {
+    let mut deferred = mem::take(&mut out.deferred);
     deferred.sort_unstable();
-    scratch.slice = brains.slice.take();
+    scratch.slice = out.slice.take();
     if scratch
         .slice
         .as_deref()
-        .is_some_and(|slice| brains.keys.binary_search(&slice.key).is_err())
+        .is_some_and(|slice| keys.binary_search(&slice.key).is_err())
     {
         scratch.slice = None;
     }
@@ -404,6 +548,7 @@ fn retry_deferred<B, W: ?Sized>(
     turns: &mut Turns<'_, '_, W>,
     scratch: &mut TurnScratch,
     tick: u64,
+    first: usize,
     retrying: Retrying<'_, B>,
 ) where
     B: MobBrain<W>,
@@ -426,7 +571,7 @@ fn retry_deferred<B, W: ?Sized>(
         else {
             continue;
         };
-        let Some(turn) = turns.turn(index, *mob, &retry.key, *cadence, brain) else {
+        let Some(turn) = turns.turn(first + index, *mob, &retry.key, *cadence, brain) else {
             still_deferred.push(retry);
             continue;
         };

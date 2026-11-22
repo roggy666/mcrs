@@ -16,12 +16,38 @@ pub struct TileBrains<B> {
     pub(crate) cadences: Vec<Cadence>,
     pub(crate) wakes: Vec<u64>,
     pub(crate) brains: Vec<B>,
+    pub(crate) outs: Vec<RangeOut>,
+    pub(crate) deferred: Vec<Deferred>,
+    pub(crate) slice: Option<Box<SearchSlice>>,
+    pub(crate) evaluations: u64,
+    pub(crate) pops: u64,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct RangeOut {
     pub(crate) near_players: Vec<PlayerRow>,
     pub(crate) decisions: Vec<Decision>,
     pub(crate) paths: Vec<IssuedPath>,
     pub(crate) deferred: Vec<Deferred>,
     pub(crate) slice: Option<Box<SearchSlice>>,
     pub(crate) evaluations: u64,
+    pub(crate) pops: u64,
+}
+
+impl RangeOut {
+    pub(crate) fn clear(&mut self) {
+        self.near_players.clear();
+        self.decisions.clear();
+        self.paths.clear();
+        self.deferred.clear();
+        self.slice = None;
+        self.evaluations = 0;
+        self.pops = 0;
+    }
+
+    pub(crate) fn pending(&self) -> usize {
+        self.deferred.len() + usize::from(self.slice.is_some())
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -38,12 +64,11 @@ impl<B> Default for TileBrains<B> {
             cadences: Vec::new(),
             wakes: Vec::new(),
             brains: Vec::new(),
-            near_players: Vec::new(),
-            decisions: Vec::new(),
-            paths: Vec::new(),
+            outs: Vec::new(),
             deferred: Vec::new(),
             slice: None,
             evaluations: 0,
+            pops: 0,
         }
     }
 }
@@ -81,6 +106,16 @@ impl<B> TileBrains<B> {
     #[must_use]
     pub fn has_open_slice(&self) -> bool {
         self.slice.is_some()
+    }
+
+    #[must_use]
+    pub fn pops(&self) -> u64 {
+        self.pops
+    }
+
+    #[must_use]
+    pub fn deferred(&self) -> usize {
+        self.deferred.len()
     }
 
     #[must_use]
@@ -173,12 +208,11 @@ impl<B> TileBrains<B> {
             cadences: Vec::with_capacity(count),
             wakes: Vec::with_capacity(count),
             brains: Vec::with_capacity(count),
-            near_players: core::mem::take(&mut self.near_players),
-            decisions: core::mem::take(&mut self.decisions),
-            paths: core::mem::take(&mut self.paths),
+            outs: core::mem::take(&mut self.outs),
             deferred: core::mem::take(&mut self.deferred),
             slice: self.slice.take(),
             evaluations: self.evaluations,
+            pops: self.pops,
         };
         let mut held = core::mem::take(self).into_entries().peekable();
         let mut entries = entries.into_iter().peekable();

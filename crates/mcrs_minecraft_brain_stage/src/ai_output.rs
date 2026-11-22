@@ -6,6 +6,9 @@ use mcrs_minecraft_brain::IssuedDecisions;
 pub struct RunStats {
     pub stage: Duration,
     pub evaluations: u64,
+    pub pops: u64,
+    pub deferred: usize,
+    pub slices: usize,
     pub decisions: usize,
     pub mobs: usize,
     pub sections: usize,

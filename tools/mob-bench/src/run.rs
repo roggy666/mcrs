@@ -12,6 +12,7 @@ use mcrs_minecraft_bench_support::{
 };
 
 use crate::adapter::LaunchOptions;
+use crate::adapter::PlayerMode;
 use crate::args::{Args, Client};
 use crate::os;
 use crate::phase::Phase;
@@ -20,7 +21,7 @@ use crate::report::{
     self, Answered, External, GameTimeAnswer, Machine, Motion, PhaseReport, PlayerModeCheck,
     RunReport, Sighting, Sprint, StirReport,
 };
-use crate::scene::{self, Ai, Area, PEN, PEN_WATCH, ROAM};
+use crate::scene::{self, Ai, Area, Layout, PEN, PEN_WATCH, ROAM, TILE};
 use crate::session::{self, CONSOLE_TIMEOUT, JOIN_TIMEOUT};
 use crate::stir::{self, Stir};
 use crate::watcher::{PigSnapshot, Watcher};
@@ -30,6 +31,7 @@ const STALL_TIMEOUT: Duration = Duration::from_secs(60);
 const ANSWER_SLACK: Duration = Duration::from_secs(3);
 const STOP_GRACE: Duration = Duration::from_secs(90);
 const HOVER: f64 = 2.0;
+const POINT_WATCH_OFFSET: f64 = 12.0;
 const WARMUP_TICKS: i64 = 120;
 const PANIC_SPREAD: f64 = 0.8;
 const ROAM_STIR_MARGIN: i32 = 32;
@@ -122,6 +124,8 @@ pub fn run(args: &Args) -> anyhow::Result<RunReport> {
         threads: args.threads,
         threads_note: launch.threads_note,
         pigs: args.pigs,
+        mob: args.mob,
+        layout: args.layout,
         pen: PEN,
         roam: ROAM,
         tick_metric: bench.metric,
@@ -159,6 +163,7 @@ pub fn run(args: &Args) -> anyhow::Result<RunReport> {
         return Ok(report);
     }
     report.player_mode = bench.set_player_mode();
+    bench.protect_player();
     let mut windows = Vec::new();
     for phase in &args.phases {
         let (phase_report, window) = bench.phase(*phase);
@@ -240,7 +245,7 @@ impl Bench<'_> {
     }
 
     fn set_up(&mut self) -> Vec<Answered> {
-        let mut answers: Vec<Answered> = scene::settings()
+        let mut answers: Vec<Answered> = scene::settings(self.args.mob)
             .iter()
             .map(|line| self.answered(line))
             .collect();
@@ -256,7 +261,12 @@ impl Bench<'_> {
     }
 
     fn join_watcher(&mut self, address: SocketAddr) -> anyhow::Result<()> {
-        let watcher = session::join_watcher(&mut self.server, &self.runtime, address)?;
+        let watcher = session::join_watcher(
+            &mut self.server,
+            &self.runtime,
+            address,
+            self.args.mob.kind(),
+        )?;
         self.watcher = Some(watcher);
         self.player = Some(scene::WATCHER_NAME.to_owned());
         self.idle_for(Duration::from_secs(1));
@@ -316,6 +326,15 @@ impl Bench<'_> {
             spectators,
             watcher_game_mode,
         })
+    }
+
+    fn protect_player(&mut self) {
+        if self.args.player_mode != PlayerMode::Survival {
+            return;
+        }
+        if let Some(player) = self.player.clone() {
+            let _ = self.answered(&scene::resistance(&player));
+        }
     }
 
     fn panic_when_due(&mut self) {
@@ -396,6 +415,7 @@ impl Bench<'_> {
         }
         let margin = if phase.roams() { ROAM_STIR_MARGIN } else { 1 };
         self.stir.stir = Some(Stir {
+            mob: self.args.mob,
             mode: self.args.stir_mode,
             area: population.area,
             margin,
@@ -449,7 +469,7 @@ impl Bench<'_> {
             return None;
         }
         let sent = Instant::now();
-        self.server.send(scene::COUNT_PIGS).ok()?;
+        self.server.send(&scene::count(self.args.mob)).ok()?;
         self.server
             .wait_for(sent, CONSOLE_TIMEOUT, probe::count_or_zero)
     }
@@ -459,7 +479,7 @@ impl Bench<'_> {
             return Ok(());
         }
         if self.pigs_in.is_some() {
-            self.server.send(scene::KILL_PIGS)?;
+            self.server.send(&scene::kill(self.args.mob))?;
             self.wait_count(|count| count == 0)?;
             self.pigs_in = None;
         }
@@ -473,6 +493,8 @@ impl Bench<'_> {
             self.args.pigs,
             self.args.samples,
             population.ai,
+            self.args.mob,
+            self.args.layout,
         );
         let batch = (self.args.summon_rate / 20).max(1);
         for chunk in lines.chunks(batch) {
@@ -515,6 +537,10 @@ impl Bench<'_> {
         }
         let population = match phase {
             Phase::Idle => None,
+            _ if self.args.layout == Layout::Point => Some(Population {
+                area: TILE,
+                ai: phase.ai(),
+            }),
             _ if phase.roams() => Some(Population {
                 area: ROAM,
                 ai: phase.ai(),
@@ -529,12 +555,19 @@ impl Bench<'_> {
         {
             return (PhaseReport::skipped(phase, format!("{error:#}")), None);
         }
-        let watch = if phase.roams() {
+        let watch = if self.args.layout == Layout::Point {
+            TILE.center() + DVec3::new(POINT_WATCH_OFFSET, HOVER, 0.0)
+        } else if phase.roams() {
             ROAM.center() + DVec3::Y * HOVER
         } else {
             PEN_WATCH
         };
         if let Some(player) = self.player.clone() {
+            if self.args.player_mode == PlayerMode::Survival {
+                for line in scene::guard(watch) {
+                    let _ = self.answered(&line);
+                }
+            }
             let _ = self.server.send(&scene::teleport(&player, watch));
         }
         let pigs_before = self.count_pigs();
@@ -684,6 +717,7 @@ impl Bench<'_> {
                     }),
             },
             stir,
+            ai: self.ai_report(from, until),
             cpu: Some(cpu),
             server_rss_mib_mean: (!rss.is_empty())
                 .then(|| round(rss.iter().sum::<f64>() / rss.len() as f64)),
@@ -726,6 +760,11 @@ impl Bench<'_> {
                 report::mspt_of_ticks(ticks)
             }
         }
+    }
+
+    fn ai_report(&self, from: Instant, until: Instant) -> Option<report::AiReport> {
+        let lines = self.server.lines_between(from, until + ANSWER_SLACK);
+        report::ai_report(lines.iter().map(|line| line.text.as_str()))
     }
 
     fn game_times(&self, from: Instant, until: Instant) -> Vec<GameTimeAnswer> {
@@ -814,6 +853,26 @@ fn machine() -> Machine {
         .output()
         .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_owned())
         .context("uname");
+    let logical =
+        std::thread::available_parallelism().map_or(String::new(), |count| count.to_string());
+    if cfg!(windows) {
+        return Machine {
+            cpu: Command::new("powershell")
+                .args([
+                    "-NoProfile",
+                    "-Command",
+                    "(Get-CimInstance Win32_Processor).Name",
+                ])
+                .output()
+                .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_owned())
+                .unwrap_or_default(),
+            logical_cpus: logical,
+            performance_cpus: String::new(),
+            efficiency_cpus: String::new(),
+            memory_bytes: String::new(),
+            os: format!("{} {}", std::env::consts::OS, std::env::consts::ARCH),
+        };
+    }
     Machine {
         cpu: sysctl("machdep.cpu.brand_string"),
         logical_cpus: sysctl("hw.logicalcpu"),

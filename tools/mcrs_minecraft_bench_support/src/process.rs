@@ -38,12 +38,21 @@ impl ServerProcess {
         let Some((program, arguments)) = command.split_first() else {
             bail!("no server command");
         };
-        let mut child = Command::new("sh")
-            .arg("-c")
-            .arg(r#"exec "$@" 2>&1"#)
-            .arg("sh")
-            .arg(program)
-            .args(arguments)
+        let mut launcher = if cfg!(windows) {
+            let mut launcher = Command::new(program);
+            launcher.args(arguments).stderr(Stdio::piped());
+            launcher
+        } else {
+            let mut launcher = Command::new("sh");
+            launcher
+                .arg("-c")
+                .arg(r#"exec "$@" 2>&1"#)
+                .arg("sh")
+                .arg(program)
+                .args(arguments);
+            launcher
+        };
+        let mut child = launcher
             .envs(env.iter().map(|(key, value)| (key, value)))
             .current_dir(dir)
             .stdin(Stdio::piped())
@@ -54,6 +63,10 @@ impl ServerProcess {
             bail!("the server has no console");
         };
         let (send, incoming) = channel();
+        if let Some(errors) = child.stderr.take() {
+            let send = send.clone();
+            std::thread::spawn(move || read_lines(errors, &send));
+        }
         std::thread::spawn(move || read_lines(output, &send));
         let raw = log_file
             .map(|path| File::create(path).map(BufWriter::new))
@@ -142,6 +155,11 @@ impl ServerProcess {
         match stop {
             Stop::Console => {
                 let _ = self.send("stop");
+            }
+            Stop::Interrupt if cfg!(windows) => {
+                let _ = Command::new("taskkill")
+                    .args(["/PID", &self.pid().to_string(), "/T", "/F"])
+                    .status();
             }
             Stop::Interrupt => {
                 let _ = Command::new("kill")

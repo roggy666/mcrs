@@ -103,6 +103,24 @@ pub(crate) fn travel<W: CollisionWorld, B: BodyView>(
     outcome
 }
 
+const FLIER_DRAG: f32 = 0.91;
+
+pub(crate) fn fly<W: CollisionWorld, B: BodyView>(
+    view: View<'_, W, B>,
+    mover: &Mover,
+    input: MoveInput,
+    speed: f32,
+    yaw: f32,
+    body: &mut Body,
+    scratch: &mut Scratch,
+) -> MoveOutcome {
+    accelerate(body, input, speed, yaw);
+    let velocity = body.velocity;
+    let outcome = move_body::move_body(view, mover, body, MoverKind::Own, velocity, scratch);
+    body.velocity *= f64::from(FLIER_DRAG);
+    outcome
+}
+
 pub(crate) fn effective_gravity(gravity: f64, slow_falling: bool, vertical: f64) -> f64 {
     if slow_falling && vertical <= 0.0 {
         gravity.min(0.01)
