@@ -407,8 +407,12 @@ impl<W: BrainWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
             }
             (GoalKind::EatGrass, GoalState::Eat(state)) => eat_grass::can_start(cx, state),
             (GoalKind::Stroll { search, .. }, GoalState::Stroll(stroll)) => {
+                let eligible = crate::StrollGoal::is_eligible(cx.turn, 0);
                 cx.destination = stroll.start_destination(cx.turn, *search);
-                note_gate(cx, stroll.gate().due());
+                if eligible {
+                    note_gate(cx, stroll.gate().due());
+                    cx.wake.due_at(crate::StrollGoal::idle_limit_at(cx.turn));
+                }
                 cx.destination.is_some()
             }
             (GoalKind::LookAtPlayer { range }, GoalState::LookAtPlayer(look)) => {

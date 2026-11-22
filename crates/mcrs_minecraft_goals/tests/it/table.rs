@@ -182,6 +182,41 @@ fn an_animal_with_no_hit_does_not_panic_and_sleeps_until_a_gate_is_due() {
     );
 }
 
+#[test]
+fn wake_007_a_pending_stroll_wait_wakes_the_brain_when_the_idle_time_reaches_the_limit() {
+    let ground = FlatGround {
+        side: 64,
+        pond: None,
+    };
+    let kinds = kinds();
+    let items = ItemTables::default();
+    let players = PlayerTable::default();
+    let neighbours = Neighbours::empty(TileKey::new(1, 0, 1));
+    let mut scratch = TurnScratch::default();
+    let mut view = view(3, None);
+    view.idle_time = 90;
+    let turn = Turn {
+        tick: 20,
+        seed: WorldSeed(41),
+        max_lag: 0,
+        cadence: Cadence::new(1, 0),
+        view: &view,
+        players: &[],
+        table: &players,
+        neighbours: &neighbours,
+        items: &items,
+        kinds: &kinds,
+        world: &ground,
+    };
+    let mut brain = TableBrain::new(&TABLE);
+    let mut intents = Intents::default();
+    let wake = brain.evaluate(&turn, &mut scratch, &mut intents);
+    assert!(
+        wake > 20 && wake <= 30,
+        "the brain wakes no later than the tick in which the idle time reaches 100: {wake}"
+    );
+}
+
 static ALLIES: KindSet = KindSet::of(&[MobKind(7), MobKind(9)]);
 
 static ALERTING: GoalTable = GoalTable {

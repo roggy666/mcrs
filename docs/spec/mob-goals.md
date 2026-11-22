@@ -1087,9 +1087,11 @@ each of its waits, and the goal timer does not count. The next AI step is a wake
 
 **GOAL-WAKE-007** (`design`, semantic, confidence: medium, fidelity: exact). The idle time can end
 the eligibility of the stroll goal with no wake event. In the first full evaluation in which the
-idle time is 100 or more, the wait of the stroll ends. That evaluation stays quiet when the other
-conditions of GOAL-WAKE-002 are true. An implementation can keep the tick of the last reset in place
-of a counter. It then computes the idle time at a due evaluation.
+idle time is 100 or more, the wait of the stroll ends. A brain with a pending wait of the stroll
+names, beside the due tick of the wait, the tick in which the idle time reaches 100 (the issue tick
+plus 100 less the idle time of the view), so that it evaluates in the same tick as a brain that
+evaluates every tick and ends the wait there; a later reset of the idle time then draws a new wait
+in both. That evaluation stays quiet when the other conditions of GOAL-WAKE-002 are true.
 
 **GOAL-WAKE-008** (`design`, semantic, confidence: medium, fidelity: exact). A quiet evaluation
 changes nothing when the AI stage runs it in full. This is the reason for each step of
