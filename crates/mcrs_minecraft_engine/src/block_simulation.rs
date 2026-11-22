@@ -27,7 +27,12 @@ use mcrs_minecraft_engine_world::world::storage::view::WorldViewMut;
 use mcrs_minecraft_item::ItemStack;
 use mcrs_minecraft_protocol::VarInt;
 use mcrs_minecraft_protocol_game::clientbound::ClientboundBlockEvent;
+use mcrs_minecraft_protocol_game::clientbound::ClientboundLevelEvent;
+use mcrs_minecraft_protocol_game::clientbound::ClientboundSound;
+use mcrs_minecraft_protocol_game::sound::SoundHolder;
+use mcrs_minecraft_protocol_game::sound::SoundSource;
 use mcrs_minecraft_resource::{Id, ResourceKeyBuf};
+use mcrs_minecraft_simulation::ClientEffect;
 use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockEvent, BlockShard, BlockUpdateFlags, BlockWrite, ChainLedger, ChainOrigin,
     Env, Footprints, GameTick, KernelConfig, Message, MessageBody, PartitionKind, Phase,
@@ -35,6 +40,7 @@ use mcrs_minecraft_simulation::{
     Serial, ShardId, SimulatedSections, Spread, StepAt, StepOutput, StreamSeed, SubTick, TickKind,
     TickQueue, UpdateRequest, VanillaOrder,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_minecraft_volume::{BlockVolume, PalettedSection};
 use mcrs_voxel::{BlockPos, ColumnPos, SectionPos};
 use rustc_hash::FxHashSet;
@@ -507,7 +513,10 @@ fn run_block_simulation<B: BlockBehaviour<WorldKinds> + BlockDrops + Send + 'sta
     });
 
     let facts = WorldFacts::new(definitions);
-    let config = KernelConfig::default();
+    let config = KernelConfig {
+        seed,
+        ..KernelConfig::default()
+    };
     let env = Env {
         partition,
         facts: &facts,
@@ -612,6 +621,11 @@ fn run_block_simulation<B: BlockBehaviour<WorldKinds> + BlockDrops + Send + 'sta
         && let Some(streams) = streams
     {
         publish_block_events(&out.delivered, streams, &mut outlets.changes);
+    }
+    if !out.effects.is_empty()
+        && let Some(streams) = streams
+    {
+        publish_effects(&out.effects, now, streams, &mut outlets.changes);
     }
     let world_seed = random.seed.as_deref().map_or(0, |seed| seed.0);
     for block in out.destroyed.iter().filter(|block| block.drops) {
@@ -782,6 +796,66 @@ fn publish_block_events(
             }),
             except: None,
         });
+    }
+}
+
+fn publish_effects(
+    effects: &[ClientEffect<WorldKinds>],
+    now: GameTick,
+    streams: &ColumnStreams,
+    changes: &mut MessageWriter<ColumnChange>,
+) {
+    for effect in effects {
+        let column = ColumnPos::from(effect.pos());
+        if !streams.is_subscribed(column) {
+            continue;
+        }
+        let payload = match *effect {
+            ClientEffect::Sound {
+                pos,
+                sound,
+                volume,
+                pitch,
+            } => PacketPayload::Sound(block_sound(pos, sound, volume, pitch, now)),
+            ClientEffect::LevelEvent { pos, event, data } => {
+                PacketPayload::LevelEvent(ClientboundLevelEvent {
+                    effect: event,
+                    pos,
+                    effect_data: data,
+                    global: false,
+                })
+            }
+        };
+        changes.write(ColumnChange {
+            column,
+            payload,
+            except: None,
+        });
+    }
+}
+
+#[must_use]
+pub fn block_sound(
+    pos: BlockPos,
+    sound: Id<SoundEvent>,
+    volume: f32,
+    pitch: f32,
+    now: GameTick,
+) -> ClientboundSound {
+    let eighths = |value: i32| value.saturating_mul(8).saturating_add(4);
+    let seed = (u64::from(pos.x as u32) << 40)
+        ^ (u64::from(pos.y as u32) << 20)
+        ^ u64::from(pos.z as u32)
+        ^ (now.0 as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15);
+    ClientboundSound {
+        sound: SoundHolder::Registry(sound.number()),
+        source: SoundSource::Blocks,
+        x: eighths(pos.x),
+        y: eighths(pos.y),
+        z: eighths(pos.z),
+        volume,
+        pitch,
+        seed: seed as i64,
     }
 }
 

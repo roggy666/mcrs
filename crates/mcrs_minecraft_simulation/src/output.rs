@@ -86,16 +86,63 @@ pub(crate) struct OutputMark {
     pub(crate) writes: usize,
     pub(crate) outbound: usize,
     pub(crate) delivered: usize,
+    pub(crate) effects: usize,
     pub(crate) destroyed: usize,
     pub(crate) chains: usize,
     report: StepReport,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ClientEffect<K: Kinds> {
+    Sound {
+        pos: BlockPos,
+        sound: K::Sound,
+        volume: f32,
+        pitch: f32,
+    },
+    LevelEvent {
+        pos: BlockPos,
+        event: i32,
+        data: i32,
+    },
+}
+
+impl<K: Kinds> ClientEffect<K> {
+    #[must_use]
+    pub const fn pos(&self) -> BlockPos {
+        match self {
+            Self::Sound { pos, .. } | Self::LevelEvent { pos, .. } => *pos,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PitchRange {
+    pub min: f32,
+    pub max: f32,
+}
+
+impl PitchRange {
+    #[must_use]
+    pub const fn fixed(pitch: f32) -> Self {
+        Self {
+            min: pitch,
+            max: pitch,
+        }
+    }
+
+    #[must_use]
+    pub const fn between(min: f32, max: f32) -> Self {
+        Self { min, max }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct StepOutput<K: Kinds> {
     pub writes: Vec<BlockWrite>,
     pub outbound: Vec<Message<K>>,
     pub delivered: Vec<BlockEvent<K::Block>>,
+    pub effects: Vec<ClientEffect<K>>,
     pub destroyed: Vec<Destroyed>,
     pub chains: Vec<ChainLedger>,
     pub report: StepReport,
@@ -107,6 +154,7 @@ impl<K: Kinds> Default for StepOutput<K> {
             writes: Vec::new(),
             outbound: Vec::new(),
             delivered: Vec::new(),
+            effects: Vec::new(),
             destroyed: Vec::new(),
             chains: Vec::new(),
             report: StepReport::default(),
@@ -119,6 +167,7 @@ impl<K: Kinds> StepOutput<K> {
         self.writes.clear();
         self.outbound.clear();
         self.delivered.clear();
+        self.effects.clear();
         self.destroyed.clear();
         self.chains.clear();
         self.report = StepReport::default();
@@ -129,6 +178,7 @@ impl<K: Kinds> StepOutput<K> {
             writes: self.writes.len(),
             outbound: self.outbound.len(),
             delivered: self.delivered.len(),
+            effects: self.effects.len(),
             destroyed: self.destroyed.len(),
             chains: self.chains.len(),
             report: self.report,
@@ -139,6 +189,7 @@ impl<K: Kinds> StepOutput<K> {
         self.writes.truncate(mark.writes);
         self.outbound.truncate(mark.outbound);
         self.delivered.truncate(mark.delivered);
+        self.effects.truncate(mark.effects);
         self.destroyed.truncate(mark.destroyed);
         self.chains.truncate(mark.chains);
         self.report = mark.report;

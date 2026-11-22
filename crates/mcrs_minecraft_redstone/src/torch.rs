@@ -5,10 +5,12 @@ use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume, TickPriority,
     neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
 use crate::memory::{HasRedstoneMemory, HasRedstoneSnapshot, ToggleLog};
 use crate::power::{attached_of, has_signal_from};
+use crate::sound;
 use crate::table::RedstoneTable;
 use crate::wire::LIMIT;
 
@@ -34,7 +36,7 @@ where
 
 fn update_all_neighbours<K, V, F, B>(cx: &mut Cx<'_, K, V, F, B>, pos: BlockPos, block: Id<Block>)
 where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -53,7 +55,7 @@ pub(crate) fn placed<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -69,7 +71,7 @@ pub(crate) fn removed<K, V, F, B>(
     old: BlockStateId,
     moved_by_piston: bool,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -85,7 +87,7 @@ pub(crate) fn neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -113,7 +115,7 @@ pub(crate) fn block_tick<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -135,6 +137,7 @@ pub(crate) fn block_tick<K, V, F, B>(
         }
         if burnt {
             cx.schedule_block_tick(pos, block, BURNOUT_DELAY, TickPriority::Normal);
+            sound::play(cx, pos, sound::torch_burnout());
         }
     } else if !off {
         let burnt = cx

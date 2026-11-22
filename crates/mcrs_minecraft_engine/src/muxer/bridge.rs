@@ -540,6 +540,7 @@ fn write_payload<W: WritePacket>(sink: &mut W, data: PacketPayload) -> anyhow::R
         PacketPayload::SectionBlocksUpdate(p) => sink.write_packet_fallible(&p),
         PacketPayload::BlockEvent(p) => sink.write_packet_fallible(&p),
         PacketPayload::LevelEvent(p) => sink.write_packet_fallible(&p),
+        PacketPayload::Sound(p) => sink.write_packet_fallible(&p),
         PacketPayload::BlockChangedAck(p) => sink.write_packet_fallible(&p),
         PacketPayload::BlockDestruction(p) => sink.write_packet_fallible(&p),
         PacketPayload::Disconnect(reason) => {

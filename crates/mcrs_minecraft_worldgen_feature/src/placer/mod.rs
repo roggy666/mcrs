@@ -34,6 +34,7 @@ pub struct GenerationKinds;
 impl Kinds for GenerationKinds {
     type Block = BlockStateId;
     type Fluid = Fluid;
+    type Sound = u16;
 }
 
 pub trait WorldGenVolume:

@@ -4,6 +4,7 @@ use mcrs_minecraft_resource::Id;
 use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume, neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 use rustc_hash::FxHashMap;
 
@@ -164,7 +165,7 @@ pub(crate) fn evaluate<K, V, F, B>(
     state: BlockStateId,
 ) -> bool
 where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,

@@ -28,6 +28,7 @@ pub struct ProbeKinds;
 impl Kinds for ProbeKinds {
     type Block = ProbeBlock;
     type Fluid = ProbeFluid;
+    type Sound = u16;
 }
 
 pub const STATES: usize = 22;

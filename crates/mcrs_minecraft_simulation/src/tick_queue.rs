@@ -16,6 +16,7 @@ impl<T: Copy + Eq + Ord + Hash + Debug + Send + Sync> TickKind for T {}
 pub trait Kinds: Copy + Eq + Debug {
     type Block: TickKind;
     type Fluid: TickKind;
+    type Sound: TickKind;
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

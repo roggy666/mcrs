@@ -4,23 +4,28 @@ use mcrs_minecraft_resource::Id;
 use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
+use crate::component::DiodeMode;
 use crate::component::Kind;
 use crate::memory::{HasRedstoneMemory, HasRedstoneSnapshot};
 use crate::rules::{RedstoneRules, WireEvaluator};
+use crate::sound;
+use crate::sound::Click;
 use crate::table::RedstoneTable;
 use crate::{comparator, lamp, observer, piston, plate, repeater, source, torch, wire};
 use crate::{daylight, mechanism, rail, tripwire, wire_network};
 use mcrs_minecraft_simulation::Footprints;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Toggle {
     pub state: BlockStateId,
     pub flags: BlockUpdateFlags,
+    pub sound: Option<Click>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum BlockUse {
     Toggle(Toggle),
     Consumed,
@@ -106,7 +111,11 @@ impl Redstone {
                 _ => return BlockUse::Unhandled,
             };
         match toggled {
-            Some((state, flags)) => BlockUse::Toggle(Toggle { state, flags }),
+            Some((next, flags)) => BlockUse::Toggle(Toggle {
+                state: next,
+                flags,
+                sound: use_sound(table, kind, state, next),
+            }),
             None if matches!(kind, Kind::Button { .. }) => BlockUse::Consumed,
             None => BlockUse::Unhandled,
         }
@@ -118,7 +127,7 @@ impl Redstone {
         at: BlockPos,
         state: BlockStateId,
     ) where
-        K: Kinds<Block = Id<Block>>,
+        K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
         V: SimulationVolume,
         F: BlockFacts<K>,
         B: BlockBehaviour<K>,
@@ -148,7 +157,7 @@ impl Redstone {
         new: BlockStateId,
         old: BlockStateId,
     ) where
-        K: Kinds<Block = Id<Block>>,
+        K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
         V: SimulationVolume,
         F: BlockFacts<K>,
         B: BlockBehaviour<K>,
@@ -194,7 +203,7 @@ impl Redstone {
         old: BlockStateId,
         moved_by_piston: bool,
     ) where
-        K: Kinds<Block = Id<Block>>,
+        K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
         V: SimulationVolume,
         F: BlockFacts<K>,
         B: BlockBehaviour<K>,
@@ -228,7 +237,7 @@ impl Redstone {
         at: BlockPos,
         state: BlockStateId,
     ) where
-        K: Kinds<Block = Id<Block>>,
+        K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
         V: SimulationVolume,
         F: BlockFacts<K>,
         B: BlockBehaviour<K>,
@@ -273,7 +282,7 @@ impl Redstone {
         neighbour_state: BlockStateId,
     ) -> BlockStateId
     where
-        K: Kinds<Block = Id<Block>>,
+        K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
         V: SimulationVolume,
         F: BlockFacts<K>,
         B: BlockBehaviour<K>,
@@ -317,7 +326,7 @@ impl Redstone {
         b: i32,
     ) -> bool
     where
-        K: Kinds<Block = Id<Block>>,
+        K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
         V: SimulationVolume,
         F: BlockFacts<K>,
         B: BlockBehaviour<K>,
@@ -331,5 +340,23 @@ impl Redstone {
             Some(Kind::NoteBlock) => mechanism::note_event(&self.table, state, a),
             _ => false,
         }
+    }
+}
+
+fn use_sound(
+    table: &RedstoneTable,
+    kind: Kind,
+    old: BlockStateId,
+    new: BlockStateId,
+) -> Option<Click> {
+    let set = table.sound_set(old);
+    match kind {
+        Kind::Lever => Some(sound::lever(table.powered(new))),
+        Kind::Button { .. } => Some(sound::button(set, true)),
+        Kind::Comparator => Some(sound::comparator(table.mode(new) == DiodeMode::Subtract)),
+        Kind::Door { .. } | Kind::Trapdoor { .. } | Kind::FenceGate => {
+            sound::open_sound(kind, set, table.open(new))
+        }
+        _ => None,
     }
 }

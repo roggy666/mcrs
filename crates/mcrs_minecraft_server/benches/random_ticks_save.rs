@@ -43,6 +43,7 @@ struct Bench;
 impl Kinds for Bench {
     type Block = u16;
     type Fluid = u16;
+    type Sound = u16;
 }
 
 #[derive(Clone, Copy)]

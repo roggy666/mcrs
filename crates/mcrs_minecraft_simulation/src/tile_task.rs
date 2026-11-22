@@ -41,6 +41,7 @@ pub(crate) struct Produced<K: Kinds, M> {
     pub(crate) blocks: Range<usize>,
     pub(crate) outbound: Range<usize>,
     pub(crate) delivered: Range<usize>,
+    pub(crate) effects: Range<usize>,
     pub(crate) destroyed: Range<usize>,
     pub(crate) chains: Range<usize>,
 }
@@ -279,6 +280,9 @@ impl<K: Kinds, M: MemoryPartition + Default + Clone> TileTask<K, M> {
         }
         if let Some(delivered) = self.out.delivered.get(produced.delivered.clone()) {
             out.delivered.extend_from_slice(delivered);
+        }
+        if let Some(effects) = self.out.effects.get(produced.effects.clone()) {
+            out.effects.extend_from_slice(effects);
         }
         if let Some(destroyed) = self.out.destroyed.get(produced.destroyed.clone()) {
             out.destroyed.extend_from_slice(destroyed);

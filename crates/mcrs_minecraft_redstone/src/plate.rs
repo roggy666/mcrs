@@ -5,11 +5,13 @@ use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume, TickPriority,
     neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
 use crate::component::{Kind, PlateKind};
 use crate::memory::{HasRedstoneMemory, HasRedstoneSnapshot, Presence, Sensor};
 use crate::power::{MAX_SIGNAL, plate_signal};
+use crate::sound;
 use crate::table::RedstoneTable;
 use crate::wire::LIMIT;
 
@@ -87,7 +89,7 @@ fn check_pressed<K, V, F, B>(
     kind: PlateKind,
     current: u8,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -101,6 +103,13 @@ fn check_pressed<K, V, F, B>(
         && let Some(next_state) = with_signal(table, state, kind, next)
     {
         cx.set(pos, next_state, BlockUpdateFlags::CLIENTS, LIMIT);
+        if (current == 0) != (next == 0) {
+            sound::play(
+                cx,
+                pos,
+                sound::plate(kind, table.sound_set(state), next > 0),
+            );
+        }
         cx.update_neighbours(pos, block, None);
         if let Some(below) = neighbour(pos, Direction::Down) {
             cx.update_neighbours(below, block, None);
@@ -117,7 +126,7 @@ pub(crate) fn neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -139,7 +148,7 @@ pub(crate) fn block_tick<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -176,7 +185,7 @@ pub(crate) fn removed<K, V, F, B>(
     old: BlockStateId,
     moved_by_piston: bool,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,

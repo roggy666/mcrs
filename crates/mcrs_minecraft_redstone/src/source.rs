@@ -5,11 +5,13 @@ use mcrs_minecraft_simulation::{
     BlockBehaviour, BlockFacts, BlockUpdateFlags, Cx, Kinds, SimulationVolume, TickPriority,
     neighbour,
 };
+use mcrs_minecraft_sound::sound_event_keys::SoundEvent;
 use mcrs_voxel::{BlockPos, BlockStateId};
 
 use crate::component::Kind;
 use crate::memory::HasRedstoneSnapshot;
 use crate::power::attached_of;
+use crate::sound;
 use crate::table::RedstoneTable;
 use crate::wire::LIMIT;
 
@@ -30,7 +32,7 @@ pub(crate) fn update_attached<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -51,7 +53,7 @@ pub(crate) fn placed<K, V, F, B>(
     state: BlockStateId,
     old: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -75,7 +77,7 @@ pub(crate) fn removed<K, V, F, B>(
     old: BlockStateId,
     moved_by_piston: bool,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -102,7 +104,7 @@ pub(crate) fn block_tick<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -123,6 +125,7 @@ pub(crate) fn block_tick<K, V, F, B>(
     }
     if let Some(released) = table.with_powered(state, false) {
         cx.set(pos, released, BlockUpdateFlags::ALL, LIMIT);
+        sound::play(cx, pos, sound::button(table.sound_set(state), false));
     }
 }
 
@@ -132,7 +135,7 @@ pub(crate) fn neighbour_changed<K, V, F, B>(
     pos: BlockPos,
     state: BlockStateId,
 ) where
-    K: Kinds<Block = Id<Block>>,
+    K: Kinds<Block = Id<Block>, Sound = Id<SoundEvent>>,
     V: SimulationVolume,
     F: BlockFacts<K>,
     B: BlockBehaviour<K>,
@@ -145,6 +148,7 @@ pub(crate) fn neighbour_changed<K, V, F, B>(
         && let Some(pressed) = table.with_powered(state, true)
     {
         cx.set(pos, pressed, BlockUpdateFlags::ALL, LIMIT);
+        sound::play(cx, pos, sound::button(table.sound_set(state), true));
     }
 }
 

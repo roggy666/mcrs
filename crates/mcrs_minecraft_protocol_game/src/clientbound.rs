@@ -12,6 +12,7 @@ use crate::minecart::MinecartStep;
 use crate::player::*;
 use crate::player_list::{PlayerListActions, PlayerListEntry};
 use crate::recipe::{RecipeBookEntry, RecipeBookSettings, RecipePropertySet, SelectableRecipe};
+use crate::sound::{SoundHolder, SoundSource};
 use crate::text::RawText;
 use crate::{ColumnPos, LpVec3, PositionFlags};
 use glam::DVec3;
@@ -221,6 +222,18 @@ pub struct ClientboundLevelChunkWithLight<'a> {
     pub pos: ColumnPos,
     pub chunk_data: crate::chunk::ChunkData<'a>,
     pub light_data: crate::chunk::LightData<'a>,
+}
+
+#[derive(Clone, Debug, PartialEq, Encode, Decode)]
+pub struct ClientboundSound {
+    pub sound: SoundHolder,
+    pub source: SoundSource,
+    pub x: i32,
+    pub y: i32,
+    pub z: i32,
+    pub volume: f32,
+    pub pitch: f32,
+    pub seed: i64,
 }
 
 #[derive(Clone, Debug, Encode, Decode)]

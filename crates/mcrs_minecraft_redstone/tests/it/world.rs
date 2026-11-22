@@ -30,6 +30,7 @@ pub struct TestKinds;
 impl Kinds for TestKinds {
     type Block = Id<Block>;
     type Fluid = Id<Fluid>;
+    type Sound = Id<SoundEvent>;
 }
 
 static DEFINITIONS: LazyLock<BlockDefinitions> = LazyLock::new(|| {

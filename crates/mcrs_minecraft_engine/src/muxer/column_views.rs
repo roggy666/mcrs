@@ -282,9 +282,9 @@ impl ColumnViews {
         };
         let (need, near) = match &change.payload {
             PacketPayload::BlockEvent(event) => (StreamNeed::Nothing, Some(event.pos)),
-            PacketPayload::LevelEvent(_) | PacketPayload::BlockDestruction(_) => {
-                (StreamNeed::Nothing, None)
-            }
+            PacketPayload::LevelEvent(_)
+            | PacketPayload::Sound(_)
+            | PacketPayload::BlockDestruction(_) => (StreamNeed::Nothing, None),
             _ => (feed.log(&change), None),
         };
         let players = &self.players;

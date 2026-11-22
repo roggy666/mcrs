@@ -31,7 +31,9 @@ pub use cx::{Cx, Drops};
 pub use event_queue::{BlockEvent, DrainEnd, Drained, EventQueue, QueuedEvent};
 pub use footprints::Footprints;
 pub use message::{ChainOrigin, Message, MessageBody, UpdateRequest};
-pub use output::{BlockWrite, ChainLedger, Destroyed, StepError, StepOutput, StepReport};
+pub use output::{
+    BlockWrite, ChainLedger, ClientEffect, Destroyed, PitchRange, StepError, StepOutput, StepReport,
+};
 pub use policy::{ChainOrder, CollectScratch, OrderingPolicy, SemanticOrder, VanillaOrder};
 pub use precipitation::{
     PRECIPITATION_GATE, PRECIPITATION_TILE, PrecipitationHit, precipitation_hits,
@@ -84,6 +86,7 @@ mod tests {
     impl Kinds for Narrow {
         type Block = u16;
         type Fluid = u16;
+        type Sound = u16;
     }
 
     #[test]
