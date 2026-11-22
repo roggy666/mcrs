@@ -169,42 +169,16 @@ fn tick_living<W: CollisionWorld, B: BodyView>(
         body.fall_distance = 0.0;
     }
     let start = body.position;
-    let mut dy = 0.0;
     let flier = row.category == Category::Flier;
-    if living.travel == Travel::Open && flier {
-        mover.gravity = 0.0;
-        let moved = travel::fly(
-            view,
-            &mover,
-            living.input,
-            living.speed,
-            living.orientation.yaw,
-            body,
-            scratch,
-        );
-        dy = applied_dy(&moved.resolved, start, body.position);
-    } else if living.travel == Travel::Open {
-        mover.gravity = if entity.no_gravity {
-            0.0
-        } else {
-            attributes.gravity
-        };
-        let input = TravelInput {
-            mover: &mover,
-            attributes: &attributes,
-            effects: &effects,
-            input: living.input,
-            speed: living.speed,
-            air_speed: AIR_SPEED,
-            yaw: living.orientation.yaw,
-            jump: living.jump,
-            omnidirectional,
-            climbs_powder_snow: living.in_powder_snow && living.walks_on_powder_snow,
-            player: false,
-        };
-        let moved = travel::travel(view, &input, body, scratch);
-        dy = applied_dy(&moved.resolved, start, body.position);
-    }
+    let dy = travel_living(
+        view,
+        row,
+        entity.no_gravity,
+        &mut mover,
+        &living,
+        body,
+        scratch,
+    );
     let context = EffectContext {
         mover: &mover,
         stuck_ignore: row.stuck_ignore,
@@ -221,6 +195,52 @@ fn tick_living<W: CollisionWorld, B: BodyView>(
     entity.contact = block_effects::apply(view, &context, body, Some(&mut living), actions);
     entity.living = Some(living);
     TickOutcome::default()
+}
+
+fn travel_living<W: CollisionWorld, B: BodyView>(
+    view: View<'_, W, B>,
+    row: &MotionRow,
+    no_gravity: bool,
+    mover: &mut Mover,
+    living: &Living,
+    body: &mut Body,
+    scratch: &mut Scratch,
+) -> f64 {
+    if living.travel != Travel::Open {
+        return 0.0;
+    }
+    let start = body.position;
+    if row.category == Category::Flier {
+        mover.gravity = 0.0;
+        let moved = travel::fly(
+            view,
+            mover,
+            living.input,
+            living.speed,
+            living.orientation.yaw,
+            body,
+            scratch,
+        );
+        return applied_dy(&moved.resolved, start, body.position);
+    }
+    let attributes = living.attributes;
+    mover.gravity = if no_gravity { 0.0 } else { attributes.gravity };
+    let effects = living.effects;
+    let input = TravelInput {
+        mover,
+        attributes: &attributes,
+        effects: &effects,
+        input: living.input,
+        speed: living.speed,
+        air_speed: AIR_SPEED,
+        yaw: living.orientation.yaw,
+        jump: living.jump,
+        omnidirectional: row.category == Category::Omnidirectional,
+        climbs_powder_snow: living.in_powder_snow && living.walks_on_powder_snow,
+        player: false,
+    };
+    let moved = travel::travel(view, &input, body, scratch);
+    applied_dy(&moved.resolved, start, body.position)
 }
 
 fn living_mover(

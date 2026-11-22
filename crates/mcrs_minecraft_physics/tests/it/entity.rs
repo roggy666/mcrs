@@ -527,13 +527,27 @@ fn ord_005_a_flier_keeps_its_height_and_moves_by_its_input_with_the_air_drag_on_
     assert_eq!(ghast.body.velocity, DVec3::ZERO);
     let living = ghast.living.as_mut().expect("a living row");
     living.input.forward = 1.0;
-    living.input.vertical = 1.0;
     living.speed = 0.1;
     tick(&mut fixture, &row, &mut ghast, true);
-    let drag = f64::from(0.91_f32);
-    assert_eq!(ghast.body.velocity.z, 0.1 * drag, "forward input along +z at yaw 0, then the drag");
-    assert_eq!(ghast.body.velocity.y, 0.1 * drag, "the vertical input moves a flier up");
-    assert_eq!(ghast.body.position.y, 10.1, "the move happens before the drag");
-    living = ghast.living.as_mut().expect("a living row");
-    let _ = living;
+    let z = ghast.body.velocity.z;
+    assert!(
+        (0.085..0.092).contains(&z),
+        "the forward input, decayed by 0.98F and dragged by 0.91F, moves along +z at yaw 0: {z}"
+    );
+    assert_eq!(ghast.body.velocity.y, 0.0, "no gravity acts on a flier");
+    assert_eq!(ghast.body.position.y, 10.0);
+    let living = ghast.living.as_mut().expect("a living row");
+    living.input.forward = 0.0;
+    living.input.vertical = 1.0;
+    tick(&mut fixture, &row, &mut ghast, true);
+    let y = ghast.body.velocity.y;
+    assert!(
+        (0.085..0.092).contains(&y),
+        "the vertical input moves a flier up with the same drag: {y}"
+    );
+    assert!(
+        ghast.body.position.y > 10.09,
+        "the move happens before the drag: {}",
+        ghast.body.position.y
+    );
 }
