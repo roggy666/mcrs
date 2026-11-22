@@ -6,13 +6,12 @@ use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use rustc_hash::FxHashMap;
 
-use crate::mob_ai::Snapshots;
-use crate::mob_ai::tile_views;
+use crate::mob_ai::Bodies;
 use crate::presence::Presence;
 
 #[derive(Debug)]
 pub struct Targets<'a> {
-    pub snapshots: &'a Snapshots,
+    pub bodies: &'a Bodies,
     pub present: &'a FxHashMap<EntityId, Presence>,
     pub players: &'a PlayerTable,
     pub kinds: &'a KindTable,
@@ -44,9 +43,10 @@ impl Targets<'_> {
     #[must_use]
     pub fn body(&self, id: EntityId) -> Option<TargetBody> {
         if let Some(presence) = self.present.get(&id) {
-            let views = tile_views(self.snapshots, presence.tile)?;
-            let index = views.index.find(id)?;
-            let view = views.views.get(index as usize)?;
+            let view = self.bodies.find(presence.tile, presence.key)?;
+            if view.mob != id {
+                return None;
+            }
             let dimensions = self.kinds.dimensions(view);
             return Some(TargetBody {
                 key: view.key,

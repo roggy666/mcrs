@@ -1,6 +1,6 @@
 use mcrs_minecraft_brain::Fact;
+use mcrs_minecraft_brain::MobView;
 use mcrs_minecraft_brain::PlayerTable;
-use mcrs_minecraft_brain::TileSnapshot;
 use mcrs_minecraft_chunk::ChunkBlocks;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
@@ -51,7 +51,7 @@ pub struct TickInput<B> {
     pub arrivals: Vec<Arrival<B>>,
     pub departures: Vec<EntityId>,
     pub moves: Vec<(EntityId, TileKey)>,
-    pub tiles: Vec<(TileKey, TileSnapshot)>,
+    pub views: Vec<MobView>,
     pub facts: Vec<(TileKey, Fact)>,
     pub players: PlayerTable,
     pub blocks: BlockDelta,
@@ -65,7 +65,7 @@ impl<B> TickInput<B> {
             arrivals: Vec::new(),
             departures: Vec::new(),
             moves: Vec::new(),
-            tiles: Vec::new(),
+            views: Vec::new(),
             facts: Vec::new(),
             players: PlayerTable::default(),
             blocks: BlockDelta::default(),

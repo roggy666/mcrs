@@ -31,7 +31,7 @@ use mcrs_minecraft_brain::PlayerTable;
 use mcrs_minecraft_brain::Proposal;
 use mcrs_minecraft_brain::Receivers;
 use mcrs_minecraft_brain::StageConfig;
-use mcrs_minecraft_brain::TileSnapshot;
+use mcrs_minecraft_brain::TileIndex;
 use mcrs_minecraft_brain::TileViews;
 use mcrs_minecraft_brain::find_path;
 use mcrs_minecraft_brain::sort_paths;
@@ -121,7 +121,36 @@ type Entities = FxHashMap<EntityId, Entity>;
 
 pub(crate) type PlayerEntities = [(EntityId, Entity)];
 
-pub(crate) type Snapshots = Vec<(TileKey, TileSnapshot)>;
+#[derive(Debug, Default)]
+pub(crate) struct Bodies {
+    pub(crate) views: Vec<MobView>,
+    pub(crate) tiles: Vec<(TileKey, u32)>,
+}
+
+impl Bodies {
+    pub(crate) fn tile(&self, tile: TileKey) -> &[MobView] {
+        let Ok(at) = self.tiles.binary_search_by_key(&tile, |(tile, _)| *tile) else {
+            return &[];
+        };
+        let start = self.tiles.get(at).map_or(0, |(_, start)| *start as usize);
+        let end = self
+            .tiles
+            .get(at + 1)
+            .map_or(self.views.len(), |(_, start)| *start as usize);
+        self.views.get(start..end).unwrap_or_default()
+    }
+
+    pub(crate) fn find(&self, tile: TileKey, key: EntityUuid) -> Option<&MobView> {
+        let views = self.tile(tile);
+        let at = views.binary_search_by_key(&key, |view| view.key).ok()?;
+        views.get(at)
+    }
+
+    fn clear(&mut self) {
+        self.views.clear();
+        self.tiles.clear();
+    }
+}
 
 #[derive(Resource)]
 pub struct MobAi<B>
@@ -140,7 +169,11 @@ where
     nav: NavTable,
     resend_sections: bool,
     present: FxHashMap<EntityId, Presence>,
-    snapshots: Snapshots,
+    bodies: Bodies,
+    bodies_next: Bodies,
+    order: Vec<(TileKey, EntityUuid, u32)>,
+    spare_views: Vec<Vec<MobView>>,
+    spare_facts: Vec<Vec<(TileKey, Fact)>>,
     input: TickInput<B>,
     due: Vec<Decision>,
     due_paths: Vec<IssuedPath>,
@@ -198,18 +231,6 @@ struct Publishing<'a, 'w, 's> {
     tick: u64,
 }
 
-pub(crate) fn tile_views(snapshots: &Snapshots, tile: TileKey) -> Option<TileViews<'_>> {
-    let index = snapshots
-        .binary_search_by_key(&tile, |(tile, _)| *tile)
-        .ok()?;
-    let (_, snapshot) = snapshots.get(index)?;
-    Some(TileViews {
-        tile,
-        views: &snapshot.views,
-        index: &snapshot.index,
-    })
-}
-
 impl<B> MobAi<B>
 where
     B: for<'a> MobBrain<ProjectionWorld<'a>> + Send + Sync + 'static,
@@ -236,7 +257,11 @@ where
             nav: NavTable::default(),
             resend_sections: false,
             present: FxHashMap::default(),
-            snapshots: Vec::new(),
+            bodies: Bodies::default(),
+            bodies_next: Bodies::default(),
+            order: Vec::new(),
+            spare_views: Vec::new(),
+            spare_facts: Vec::new(),
             input: TickInput::new(1),
             due: Vec::new(),
             due_paths: Vec::new(),
@@ -384,7 +409,7 @@ where
             due: &self.due,
             due_paths: &self.due_paths,
             targets: Targets {
-                snapshots: &self.snapshots,
+                bodies: &self.bodies,
                 present: &self.present,
                 players: &players,
                 kinds: &self.kinds,
@@ -454,6 +479,11 @@ where
             self.stats.projection_sections = output.run.sections;
             self.stats.projection_bytes = output.run.projection_bytes;
             self.stats.without_tables = output.run.without_tables;
+            let mut recycled = output.recycled;
+            recycled.views.clear();
+            recycled.facts.clear();
+            self.spare_views.push(recycled.views);
+            self.spare_facts.push(recycled.facts);
             self.pipeline.ready(output.decisions);
         }
     }
@@ -563,18 +593,24 @@ where
                 self.input.moves.push((moved.mob, moved.tile));
             }
         }
-        gathered
-            .views
-            .sort_unstable_by_key(|view| (TileKey::at(view.position), view.key));
-        self.snapshots.clear();
-        for views in gathered
-            .views
-            .chunk_by(|a, b| TileKey::at(a.position) == TileKey::at(b.position))
-        {
-            if let Some(first) = views.first() {
-                let tile = TileKey::at(first.position);
-                self.snapshots
-                    .push((tile, TileSnapshot::new(tile, views.to_vec())));
+        self.order.clear();
+        self.order.extend(
+            gathered
+                .views
+                .iter()
+                .enumerate()
+                .map(|(index, view)| (TileKey::at(view.position), view.key, index as u32)),
+        );
+        self.order.sort_unstable();
+        let next = &mut self.bodies_next;
+        next.clear();
+        next.views.reserve(self.order.len());
+        for &(tile, _, index) in &self.order {
+            if next.tiles.last().is_none_or(|(last, _)| *last != tile) {
+                next.tiles.push((tile, next.views.len() as u32));
+            }
+            if let Some(view) = gathered.views.get(index as usize) {
+                next.views.push(*view);
             }
         }
         gathered.views.clear();
@@ -636,9 +672,14 @@ where
     }
 
     fn send(&mut self, tick: u64, players: PlayerTable) {
+        std::mem::swap(&mut self.bodies, &mut self.bodies_next);
         let mut input = std::mem::replace(&mut self.input, TickInput::new(tick.saturating_add(1)));
         input.tick = tick;
-        input.tiles = self.snapshots.clone();
+        input.views = self.spare_views.pop().unwrap_or_default();
+        input.views.clear();
+        input.views.extend_from_slice(&self.bodies.views);
+        input.facts = self.spare_facts.pop().unwrap_or_default();
+        input.facts.clear();
         input
             .facts
             .extend(self.facts.iter().map(|tiled| (tiled.tile, tiled.fact)));
@@ -829,7 +870,20 @@ where
             Receivers::SameKind => KindSet::NONE.with(MobKind(kind.entity_type.id().number())),
             Receivers::Kinds(kinds) => *kinds,
         };
-        let neighbours = Neighbours::new(tile, |tile| tile_views(&self.snapshots, tile));
+        let mut indices: Vec<(TileKey, TileIndex)> = (-1..=1)
+            .flat_map(|dx| (-1..=1).map(move |dz| TileKey::new(tile.x + dx, 0, tile.z + dz)))
+            .map(|near| (near, TileIndex::build(near, self.bodies.tile(near))))
+            .collect();
+        indices.sort_by_key(|(near, _)| *near);
+        let neighbours = Neighbours::new(tile, |near| {
+            let at = indices.binary_search_by_key(&near, |(key, _)| *key).ok()?;
+            let (_, index) = indices.get(at)?;
+            Some(TileViews {
+                tile: near,
+                views: self.bodies.tile(near),
+                index,
+            })
+        });
         let mut found: Vec<(EntityId, EntityUuid)> = Vec::new();
         neighbours.for_each_in(min, max, &kinds, |view| {
             if view.mob != proposer && view.mob != target && view.target.is_none() {

@@ -1,6 +1,7 @@
 use alloc::collections::BTreeMap;
 use alloc::collections::VecDeque;
 use alloc::vec::Vec;
+use core::mem;
 
 use crate::Fact;
 use crate::MobView;
@@ -14,6 +15,7 @@ pub struct Replica {
     tiles: BTreeMap<TileKey, VecDeque<TileVersion>>,
     players: VecDeque<PlayersVersion>,
     facts: VecDeque<TickFacts>,
+    spare: Vec<Vec<MobView>>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -64,6 +66,27 @@ impl Replica {
             tick,
             views: snapshot.views,
             index: snapshot.index,
+        });
+    }
+
+    pub fn publish_views(&mut self, tick: u64, tile: TileKey, views: &[MobView]) {
+        let mut buffer = self.spare.pop().unwrap_or_default();
+        buffer.clear();
+        buffer.extend_from_slice(views);
+        let index = TileIndex::build(tile, &buffer);
+        let versions = self.tiles.entry(tile).or_default();
+        if let Some(last) = versions.back_mut()
+            && last.tick == tick
+        {
+            let old = mem::replace(&mut last.views, buffer);
+            self.spare.push(old);
+            last.index = index;
+            return;
+        }
+        versions.push_back(TileVersion {
+            tick,
+            views: buffer,
+            index,
         });
     }
 
@@ -137,19 +160,27 @@ impl Replica {
     }
 
     pub fn retire(&mut self, oldest: u64) {
+        let spare = &mut self.spare;
         self.tiles.retain(|_, versions| {
-            retire_versions(versions, oldest, |version| version.tick);
+            while versions.len() > 1 && versions.get(1).is_some_and(|next| next.tick <= oldest) {
+                if let Some(old) = versions.pop_front() {
+                    spare.push(old.views);
+                }
+            }
             versions
                 .back()
                 .is_some_and(|version| !version.views.is_empty())
                 || versions.len() > 1
         });
+        spare.truncate(SPARE_LIMIT);
         retire_versions(&mut self.players, oldest, |version| version.tick);
         while self.facts.front().is_some_and(|entry| entry.tick < oldest) {
             self.facts.pop_front();
         }
     }
 }
+
+const SPARE_LIMIT: usize = 4096;
 
 fn retire_versions<T>(versions: &mut VecDeque<T>, oldest: u64, tick: impl Fn(&T) -> u64) {
     while versions.len() > 1 && versions.get(1).is_some_and(|next| tick(next) <= oldest) {

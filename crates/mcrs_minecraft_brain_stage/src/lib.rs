@@ -9,7 +9,7 @@ mod run_tiles;
 mod stage_tables;
 
 pub use ai_input::{AiInput, Arrival, BlockDelta, Landed, TickInput};
-pub use ai_output::{AiOutput, RunStats};
+pub use ai_output::{AiOutput, Recycled, RunStats};
 pub use ai_stage::AiStage;
 pub use nav_read::{NavRows, block_path_type, feet_top, ground_cell, path_cell_of};
 pub use nav_sight::NavSight;

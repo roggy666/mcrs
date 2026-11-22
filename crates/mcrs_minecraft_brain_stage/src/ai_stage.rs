@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 use std::convert::Infallible;
+use std::mem;
 use std::time::Instant;
 
 use bevy_tasks::TaskPool;
@@ -11,6 +12,7 @@ use mcrs_minecraft_brain::Replica;
 use mcrs_minecraft_brain::Stage;
 use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::TickContext;
+use mcrs_minecraft_entity_key::TileKey;
 use mcrs_minecraft_nav_projection::NavDelta;
 use mcrs_minecraft_nav_projection::NavProjection;
 use mcrs_minecraft_nav_projection::NavSection;
@@ -21,6 +23,7 @@ use crate::AiInput;
 use crate::AiOutput;
 use crate::BlockDelta;
 use crate::ProjectionWorld;
+use crate::Recycled;
 use crate::RunStats;
 use crate::StageTables;
 use crate::TickInput;
@@ -82,7 +85,7 @@ impl<B> AiStage<B> {
     }
 
     fn follow_life_cycle(&mut self, input: &mut TickInput<B>) {
-        for mob in input.departures.drain(..) {
+        for mob in input.departures.iter().copied() {
             self.stage.despawn(mob);
         }
         input.arrivals.sort_unstable_by_key(|arrival| arrival.key);
@@ -99,14 +102,21 @@ impl<B> AiStage<B> {
                 arrival.brain,
             );
         }
-        self.stage.relocate_all(input.moves.drain(..));
+        self.stage.relocate_all(input.moves.iter().copied());
     }
 
     fn publish(&mut self, input: &mut TickInput<B>) {
         let tick = input.tick;
-        for (tile, snapshot) in input.tiles.drain(..) {
-            self.replica.publish_tile(tick, tile, snapshot);
+        for views in input
+            .views
+            .chunk_by(|a, b| TileKey::at(a.position) == TileKey::at(b.position))
+        {
+            if let Some(first) = views.first() {
+                self.replica
+                    .publish_views(tick, TileKey::at(first.position), views);
+            }
         }
+        input.views.clear();
         input.facts.sort_by_key(|(tile, fact)| (*tile, fact.mob));
         for facts in input.facts.chunk_by(|a, b| a.0 == b.0) {
             if let Some((tile, _)) = facts.first() {
@@ -114,8 +124,9 @@ impl<B> AiStage<B> {
                     .publish_facts(tick, *tile, facts.iter().map(|(_, fact)| *fact));
             }
         }
+        input.facts.clear();
         self.replica
-            .publish_players(tick, std::mem::take(&mut input.players));
+            .publish_players(tick, mem::take(&mut input.players));
     }
 
     fn project(&mut self, tick: u64, blocks: BlockDelta) {
@@ -149,11 +160,17 @@ where
         let tick = input.tick;
         self.follow_life_cycle(&mut input);
         self.publish(&mut input);
-        let blocks = std::mem::take(&mut input.blocks);
+        let blocks = mem::take(&mut input.blocks);
         self.project(tick, blocks);
         let before = self.stage.evaluations();
         let pops_before = self.stage.pops();
         let max_lag = u64::from(self.stage.config().max_lag());
+        let recycled = Recycled {
+            views: mem::take(&mut input.views),
+            facts: mem::take(&mut input.facts),
+            moves: mem::take(&mut input.moves),
+            departures: mem::take(&mut input.departures),
+        };
         let Some(tables) = self.tables.as_deref() else {
             return AiOutput {
                 tick,
@@ -163,6 +180,7 @@ where
                     without_tables: true,
                     ..RunStats::default()
                 },
+                recycled,
             };
         };
         let world = ProjectionWorld::new(self.projection.at(tick), tables);
@@ -195,6 +213,7 @@ where
                 without_tables: false,
             },
             decisions,
+            recycled,
         }
     }
 }
