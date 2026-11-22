@@ -1,3 +1,4 @@
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::BrainRules;
@@ -13,6 +14,7 @@ use crate::Neighbours;
 use crate::Part;
 use crate::PlayerRow;
 use crate::PlayerTable;
+use crate::SearchSlice;
 use crate::WorldSeed;
 use mcrs_minecraft_pathfind::Searcher;
 
@@ -70,6 +72,7 @@ pub struct TurnScratch {
     pub budget: u32,
     pub paths: Vec<IssuedPath>,
     pub deferred: bool,
+    pub slice: Option<Box<SearchSlice>>,
 }
 
 impl Default for TurnScratch {
@@ -81,6 +84,7 @@ impl Default for TurnScratch {
             budget: u32::MAX,
             paths: Vec::new(),
             deferred: false,
+            slice: None,
         }
     }
 }

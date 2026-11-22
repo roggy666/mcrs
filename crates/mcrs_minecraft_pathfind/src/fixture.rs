@@ -150,7 +150,8 @@ pub(crate) fn walk(world: &MapWorld, mob: &MobPath, to: BlockPos) -> Option<Vec<
         ZOMBIE_FOLLOW_RANGE,
     );
     let mut searcher = Searcher::default();
-    let outcome = search(world, mob, &request, &mut searcher);
+    let mut world = world;
+    let outcome = search(&mut world, mob, &request, &mut searcher);
     outcome
         .path
         .filter(|path| path.reached)
@@ -170,6 +171,51 @@ mod tests {
         assert!(near(&path, BlockPos::new(5, 64, 0)), "{path:?}");
         assert!(path.iter().all(|node| node.y == 64 && node.z == 0));
         assert_eq!(path.len(), 5);
+    }
+
+    #[test]
+    fn a_search_in_slices_of_three_pops_finds_the_path_of_one_search() {
+        let mut world = MapWorld::flat(63);
+        world.wall(4, -4, 4, 64, 65);
+        let mob = zombie_at(0.5, 64.0, 0.5);
+        let target = BlockPos::new(9, 64, 0);
+        let whole = walk(&world, &mob, target).expect("a reached path");
+        let request = Request::new(
+            crate::RequestKind::Blocks,
+            alloc::vec![target],
+            Request::DEFAULT_REACH,
+            1.0,
+            ZOMBIE_FOLLOW_RANGE,
+        );
+        let mut searcher = Searcher::default();
+        let mut view = &world;
+        assert!(crate::search_begin(
+            &mut view,
+            &mob,
+            &request,
+            &mut searcher
+        ));
+        let mut slices = 0;
+        let outcome = loop {
+            slices += 1;
+            match crate::search_advance(&mut view, &mob, &request, &mut searcher, 3) {
+                crate::SearchStep::Suspended { spent } => assert_eq!(spent, 3),
+                crate::SearchStep::Done { outcome, spent } => {
+                    assert!(spent <= 3);
+                    break outcome;
+                }
+            }
+        };
+        assert!(slices > 1, "the search took more than one slice: {slices}");
+        let sliced: Vec<BlockPos> = outcome
+            .path
+            .filter(|path| path.reached)
+            .expect("a reached path")
+            .nodes
+            .iter()
+            .map(|node| node.pos())
+            .collect();
+        assert_eq!(sliced, whole);
     }
 
     #[test]

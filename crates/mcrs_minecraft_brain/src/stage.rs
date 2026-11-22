@@ -291,8 +291,7 @@ impl<B> TileWork<'_, B> {
         let empty = PlayerTable::default();
         let table = table.unwrap_or(&empty);
         let mut loaded_range: Option<f64> = None;
-        let mut deferred = mem::take(&mut brains.deferred);
-        deferred.sort_unstable();
+        let deferred = take_deferred(brains, scratch);
         let TileBrains {
             ids,
             keys,
@@ -303,6 +302,7 @@ impl<B> TileWork<'_, B> {
             decisions,
             paths,
             deferred: still_deferred,
+            slice,
             evaluations,
         } = brains;
         let mut turns = Turns {
@@ -365,7 +365,28 @@ impl<B> TileWork<'_, B> {
                 });
             }
         }
+        *slice = scratch.slice.take();
     }
+}
+
+fn take_deferred<B>(brains: &mut TileBrains<B>, scratch: &mut TurnScratch) -> Vec<Deferred> {
+    let mut deferred = mem::take(&mut brains.deferred);
+    deferred.sort_unstable();
+    scratch.slice = brains.slice.take();
+    if scratch
+        .slice
+        .as_deref()
+        .is_some_and(|slice| brains.keys.binary_search(&slice.key).is_err())
+    {
+        scratch.slice = None;
+    }
+    if let Some(slice) = scratch.slice.as_deref()
+        && let Some(at) = deferred.iter().position(|retry| retry.key == slice.key)
+    {
+        let first = deferred.remove(at);
+        deferred.insert(0, first);
+    }
+    deferred
 }
 
 struct Retrying<'r, B> {

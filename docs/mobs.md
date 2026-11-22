@@ -142,15 +142,20 @@ to the population.
 `docs/spec/pathfinding.md`, the requests, the navigation and the follower. A goal asks the
 `PathTrack` of its brain for a path; the brain runs the search inline in its tile task of the AI
 stage, on the per-task `Searcher` scratch of `TurnScratch` and within the node budget of the tile
-(`StageConfig::path_budget` for the dimension, `tile_path_budget` per tile; a request that does
-not fit is deferred whole and runs first in the next tick, PATH-DEV-010). The found nodes travel
-beside the decision in `IssuedDecisions::paths` (sorted by mob and ticket) and apply with it into
-the `MobNavigation` component of the mob on the host; `PathIntent::Walk` keeps its shape. The
-follower of `mcrs_minecraft_mob_control` walks the nodes in the hot tick (PATH-FOL), and the host
-flags a recompute from the block changes of the previous tick against the box of each path
-(PATH-RCP-003); the brain re-requests its stored target under the 20-tick gate. The search view
-of the host keeps a cache of 64 sections per search (PATH-PRF-002). `run_tiles` chunks the tiles
-by a cost of `brains + 16 × deferred requests`.
+(`StageConfig::path_budget` for the dimension, `tile_path_budget` per tile). A search that
+exhausts the budget suspends after the pop it is at (`search_begin` / `search_advance` with a pop
+limit) and its `Searcher` moves into the `SearchSlice` of the tile (`TileBrains::slice`, one per
+tile, with the version of the projection it reads); the next run of the tile resumes it first,
+through `PathSearchWorld::reopen(mob, version)`, and restarts it on the newest version when the
+old one was retired (PATH-DEV-010). The search reads the world through `SearchWorld`, the
+exclusive view that `open` and `reopen` give by value, so a search view keeps its collider
+scratch as a plain field. The found nodes travel beside the decision in `IssuedDecisions::paths`
+(sorted by mob and ticket) and apply with it into the `MobNavigation` component of the mob on the
+host; `PathIntent::Walk` keeps its shape. The follower of `mcrs_minecraft_mob_control` walks the
+nodes in the hot tick (PATH-FOL), and the host flags a recompute from the block changes of the
+previous tick against the box of each path (PATH-RCP-003); the brain re-requests its stored
+target under the 20-tick gate. `run_tiles` chunks the tiles by a cost of `brains + 16 × pending
+searches`, where a suspended slice counts as one.
 
 ## 7. Use cases
 

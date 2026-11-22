@@ -3,11 +3,11 @@ use mcrs_minecraft_path_type::PathType;
 use mcrs_voxel::BlockPos;
 
 use crate::NavFlags;
-use crate::PathWorld;
+use crate::SearchWorld;
 use crate::Searcher;
 use crate::node::Node;
 use crate::searcher::Scene;
-use crate::world::floor_level;
+use crate::world::floor_level_in;
 
 const SIDES: [(i32, i32); 4] = [(0, -1), (1, 0), (0, 1), (-1, 0)];
 const STEP_UP_LOW: f64 = 0.001;
@@ -29,9 +29,9 @@ impl Candidate {
     }
 }
 
-pub(crate) fn start_node<W: PathWorld + ?Sized>(
+pub(crate) fn start_node<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
 ) -> u32 {
     let mob = scene.mob;
     let block = scene.mob_block;
@@ -79,18 +79,18 @@ pub(crate) fn start_node<W: PathWorld + ?Sized>(
     index
 }
 
-fn can_start<W: PathWorld + ?Sized>(
+fn can_start<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     at: BlockPos,
 ) -> bool {
     let (kind, malus) = searcher.malus(scene, at);
     kind != PathType::Open && malus >= 0.0
 }
 
-fn jump_size<W: PathWorld + ?Sized>(
+fn jump_size<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     node: &Node,
 ) -> i32 {
     let above = searcher.malus(scene, node.pos.offset(0, 1, 0)).1;
@@ -101,13 +101,13 @@ fn jump_size<W: PathWorld + ?Sized>(
     }
 }
 
-fn level<W: PathWorld + ?Sized>(scene: &Scene<'_, W>, at: BlockPos) -> f64 {
-    floor_level(scene.world, at, scene.mob.can(NavFlags::CAN_FLOAT))
+fn level<W: SearchWorld + ?Sized>(scene: &mut Scene<'_, W>, at: BlockPos) -> f64 {
+    floor_level_in(scene.world, at, scene.mob.can(NavFlags::CAN_FLOAT))
 }
 
-pub(crate) fn neighbours<W: PathWorld + ?Sized>(
+pub(crate) fn neighbours<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     index: u32,
     out: &mut alloc::vec::Vec<u32>,
 ) {
@@ -153,9 +153,9 @@ pub(crate) fn neighbours<W: PathWorld + ?Sized>(
     }
 }
 
-fn diagonal_ok<W: PathWorld + ?Sized>(
+fn diagonal_ok<W: SearchWorld + ?Sized>(
     searcher: &Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     node: &Node,
     a: Candidate,
     b: Candidate,
@@ -182,9 +182,9 @@ fn diagonal_ok<W: PathWorld + ?Sized>(
         .all(|side| side.pos.y < node.pos.y || side.malus >= 0.0 || both_fences)
 }
 
-fn probe<W: PathWorld + ?Sized>(
+fn probe<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     at: BlockPos,
     jump: i32,
     floor: f64,
@@ -271,9 +271,9 @@ fn blocked(searcher: &mut Searcher, at: BlockPos) -> Candidate {
     Candidate::Node(index)
 }
 
-fn step_up<W: PathWorld + ?Sized>(
+fn step_up<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     at: BlockPos,
     jump: i32,
     floor: f64,
@@ -315,9 +315,9 @@ fn step_up<W: PathWorld + ?Sized>(
     result
 }
 
-fn fall<W: PathWorld + ?Sized>(
+fn fall<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     at: BlockPos,
 ) -> Candidate {
     let min_y = scene.world.min_y();
@@ -340,9 +340,9 @@ fn fall<W: PathWorld + ?Sized>(
     blocked(searcher, at)
 }
 
-fn sweep_collides<W: PathWorld + ?Sized>(
+fn sweep_collides<W: SearchWorld + ?Sized>(
     searcher: &mut Searcher,
-    scene: &Scene<'_, W>,
+    scene: &mut Scene<'_, W>,
     to: BlockPos,
 ) -> bool {
     let mob = scene.mob;

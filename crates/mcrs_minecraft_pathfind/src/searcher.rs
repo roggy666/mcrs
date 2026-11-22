@@ -8,12 +8,12 @@ use mcrs_voxel::BlockPos;
 use crate::MobPath;
 use crate::NavFlags;
 use crate::PathCell;
-use crate::PathWorld;
 use crate::Region;
+use crate::SearchWorld;
 use crate::heap::Heap;
 use crate::node::Node;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Searcher {
     pub(crate) nodes: Vec<Node>,
     pub(crate) index: HashMap<(i32, i32, i32), u32>,
@@ -23,6 +23,7 @@ pub struct Searcher {
     pub(crate) boxes: HashMap<[u64; 6], bool>,
     pub(crate) targets: Vec<Target>,
     pub(crate) neighbours: Vec<u32>,
+    pub(crate) run: Option<crate::search::SearchRun>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -34,7 +35,7 @@ pub(crate) struct Target {
 }
 
 pub(crate) struct Scene<'a, W: ?Sized> {
-    pub(crate) world: &'a W,
+    pub(crate) world: &'a mut W,
     pub(crate) region: Region,
     pub(crate) mob: &'a MobPath,
     pub(crate) mob_block: BlockPos,
@@ -54,6 +55,7 @@ impl Searcher {
         self.boxes.clear();
         self.targets.clear();
         self.neighbours.clear();
+        self.run = None;
     }
 
     pub(crate) fn node_at(&mut self, pos: BlockPos) -> u32 {
@@ -74,7 +76,10 @@ impl Searcher {
         self.nodes.get_mut(index as usize)
     }
 
-    pub(crate) fn cell<W: PathWorld + ?Sized>(scene: &Scene<'_, W>, at: BlockPos) -> PathCell {
+    pub(crate) fn cell<W: SearchWorld + ?Sized>(
+        scene: &mut Scene<'_, W>,
+        at: BlockPos,
+    ) -> PathCell {
         if !scene.region.contains(at.x, at.z)
             || at.y < scene.world.min_y()
             || at.y > scene.world.max_y()
@@ -85,9 +90,9 @@ impl Searcher {
         scene.world.path_cell(at)
     }
 
-    pub(crate) fn block_type<W: PathWorld + ?Sized>(
+    pub(crate) fn block_type<W: SearchWorld + ?Sized>(
         &mut self,
-        scene: &Scene<'_, W>,
+        scene: &mut Scene<'_, W>,
         at: BlockPos,
     ) -> PathType {
         if let Some(&kind) = self.block_types.get(&key(at)) {
@@ -98,9 +103,9 @@ impl Searcher {
         kind
     }
 
-    pub(crate) fn mob_type<W: PathWorld + ?Sized>(
+    pub(crate) fn mob_type<W: SearchWorld + ?Sized>(
         &mut self,
-        scene: &Scene<'_, W>,
+        scene: &mut Scene<'_, W>,
         at: BlockPos,
     ) -> PathType {
         if let Some(&kind) = self.mob_types.get(&key(at)) {
@@ -111,18 +116,18 @@ impl Searcher {
         kind
     }
 
-    pub(crate) fn malus<W: PathWorld + ?Sized>(
+    pub(crate) fn malus<W: SearchWorld + ?Sized>(
         &mut self,
-        scene: &Scene<'_, W>,
+        scene: &mut Scene<'_, W>,
         at: BlockPos,
     ) -> (PathType, f32) {
         let kind = self.mob_type(scene, at);
         (kind, scene.mob.malus.get(kind))
     }
 
-    pub(crate) fn collides<W: PathWorld + ?Sized>(
+    pub(crate) fn collides<W: SearchWorld + ?Sized>(
         &mut self,
-        scene: &Scene<'_, W>,
+        scene: &mut Scene<'_, W>,
         min: DVec3,
         max: DVec3,
     ) -> bool {
@@ -142,16 +147,17 @@ impl Searcher {
         hit
     }
 
-    fn mob_path_type<W: PathWorld + ?Sized>(
+    fn mob_path_type<W: SearchWorld + ?Sized>(
         &mut self,
-        scene: &Scene<'_, W>,
+        scene: &mut Scene<'_, W>,
         at: BlockPos,
     ) -> PathType {
         let mob = scene.mob;
         let wide = mob.cells_wide();
         let high = mob.cells_high();
-        let rail_near = self.block_type(scene, scene.mob_block) == PathType::Rail
-            || self.block_type(scene, scene.mob_block.below()) == PathType::Rail;
+        let mob_block = scene.mob_block;
+        let rail_near = self.block_type(scene, mob_block) == PathType::Rail
+            || self.block_type(scene, mob_block.below()) == PathType::Rail;
         let mut set: u32 = 0;
         for i in 0..wide {
             for j in 0..high {
@@ -219,8 +225,8 @@ impl Searcher {
     }
 }
 
-pub(crate) fn block_path_type<W: PathWorld + ?Sized>(
-    scene: &Scene<'_, W>,
+pub(crate) fn block_path_type<W: SearchWorld + ?Sized>(
+    scene: &mut Scene<'_, W>,
     at: BlockPos,
 ) -> PathType {
     let here = Searcher::cell(scene, at).kind;

@@ -4,9 +4,9 @@ use mcrs_voxel::BlockPos;
 
 use crate::MobPath;
 use crate::PathNode;
-use crate::PathWorld;
 use crate::Region;
 use crate::Request;
+use crate::SearchWorld;
 use crate::Searcher;
 use crate::ground;
 use crate::node::distance;
@@ -29,21 +29,51 @@ pub struct SearchOutcome {
     pub pops: u32,
 }
 
-pub fn search<W: PathWorld + ?Sized>(
-    world: &W,
+#[derive(Clone, Debug, PartialEq)]
+pub enum SearchStep {
+    Suspended { spent: u32 },
+    Done { outcome: SearchOutcome, spent: u32 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct SearchRun {
+    start_pos: BlockPos,
+    budget: u32,
+    pops: u32,
+}
+
+pub fn search<W: SearchWorld + ?Sized>(
+    world: &mut W,
     mob: &MobPath,
     request: &Request,
     searcher: &mut Searcher,
 ) -> SearchOutcome {
+    if !search_begin(world, mob, request, searcher) {
+        return SearchOutcome {
+            path: None,
+            pops: 0,
+        };
+    }
+    match search_advance(world, mob, request, searcher, u32::MAX) {
+        SearchStep::Done { outcome, .. } => outcome,
+        SearchStep::Suspended { .. } => finish(searcher, request.reach),
+    }
+}
+
+pub fn search_begin<W: SearchWorld + ?Sized>(
+    world: &mut W,
+    mob: &MobPath,
+    request: &Request,
+    searcher: &mut Searcher,
+) -> bool {
     searcher.clear();
     let mob_block = mob.block_pos();
-    let scene = Scene {
+    let mut scene = Scene {
         world,
         region: Region::around(mob_block, request.length),
         mob,
         mob_block,
     };
-    let budget = request.node_budget();
     searcher
         .targets
         .extend(request.targets.iter().map(|&pos| Target {
@@ -53,12 +83,9 @@ pub fn search<W: PathWorld + ?Sized>(
             reached: false,
         }));
     if searcher.targets.is_empty() {
-        return SearchOutcome {
-            path: None,
-            pops: 0,
-        };
+        return false;
     }
-    let start = ground::start_node(searcher, &scene);
+    let start = ground::start_node(searcher, &mut scene);
     let start_pos = searcher.node(start).map_or(mob_block, |node| node.pos);
     let h = heuristic(searcher, start);
     if let Some(node) = searcher.node_mut(start) {
@@ -67,11 +94,45 @@ pub fn search<W: PathWorld + ?Sized>(
         node.f = h;
     }
     searcher.heap.insert(&mut searcher.nodes, start);
-    let mut pops: u32 = 0;
+    searcher.run = Some(SearchRun {
+        start_pos,
+        budget: request.node_budget(),
+        pops: 0,
+    });
+    true
+}
+
+pub fn search_advance<W: SearchWorld + ?Sized>(
+    world: &mut W,
+    mob: &MobPath,
+    request: &Request,
+    searcher: &mut Searcher,
+    limit: u32,
+) -> SearchStep {
+    let Some(mut run) = searcher.run else {
+        return SearchStep::Done {
+            outcome: finish(searcher, request.reach),
+            spent: 0,
+        };
+    };
+    let mob_block = mob.block_pos();
+    let mut scene = Scene {
+        world,
+        region: Region::around(mob_block, request.length),
+        mob,
+        mob_block,
+    };
+    let mut spent: u32 = 0;
     let mut neighbours = core::mem::take(&mut searcher.neighbours);
+    let mut suspended = false;
     while !searcher.heap.is_empty() {
-        pops = pops.saturating_add(1);
-        if pops >= budget {
+        if spent >= limit {
+            suspended = true;
+            break;
+        }
+        run.pops = run.pops.saturating_add(1);
+        spent = spent.saturating_add(1);
+        if run.pops >= run.budget {
             break;
         }
         let Some(current) = searcher.heap.pop(&mut searcher.nodes) else {
@@ -93,10 +154,10 @@ pub fn search<W: PathWorld + ?Sized>(
         if reached {
             break;
         }
-        if node.distance_to(start_pos) >= request.length {
+        if node.distance_to(run.start_pos) >= request.length {
             continue;
         }
-        ground::neighbours(searcher, &scene, current, &mut neighbours);
+        ground::neighbours(searcher, &mut scene, current, &mut neighbours);
         for &next in &neighbours {
             let Some(q) = searcher.node(next).copied() else {
                 continue;
@@ -128,7 +189,19 @@ pub fn search<W: PathWorld + ?Sized>(
         }
     }
     searcher.neighbours = neighbours;
-    let path = choose(searcher, request.reach);
+    searcher.run = Some(run);
+    if suspended {
+        return SearchStep::Suspended { spent };
+    }
+    SearchStep::Done {
+        outcome: finish(searcher, request.reach),
+        spent,
+    }
+}
+
+fn finish(searcher: &mut Searcher, reach: i32) -> SearchOutcome {
+    let pops = searcher.run.take().map_or(0, |run| run.pops);
+    let path = choose(searcher, reach);
     SearchOutcome { path, pops }
 }
 

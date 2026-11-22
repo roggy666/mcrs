@@ -1,6 +1,7 @@
 use alloc::boxed::Box;
 use core::hash::Hash;
 use core::hash::Hasher;
+use core::mem;
 
 use glam::DVec3;
 use mcrs_minecraft_brain::Candidate;
@@ -10,6 +11,7 @@ use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::MobView;
 use mcrs_minecraft_brain::PathIntent;
 use mcrs_minecraft_brain::Progress;
+use mcrs_minecraft_brain::SearchSlice;
 use mcrs_minecraft_brain::Ticket;
 use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_brain::TurnScratch;
@@ -18,9 +20,12 @@ use mcrs_minecraft_pathfind::MobPath;
 use mcrs_minecraft_pathfind::PathSearchWorld;
 use mcrs_minecraft_pathfind::Request;
 use mcrs_minecraft_pathfind::RequestKind;
+use mcrs_minecraft_pathfind::SearchStep;
+use mcrs_minecraft_pathfind::SearchWorld;
 use mcrs_minecraft_pathfind::adjust_target;
 use mcrs_minecraft_pathfind::can_update_path;
-use mcrs_minecraft_pathfind::search;
+use mcrs_minecraft_pathfind::search_advance;
+use mcrs_minecraft_pathfind::search_begin;
 use mcrs_voxel::BlockPos;
 
 const RECOMPUTE_GATE: u64 = 20;
@@ -132,14 +137,104 @@ fn run<W: PathSearchWorld + ?Sized>(
         }
         request.targets = alloc::vec![adjust_target(turn.world, target)];
     }
-    if scratch.budget < request.node_budget() {
+    if let Some(slice) = scratch.slice.as_deref()
+        && slice.key == turn.view.key
+    {
+        if slice.request == request {
+            return resume(turn, scratch);
+        }
+        if let Some(slice) = scratch.slice.take() {
+            scratch.searcher = slice.searcher;
+        }
+    }
+    if scratch.budget == 0 {
         scratch.deferred = true;
         return Run::Deferred;
     }
-    let world = turn.world.open(&mob);
-    let outcome = search(&world, &mob, &request, &mut scratch.searcher);
-    scratch.budget = scratch.budget.saturating_sub(outcome.pops.max(1));
-    outcome.path.map_or(Run::NoPath, Run::Found)
+    let version = turn.world.version();
+    let mut world = turn.world.open(&mob);
+    if !search_begin(&mut world, &mob, &request, &mut scratch.searcher) {
+        return Run::NoPath;
+    }
+    advance(turn, scratch, &mut world, mob, request, version)
+}
+
+fn advance<W: PathSearchWorld + ?Sized, S: SearchWorld>(
+    turn: &Turn<'_, W>,
+    scratch: &mut TurnScratch,
+    world: &mut S,
+    mob: MobPath,
+    request: Request,
+    version: u64,
+) -> Run {
+    match search_advance(world, &mob, &request, &mut scratch.searcher, scratch.budget) {
+        SearchStep::Done { outcome, spent } => {
+            scratch.budget = scratch.budget.saturating_sub(spent.max(1));
+            outcome.path.map_or(Run::NoPath, Run::Found)
+        }
+        SearchStep::Suspended { spent } => {
+            scratch.budget = scratch.budget.saturating_sub(spent);
+            scratch.deferred = true;
+            if scratch.slice.is_none() {
+                let searcher = mem::take(&mut scratch.searcher);
+                scratch.slice = Some(Box::new(SearchSlice {
+                    key: turn.view.key,
+                    version,
+                    mob,
+                    request,
+                    searcher,
+                }));
+            } else {
+                scratch.searcher.clear();
+            }
+            Run::Deferred
+        }
+    }
+}
+
+fn resume<W: PathSearchWorld + ?Sized>(turn: &Turn<'_, W>, scratch: &mut TurnScratch) -> Run {
+    let Some(mut slice) = scratch.slice.take() else {
+        return Run::NoPath;
+    };
+    if scratch.budget == 0 {
+        scratch.slice = Some(slice);
+        scratch.deferred = true;
+        return Run::Deferred;
+    }
+    let Some(mut world) = turn.world.reopen(&slice.mob, slice.version) else {
+        scratch.searcher = slice.searcher;
+        scratch.searcher.clear();
+        let version = turn.world.version();
+        let mut world = turn.world.open(&slice.mob);
+        if !search_begin(
+            &mut world,
+            &slice.mob,
+            &slice.request,
+            &mut scratch.searcher,
+        ) {
+            return Run::NoPath;
+        }
+        return advance(turn, scratch, &mut world, slice.mob, slice.request, version);
+    };
+    match search_advance(
+        &mut world,
+        &slice.mob,
+        &slice.request,
+        &mut slice.searcher,
+        scratch.budget,
+    ) {
+        SearchStep::Done { outcome, spent } => {
+            scratch.budget = scratch.budget.saturating_sub(spent.max(1));
+            scratch.searcher = slice.searcher;
+            outcome.path.map_or(Run::NoPath, Run::Found)
+        }
+        SearchStep::Suspended { spent } => {
+            scratch.budget = scratch.budget.saturating_sub(spent);
+            scratch.deferred = true;
+            scratch.slice = Some(slice);
+            Run::Deferred
+        }
+    }
 }
 
 impl PathTrack {

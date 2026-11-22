@@ -1,9 +1,11 @@
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 
 use crate::Cadence;
 use crate::Decision;
 use crate::IssuedPath;
 use crate::PlayerRow;
+use crate::SearchSlice;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 
@@ -18,6 +20,7 @@ pub struct TileBrains<B> {
     pub(crate) decisions: Vec<Decision>,
     pub(crate) paths: Vec<IssuedPath>,
     pub(crate) deferred: Vec<Deferred>,
+    pub(crate) slice: Option<Box<SearchSlice>>,
     pub(crate) evaluations: u64,
 }
 
@@ -39,6 +42,7 @@ impl<B> Default for TileBrains<B> {
             decisions: Vec::new(),
             paths: Vec::new(),
             deferred: Vec::new(),
+            slice: None,
             evaluations: 0,
         }
     }
@@ -71,7 +75,12 @@ impl<B> TileBrains<B> {
 
     #[must_use]
     pub fn pending_searches(&self) -> usize {
-        self.deferred.len()
+        self.deferred.len() + usize::from(self.slice.is_some())
+    }
+
+    #[must_use]
+    pub fn has_open_slice(&self) -> bool {
+        self.slice.is_some()
     }
 
     #[must_use]
@@ -168,6 +177,7 @@ impl<B> TileBrains<B> {
             decisions: core::mem::take(&mut self.decisions),
             paths: core::mem::take(&mut self.paths),
             deferred: core::mem::take(&mut self.deferred),
+            slice: self.slice.take(),
             evaluations: self.evaluations,
         };
         let mut held = core::mem::take(self).into_entries().peekable();

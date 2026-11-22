@@ -1004,21 +1004,28 @@ only where the reference depends on an order that is not part of the world, or o
 - **Visible to the client:** yes. A slow mob on a long path stops for 1 or 2 ticks at intervals.
 - **Test:** a differential test ignores a stop of 1 or 2 ticks that a timeout explains.
 
-### PATH-DEV-010: A deferred search restarts; no slice resumes
+### PATH-DEV-010: A search runs in slices and resumes on the version it started on
 
 - **Rule:** PATH-DET-002, PATH-SRC-001.
 - **Reference:** a search runs whole in the tick of its request.
-- **Visible to the client:** no, within AIT-DEC-005. A tile has a budget of node pops in each tick
-  (the stage distributes the budget of the dimension over the tiles: a base share per tile, and a
-  reserve for the tiles with deferred requests, in the order of the oldest deferral and the tile
-  key). A request whose budget does not fit in the remaining budget of its tile is deferred whole
-  and runs first in the next tick, in the order of the tick of its deferral and the key of the mob.
-  The deferred search restarts on the blocks of the tick in which it runs. A search does not stop
-  after a slice and resume, because the stage has no versioned copy of the blocks (PHY-CMP-009):
-  a resume would read the blocks of a later tick. The slices of PATH-DET-002 come with that copy.
-  A deferral adds one tick to the delay of the request, inside the allowed delay of 2.
-- **Test:** a differential test accepts a path that applies one tick later than the vanilla path
-  when the tile had more requests than its budget in the tick.
+- **Visible to the client:** no, within AIT-DEC-005. A tile has a budget of node pops in each run
+  of the AI stage (the stage distributes the budget of the dimension over the tiles: a base share
+  per tile, and a reserve for the tiles with pending requests, in the order of the oldest deferral
+  and the tile key). A search that exhausts the budget of its tile stops after the pop it is at and
+  keeps its state: the nodes, the open heap, the caches and the targets. It resumes first in the
+  next run of the tile, on the version of the navigation projection it started on (the blocks of
+  its issue tick, AIT-LAG-001), so no path mixes two versions. A version lives `max_lag + 1`
+  runs; a search whose version was retired restarts on the newest version. One search per tile
+  keeps its state between runs; a second search that exhausts the budget while the first is
+  suspended is deferred whole and restarts, in the order of the tick of its deferral and the key
+  of the mob. A request of a mob that changed before its slice resumed (another target, a
+  different adjusted target) drops the slice. A search of a mob that left the tile drops with it.
+  The slice limit is a count of pops, never a time, so the result is the same for every thread
+  count. A deferral adds one tick to the delay of the request for each run it waits, inside the
+  allowed delay of 2 in the normal case.
+- **Test:** `a_search_in_slices_of_three_pops_finds_the_path_of_one_search` in
+  `mcrs_minecraft_pathfind`; a differential test accepts a path that applies one tick later than
+  the vanilla path when the tile had more requests than its budget in the tick.
 
 ### PATH-DEV-009: A recompute is a request of the running path
 

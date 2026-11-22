@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-
 use glam::DVec3;
 use mcrs_minecraft_goal_world::BuildHeight;
 use mcrs_minecraft_goal_world::GoalWorld;
@@ -10,7 +8,9 @@ use mcrs_minecraft_pathfind::MobPath;
 use mcrs_minecraft_pathfind::PathCell;
 use mcrs_minecraft_pathfind::PathSearchWorld;
 use mcrs_minecraft_pathfind::PathWorld;
+use mcrs_minecraft_pathfind::SearchWorld;
 use mcrs_minecraft_physics::Aabb;
+use mcrs_minecraft_physics::BlockFlags;
 use mcrs_minecraft_physics::EntityCollider;
 use mcrs_minecraft_physics::NoBodies;
 use mcrs_minecraft_physics::QueryEntity;
@@ -55,10 +55,7 @@ impl<'a> ProjectionWorld<'a> {
 
     #[must_use]
     pub fn is_cauldron(&self, at: BlockPos) -> bool {
-        self.view
-            .row(at)
-            .flags
-            .contains(mcrs_minecraft_physics::BlockFlags::CAULDRON)
+        self.view.row(at).flags.contains(BlockFlags::CAULDRON)
     }
 }
 
@@ -121,7 +118,7 @@ impl PathWorld for ProjectionWorld<'_> {
             (max.y - min.y) as f32,
             0.0,
         );
-        ProjectionSearch::new(self, &mob).collides(min, max)
+        SearchWorld::collides(&mut ProjectionSearch::new(*self, &mob), min, max)
     }
 }
 
@@ -132,19 +129,31 @@ impl<'a> PathSearchWorld for ProjectionWorld<'a> {
         Self: 's;
 
     fn open(&self, mob: &MobPath) -> Self::Search<'_> {
-        ProjectionSearch::new(self, mob)
+        ProjectionSearch::new(*self, mob)
+    }
+
+    fn version(&self) -> u64 {
+        self.view.tick()
+    }
+
+    fn reopen(&self, mob: &MobPath, version: u64) -> Option<Self::Search<'_>> {
+        let view = self.view.at(version);
+        if !view.is_live() || version > self.view.tick() {
+            return None;
+        }
+        Some(ProjectionSearch::new(Self::new(view, self.tables), mob))
     }
 }
 
 pub struct ProjectionSearch<'a> {
-    world: &'a ProjectionWorld<'a>,
+    world: ProjectionWorld<'a>,
     entity: QueryEntity,
-    colliders: RefCell<Vec<EntityCollider>>,
+    colliders: Vec<EntityCollider>,
 }
 
 impl<'a> ProjectionSearch<'a> {
     #[must_use]
-    pub fn new(world: &'a ProjectionWorld<'a>, mob: &MobPath) -> Self {
+    pub fn new(world: ProjectionWorld<'a>, mob: &MobPath) -> Self {
         Self {
             world,
             entity: QueryEntity {
@@ -155,7 +164,7 @@ impl<'a> ProjectionSearch<'a> {
                 powder_snow_solid: false,
                 walks_on_powder_snow: false,
             },
-            colliders: RefCell::new(Vec::new()),
+            colliders: Vec::new(),
         }
     }
 }
@@ -165,27 +174,26 @@ fn mob_key(mob: &MobPath) -> mcrs_minecraft_entity_key::EntityUuid {
     mcrs_minecraft_entity_key::EntityUuid::from_u128(bits)
 }
 
-impl PathWorld for ProjectionSearch<'_> {
-    fn path_cell(&self, at: BlockPos) -> PathCell {
-        self.world.path_cell(at)
+impl SearchWorld for ProjectionSearch<'_> {
+    fn path_cell(&mut self, at: BlockPos) -> PathCell {
+        PathWorld::path_cell(&self.world, at)
     }
 
-    fn min_y(&self) -> i32 {
-        self.world.min_y()
+    fn min_y(&mut self) -> i32 {
+        PathWorld::min_y(&self.world)
     }
 
-    fn max_y(&self) -> i32 {
-        self.world.max_y()
+    fn max_y(&mut self) -> i32 {
+        PathWorld::max_y(&self.world)
     }
 
-    fn column_loaded(&self, at: BlockPos) -> bool {
-        self.world.column_loaded(at)
+    fn column_loaded(&mut self, at: BlockPos) -> bool {
+        PathWorld::column_loaded(&self.world, at)
     }
 
-    fn collides(&self, min: DVec3, max: DVec3) -> bool {
+    fn collides(&mut self, min: DVec3, max: DVec3) -> bool {
         let sight = NavSight::new(self.world.view);
         let view = View::new(&sight, &NoBodies, &self.world.tables.physics);
-        let mut colliders = self.colliders.borrow_mut();
-        intersects(view, &self.entity, Aabb::new(min, max), &mut colliders)
+        intersects(view, &self.entity, Aabb::new(min, max), &mut self.colliders)
     }
 }

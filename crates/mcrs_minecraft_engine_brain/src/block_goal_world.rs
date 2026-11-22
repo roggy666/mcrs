@@ -11,6 +11,7 @@ use mcrs_minecraft_pathfind::MobPath;
 use mcrs_minecraft_pathfind::PathCell;
 use mcrs_minecraft_pathfind::PathSearchWorld;
 use mcrs_minecraft_pathfind::PathWorld;
+use mcrs_minecraft_pathfind::SearchWorld;
 use mcrs_minecraft_physics::BlockFlags;
 use mcrs_minecraft_physics::CollisionTable;
 use mcrs_minecraft_physics::Tables;
@@ -132,7 +133,7 @@ impl<V: BlockVolume> PathWorld for BlockGoalWorld<'_, V> {
             (max.y - min.y) as f32,
             0.0,
         );
-        SearchView::new(self, &mob).collides(min, max)
+        SearchWorld::collides(&mut SearchView::new(self, &mob), min, max)
     }
 }
 

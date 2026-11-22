@@ -2,7 +2,7 @@ use alloc::vec::Vec;
 
 use crate::node::Node;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub(crate) struct Heap {
     order: Vec<u32>,
 }

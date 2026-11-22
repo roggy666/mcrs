@@ -32,6 +32,16 @@ impl<'a> NavView<'a> {
     }
 
     #[must_use]
+    pub const fn at(&self, tick: u64) -> Self {
+        Self::new(self.projection, tick)
+    }
+
+    #[must_use]
+    pub const fn is_live(&self) -> bool {
+        self.tick >= self.projection.floor()
+    }
+
+    #[must_use]
     pub const fn table(&self) -> &'a NavTable {
         self.projection.table()
     }

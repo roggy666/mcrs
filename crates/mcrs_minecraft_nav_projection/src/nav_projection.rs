@@ -83,6 +83,7 @@ impl Versions {
 pub struct NavProjection {
     sections: FxHashMap<SectionPos, Versions>,
     changed: VecDeque<(u64, SectionPos)>,
+    floor: u64,
     table: NavTable,
     min_y: i32,
     max_y: i32,
@@ -94,6 +95,7 @@ impl NavProjection {
         Self {
             sections: FxHashMap::default(),
             changed: VecDeque::new(),
+            floor: 0,
             table,
             min_y,
             max_y,
@@ -119,6 +121,7 @@ impl NavProjection {
         self.table = table;
         self.sections.clear();
         self.changed.clear();
+        self.floor = 0;
     }
 
     #[must_use]
@@ -192,7 +195,13 @@ impl NavProjection {
         self.changed.push_back((tick, pos));
     }
 
+    #[must_use]
+    pub const fn floor(&self) -> u64 {
+        self.floor
+    }
+
     pub fn retire(&mut self, oldest: u64) {
+        self.floor = self.floor.max(oldest);
         while let Some(&(tick, pos)) = self.changed.front() {
             if tick > oldest {
                 break;
