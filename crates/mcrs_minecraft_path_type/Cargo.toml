@@ -1,0 +1,13 @@
+[package]
+name = "mcrs_minecraft_path_type"
+description = "The path types of the block positions that a mob walks: the 27 values of the pathfinding specification with their default malus"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]

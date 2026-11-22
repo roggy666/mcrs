@@ -13,6 +13,7 @@ workspace = true
 [dependencies]
 mcrs_minecraft_pose.workspace = true
 mcrs_minecraft_entity_key.workspace = true
+mcrs_minecraft_path_type.workspace = true
 glam = { workspace = true, features = ["std"] }
 mcrs_voxel.workspace = true
 mcrs_minecraft_numeric.workspace = true

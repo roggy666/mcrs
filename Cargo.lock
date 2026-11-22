@@ -6517,6 +6517,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "mcrs_minecraft_path_type"
+version = "0.5.8"
+
+[[package]]
+name = "mcrs_minecraft_pathfind"
+version = "0.5.8"
+dependencies = [
+ "glam",
+ "hashbrown 0.16.1",
+ "libm",
+ "mcrs_minecraft_path_type",
+ "mcrs_voxel",
+]
+
+[[package]]
 name = "mcrs_minecraft_physics"
 version = "0.5.8"
 dependencies = [
@@ -6530,6 +6545,7 @@ dependencies = [
  "mcrs_minecraft_entity_attribute",
  "mcrs_minecraft_entity_key",
  "mcrs_minecraft_numeric",
+ "mcrs_minecraft_path_type",
  "mcrs_minecraft_physics",
  "mcrs_minecraft_pose",
  "mcrs_minecraft_resource",

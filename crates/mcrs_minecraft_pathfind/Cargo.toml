@@ -1,0 +1,18 @@
+[package]
+name = "mcrs_minecraft_pathfind"
+description = "The path search of mobs without Bevy: the ground node evaluator, the A* search with the vanilla heap order, the requests, the navigation and the path follower of the pathfinding specification"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+glam = { workspace = true, features = ["nostd-libm"] }
+hashbrown.workspace = true
+libm.workspace = true
+mcrs_minecraft_path_type.workspace = true
+mcrs_voxel.workspace = true
