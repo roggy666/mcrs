@@ -1,3 +1,4 @@
+use bevy_ecs::entity::Entity;
 use bevy_ecs::prelude::With;
 use bevy_ecs::system::Query;
 use mcrs_minecraft_brain::HurtBy;
@@ -23,6 +24,7 @@ pub(crate) type Players<'w, 's> = Query<
     'w,
     's,
     (
+        Entity,
         &'static Owner,
         &'static EntityUuid,
         &'static Transform,
@@ -45,41 +47,52 @@ fn hand(slots: Option<&Slots>, slot: Option<usize>, stacks: &Stacks<'_, '_>) -> 
 }
 
 pub(crate) fn player_table(players: &Players<'_, '_>, stacks: &Stacks<'_, '_>) -> PlayerTable {
-    PlayerTable::new(
-        players
-            .iter()
-            .map(|(owner, uuid, transform, mode, body, selected, slots)| {
-                let mode = mode.map(|mode| mode.0);
-                let dimensions = body.dimensions();
-                let marks = [
-                    (true, PlayerFlags::ALIVE),
-                    (mode == Some(GameMode::Spectator), PlayerFlags::SPECTATOR),
-                    (mode == Some(GameMode::Creative), PlayerFlags::CREATIVE),
-                ];
-                let flags = marks
-                    .into_iter()
-                    .filter(|(set, _)| *set)
-                    .fold(PlayerFlags::NONE, |flags, (_, flag)| flags.union(flag));
-                PlayerRow {
-                    player: EntityId(u64::from(player_network_id(owner.0).cast_unsigned())),
-                    key: *uuid,
-                    position: transform.translation,
-                    width: dimensions.width,
-                    height: dimensions.height,
-                    eye_height: dimensions.eye_height,
-                    flags,
-                    visibility: 1.0,
-                    vehicle: None,
-                    hands: [
-                        hand(
-                            slots,
-                            selected.map(|selected| usize::from(selected.0)),
-                            stacks,
-                        ),
-                        hand(slots, Some(usize::from(OFF_HAND)), stacks),
-                    ],
-                    hurt_by: HurtBy::NONE,
-                }
-            }),
-    )
+    PlayerTable::new(players.iter().map(
+        |(_, owner, uuid, transform, mode, body, selected, slots)| {
+            let mode = mode.map(|mode| mode.0);
+            let dimensions = body.dimensions();
+            let marks = [
+                (true, PlayerFlags::ALIVE),
+                (mode == Some(GameMode::Spectator), PlayerFlags::SPECTATOR),
+                (mode == Some(GameMode::Creative), PlayerFlags::CREATIVE),
+            ];
+            let flags = marks
+                .into_iter()
+                .filter(|(set, _)| *set)
+                .fold(PlayerFlags::NONE, |flags, (_, flag)| flags.union(flag));
+            PlayerRow {
+                player: player_id(owner),
+                key: *uuid,
+                position: transform.translation,
+                width: dimensions.width,
+                height: dimensions.height,
+                eye_height: dimensions.eye_height,
+                flags,
+                visibility: 1.0,
+                vehicle: None,
+                hands: [
+                    hand(
+                        slots,
+                        selected.map(|selected| usize::from(selected.0)),
+                        stacks,
+                    ),
+                    hand(slots, Some(usize::from(OFF_HAND)), stacks),
+                ],
+                hurt_by: HurtBy::NONE,
+            }
+        },
+    ))
+}
+
+fn player_id(owner: &Owner) -> EntityId {
+    EntityId(u64::from(player_network_id(owner.0).cast_unsigned()))
+}
+
+pub(crate) fn player_entities(players: &Players<'_, '_>) -> Vec<(EntityId, Entity)> {
+    let mut entities: Vec<(EntityId, Entity)> = players
+        .iter()
+        .map(|(entity, owner, ..)| (player_id(owner), entity))
+        .collect();
+    entities.sort_unstable_by_key(|(id, _)| *id);
+    entities
 }

@@ -5,6 +5,7 @@ use mcrs_minecraft_brain::HurtBy;
 use mcrs_minecraft_brain::Leap;
 use mcrs_minecraft_brain::Panic;
 use mcrs_minecraft_brain::PoseBits;
+use mcrs_minecraft_damage::LastHit;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_mob_control::ControlInput;
 use mcrs_minecraft_mob_control::LookDefaults;
@@ -12,7 +13,6 @@ use mcrs_minecraft_mob_control::MeleeReflex;
 use mcrs_minecraft_mob_control::MobControl;
 use mcrs_minecraft_mob_control::RangedReflex;
 use mcrs_minecraft_mob_control::Rotations;
-use mcrs_minecraft_physics::LastHit;
 
 pub const BABY_AGE: i32 = -24000;
 const BRED_AGE: i32 = 6000;

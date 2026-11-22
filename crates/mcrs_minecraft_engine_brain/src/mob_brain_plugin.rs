@@ -4,6 +4,7 @@ use bevy_app::Plugin;
 use bevy_ecs::entity::Entity;
 use bevy_ecs::lifecycle::Add;
 use bevy_ecs::lifecycle::Remove;
+use bevy_ecs::message::MessageReader;
 use bevy_ecs::message::MessageWriter;
 use bevy_ecs::observer::On;
 use bevy_ecs::prelude::With;
@@ -22,15 +23,18 @@ use bevy_ecs::system::Single;
 use bevy_tasks::ComputeTaskPool;
 use bevy_utils::Parallel;
 use mcrs_minecraft_brain::AiDelay;
+use mcrs_minecraft_brain::HurtBy;
 use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::KindTable;
 use mcrs_minecraft_brain::MobBrain;
 use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::WorldSeed as StageSeed;
+use mcrs_minecraft_engine_damage::DamageSet;
+use mcrs_minecraft_engine_damage::Damaged;
+use mcrs_minecraft_engine_damage::PendingHits;
 use mcrs_minecraft_engine_entity_motion::MotionId;
 use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_physics::Mob;
-use mcrs_minecraft_engine_physics::MobChanges;
 use mcrs_minecraft_engine_physics::MobSpawnRequest;
 use mcrs_minecraft_engine_physics::PhysicsTables;
 use mcrs_minecraft_engine_world::tick::TickSet;
@@ -61,6 +65,7 @@ use crate::mob_ai::Thinking;
 use crate::panic_causes_in::panic_causes_in;
 use crate::player_table::Players;
 use crate::player_table::Stacks;
+use crate::player_table::player_entities;
 use crate::player_table::player_table;
 
 const DAMAGE_TYPE: ResourceLocation<'static> = rl!("minecraft:damage_type");
@@ -132,6 +137,9 @@ where
                     .before(MobBrainSet::Prepare),
                 prepare::<B>.in_set(MobBrainSet::Prepare),
                 run_stage::<B>.in_set(MobBrainSet::Stage),
+                record_hurt_by::<B>
+                    .in_set(DamageSet::Report)
+                    .run_if(resource_exists::<MobAi<B>>.and_then(resource_exists::<PendingHits>)),
             ),
         );
     }
@@ -222,7 +230,7 @@ fn prepare<B>(
     players: Players,
     stacks: Stacks,
     mut mobs: ParamSet<(Thinking, Hitting)>,
-    mut changes: ResMut<MobChanges>,
+    mut pending: Option<ResMut<PendingHits>>,
     mut ai: ResMut<MobAi<B>>,
     mut threads: Local<Parallel<BrainOut>>,
     mut hits: MessageWriter<MobHit>,
@@ -238,13 +246,31 @@ fn prepare<B>(
     ai.prepare(
         &goal_world,
         player_table(&players, &stacks),
+        &player_entities(&players),
         &mut mobs,
-        &mut changes,
+        pending.as_deref_mut(),
         &mut threads,
     );
     hits.write_batch(ai.take_player_hits());
     shots.write_batch(ai.take_shots());
     spawns.write_batch(ai.take_spawns());
+}
+
+fn record_hurt_by<B: Send + Sync + 'static>(
+    mut damaged: MessageReader<Damaged>,
+    ai: Res<MobAi<B>>,
+    mut brains: Query<&mut BrainState>,
+) {
+    let tick = ai.tick() as u32;
+    for hit in damaged.read() {
+        let Some(attacker) = ai.attacker_of(hit.target) else {
+            continue;
+        };
+        if let Ok(mut brain) = brains.get_mut(hit.target) {
+            brain.hurt_by = HurtBy::by(attacker, tick);
+            brain.love = 0;
+        }
+    }
 }
 
 fn run_stage<B>(

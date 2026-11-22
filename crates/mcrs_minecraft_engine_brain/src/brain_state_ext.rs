@@ -47,6 +47,7 @@ use crate::BrainState;
 use crate::hit_queue::HitTarget;
 use crate::hit_queue::MeleeHit;
 use crate::hit_queue::RangedShot;
+use crate::sensed::Sensed;
 use crate::targets::TargetBody;
 use crate::targets::Targets;
 
@@ -76,7 +77,7 @@ pub(crate) trait BrainStateExt {
         attributes: Option<&MobAttributes>,
         tick: u64,
         id: EntityId,
-        state: &EntityState,
+        sensed: Sensed<'_>,
     ) -> Observed;
 
     fn apply(&mut self, intents: &Intents, state: &EntityState);
@@ -87,7 +88,7 @@ pub(crate) trait BrainStateExt {
         targets: &Targets<'_, B>,
         tick: u64,
         id: EntityId,
-        state: &EntityState,
+        sensed: Sensed<'_>,
     ) -> Option<Steered>;
 }
 
@@ -107,8 +108,8 @@ impl BrainState {
         );
     }
 
-    fn grow(&mut self, living: &Living, stalled: bool) {
-        if !living.is_alive() || stalled {
+    fn grow(&mut self, alive: bool, stalled: bool) {
+        if !alive || stalled {
             return;
         }
         if self.age < 0 {
@@ -179,8 +180,9 @@ impl BrainStateExt for BrainState {
         attributes: Option<&MobAttributes>,
         tick: u64,
         id: EntityId,
-        state: &EntityState,
+        sensed: Sensed<'_>,
     ) -> Observed {
+        let state = sensed.state;
         let living = state.living.unwrap_or_default();
         let position = state.body.position;
         self.read_attributes(attributes);
@@ -188,8 +190,9 @@ impl BrainStateExt for BrainState {
             self.control
                 .after_travel(&input, position, rotations(&living))
         });
-        let hit = state.hits.last();
-        let strikes = state.hits.strikes();
+        let hits = sensed.hits.copied().unwrap_or_default();
+        let hit = hits.last();
+        let strikes = hits.strikes();
         let hurt = hit.is_some() && hit != self.last_hit;
         self.last_hit = hit;
         let struck_now = strikes != self.strikes;
@@ -219,10 +222,10 @@ impl BrainStateExt for BrainState {
         let resumed = self.stalled && !stalled;
         self.stalled = stalled;
         self.seen_age = Some(state.age);
-        self.grow(&living, stalled);
+        self.grow(sensed.is_alive(), stalled);
         let applied = self.control.applied();
         let marks = [
-            (living.is_alive(), MobFlags::ALIVE),
+            (sensed.is_alive(), MobFlags::ALIVE),
             (state.body.flags.on_ground, MobFlags::ON_GROUND),
             (self.panic == Panic::Panicking, MobFlags::IN_PANIC),
             (
@@ -243,7 +246,7 @@ impl BrainStateExt for BrainState {
                 velocity: state.body.velocity.as_vec3(),
                 kind: MobKind(self.kind.entity_type.id().number()),
                 flags: MobFlags::of(marks),
-                health: living.health,
+                health: sensed.vitals.map_or(0.0, |vitals| vitals.health),
                 follow_range: self.follow_range,
                 age: self.age,
                 love: self.love,
@@ -315,9 +318,10 @@ impl BrainStateExt for BrainState {
         targets: &Targets<'_, B>,
         tick: u64,
         id: EntityId,
-        state: &EntityState,
+        sensed: Sensed<'_>,
     ) -> Option<Steered> {
-        let living = state.living.filter(Living::is_alive)?;
+        let state = sensed.state;
+        let living = state.living.filter(|_| sensed.is_alive())?;
         let head_yaw_limit = self.kind.mob()?.head_yaw_limit;
         let position = state.body.position;
         let turned = self.turned.take();

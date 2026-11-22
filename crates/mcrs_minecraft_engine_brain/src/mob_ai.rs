@@ -15,7 +15,6 @@ use mcrs_minecraft_brain::Decision;
 use mcrs_minecraft_brain::EntityRef;
 use mcrs_minecraft_brain::Fact;
 use mcrs_minecraft_brain::FactKind;
-use mcrs_minecraft_brain::HurtBy;
 use mcrs_minecraft_brain::ItemTables;
 use mcrs_minecraft_brain::KindSet;
 use mcrs_minecraft_brain::KindTable;
@@ -32,24 +31,27 @@ use mcrs_minecraft_brain::Stage;
 use mcrs_minecraft_brain::StageConfig;
 use mcrs_minecraft_brain::Tables;
 use mcrs_minecraft_brain::TileSnapshot;
+use mcrs_minecraft_damage::DamageSource;
 use mcrs_minecraft_damage::Hit;
-use mcrs_minecraft_damage::HitOutcome;
+use mcrs_minecraft_damage::HitRecord;
+use mcrs_minecraft_damage::Vitals;
+use mcrs_minecraft_engine_damage::DamageRequest;
+use mcrs_minecraft_engine_damage::PendingHits;
 use mcrs_minecraft_engine_entity_motion::MobIntent;
 use mcrs_minecraft_engine_entity_motion::MotionId;
 use mcrs_minecraft_engine_entity_motion::MotionState;
 use mcrs_minecraft_engine_mob_attributes::MobAttributes;
-use mcrs_minecraft_engine_physics::MobChanges;
 use mcrs_minecraft_engine_physics::MobExtras;
 use mcrs_minecraft_engine_physics::MobSpawnRequest;
 use mcrs_minecraft_engine_physics::SpawnSetup;
-use mcrs_minecraft_engine_physics::hurt_mob;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_entity_key::BirthSource;
+use mcrs_minecraft_entity_key::Cause;
 use mcrs_minecraft_entity_key::EntityId;
 use mcrs_minecraft_entity_key::EntityUuid;
 use mcrs_minecraft_entity_key::TileKey;
+use mcrs_minecraft_entity_key::WriterKey;
 use mcrs_minecraft_goal_world::GoalWorld;
-use mcrs_minecraft_physics::EntityState;
 use mcrs_minecraft_volume::BlockVolume;
 use rustc_hash::FxHashMap;
 
@@ -64,6 +66,7 @@ use crate::hit_queue::MeleeHit;
 use crate::hit_queue::Proposed;
 use crate::hit_queue::RangedShot;
 use crate::run_tiles::run_tiles;
+use crate::sensed::Sensed;
 use crate::targets::Targets;
 
 const BREED_DISTANCE_SQUARED: f64 = 9.0;
@@ -77,15 +80,26 @@ pub(crate) type Thinking<'w, 's> = Query<
         &'static MotionId,
         &'static MotionState,
         Option<&'static MobAttributes>,
+        Option<&'static Vitals>,
+        Option<&'static HitRecord>,
         &'static mut BrainState,
         &'static mut MobIntent,
     ),
 >;
 
-pub(crate) type Hitting<'w, 's> =
-    Query<'w, 's, (&'static mut MotionState, &'static mut BrainState)>;
+pub(crate) type Hitting<'w, 's> = Query<
+    'w,
+    's,
+    (
+        &'static MotionState,
+        &'static mut BrainState,
+        Option<&'static Vitals>,
+    ),
+>;
 
 type Entities = FxHashMap<EntityId, Entity>;
+
+pub(crate) type PlayerEntities = [(EntityId, Entity)];
 
 #[derive(Resource, Debug)]
 pub struct MobAi<B: Send + Sync + 'static> {
@@ -104,6 +118,7 @@ pub struct MobAi<B: Send + Sync + 'static> {
     player_hits: Vec<MobHit>,
     shots: Vec<RangedAttack>,
     spawns: Vec<MobSpawnRequest>,
+    struck: Vec<(Entity, EntityId)>,
     births: u32,
     stats: AiStats,
 }
@@ -151,6 +166,14 @@ struct Pass<'a, B, V> {
     world: &'a BlockGoalWorld<'a, V>,
 }
 
+struct Publishing<'a, 'w, 's> {
+    players: PlayerTable,
+    player_entities: &'a PlayerEntities,
+    mobs: &'a mut Hitting<'w, 's>,
+    pending: Option<&'a mut PendingHits>,
+    tick: u64,
+}
+
 impl<B: Send + Sync + 'static> MobAi<B> {
     #[must_use]
     pub fn new(
@@ -174,6 +197,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             player_hits: Vec::new(),
             shots: Vec::new(),
             spawns: Vec::new(),
+            struck: Vec::new(),
             births: 0,
             stats: AiStats::default(),
         }
@@ -218,6 +242,15 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         std::mem::take(&mut self.spawns)
     }
 
+    #[must_use]
+    pub fn attacker_of(&self, target: Entity) -> Option<EntityId> {
+        self.struck
+            .binary_search_by_key(&target, |(struck, _)| *struck)
+            .ok()
+            .and_then(|index| self.struck.get(index))
+            .map(|(_, attacker)| *attacker)
+    }
+
     pub(crate) fn brain_for(&self, kind: &'static EntityTypeData) -> Option<B> {
         (self.brain_for)(kind)
     }
@@ -235,8 +268,9 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         &mut self,
         world: &BlockGoalWorld<'_, V>,
         players: PlayerTable,
+        player_entities: &PlayerEntities,
         mobs: &mut ParamSet<'_, '_, (Thinking<'_, '_>, Hitting<'_, '_>)>,
-        changes: &mut MobChanges,
+        pending: Option<&mut PendingHits>,
         threads: &mut Parallel<BrainOut>,
     ) {
         let started = Instant::now();
@@ -261,12 +295,26 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let shared = &*threads;
         mobs.p0().par_iter_mut().for_each_init(
             || shared.borrow_local_mut(),
-            |out, (entity, id, state, attributes, brain, intent)| {
-                pass.think(out, entity, id.0, &state.0, attributes, brain, intent);
+            |out, (entity, id, state, attributes, vitals, hits, brain, intent)| {
+                let sensed = Sensed {
+                    state: &state.0,
+                    vitals,
+                    hits,
+                };
+                pass.think(out, entity, id.0, sensed, attributes, brain, intent);
             },
         );
         let ran = Instant::now();
-        self.publish(threads, players, &mut mobs.p1(), changes, tick);
+        self.publish(
+            threads,
+            Publishing {
+                players,
+                player_entities,
+                mobs: &mut mobs.p1(),
+                pending,
+                tick,
+            },
+        );
         self.stats.life_cycle = followed.duration_since(started);
         self.stats.tile_tasks = ran.duration_since(followed);
         self.stats.publish = ran.elapsed();
@@ -333,11 +381,9 @@ impl<B: Send + Sync + 'static> MobAi<B> {
     fn publish(
         &mut self,
         threads: &mut Parallel<BrainOut>,
-        players: PlayerTable,
-        mobs: &mut Hitting<'_, '_>,
-        changes: &mut MobChanges,
-        tick: u64,
+        mut publishing: Publishing<'_, '_, '_>,
     ) {
+        let tick = publishing.tick;
         let mut gathered = std::mem::take(&mut self.gathered);
         let mut applied: usize = 0;
         for out in threads.iter_mut() {
@@ -377,14 +423,22 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         gathered
             .hits
             .sort_by_key(|hit| (hit.target.key(), hit.attacker_key));
+        self.struck.clear();
         for hit in gathered.hits.drain(..) {
-            self.apply_hit(hit, &entities, mobs, changes, tick, &mut gathered.facts);
+            self.request_hit(hit, &entities, &mut publishing);
         }
+        self.struck.sort_unstable_by_key(|(target, _)| *target);
         gathered
             .proposals
             .sort_by_key(|proposed| (proposed.issue_tick, proposed.key));
         for proposed in gathered.proposals.drain(..) {
-            self.grant(proposed, &entities, mobs, tick, &mut gathered.facts);
+            self.grant(
+                proposed,
+                &entities,
+                publishing.mobs,
+                tick,
+                &mut gathered.facts,
+            );
         }
         gathered
             .shots
@@ -425,58 +479,61 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         }
         gathered.ended.sort_unstable();
         self.ended.append(&mut gathered.ended);
-        self.driver.publish_players(players);
+        self.driver.publish_players(publishing.players);
         self.stats.applied = applied;
         self.gathered = gathered;
     }
 
-    fn apply_hit(
+    fn request_hit(
         &mut self,
         hit: MeleeHit,
         entities: &Entities,
-        mobs: &mut Hitting<'_, '_>,
-        changes: &mut MobChanges,
-        tick: u64,
-        facts: &mut Vec<Fact>,
+        publishing: &mut Publishing<'_, '_, '_>,
     ) {
-        let Some(amount) = entities
+        let Some((amount, position)) = entities
             .get(&hit.attacker)
-            .and_then(|entity| mobs.get(*entity).ok())
-            .map(|(_, brain)| brain.attack_damage)
+            .and_then(|entity| publishing.mobs.get(*entity).ok())
+            .map(|(state, brain, _)| (brain.attack_damage, state.0.body.position))
         else {
             return;
         };
-        match hit.target {
-            HitTarget::Player(target, _) => self.player_hits.push(MobHit {
-                attacker: hit.attacker,
-                target,
-                amount,
-                damage_type: self.mob_attack,
-            }),
-            HitTarget::Mob(target, key) => {
-                let Some(&entity) = entities.get(&target) else {
-                    return;
-                };
-                let Ok((mut state, mut brain)) = mobs.get_mut(entity) else {
-                    return;
-                };
-                let outcome = hurt_mob(
-                    entity,
-                    &mut state.0,
-                    changes,
-                    Hit::new(amount, self.mob_attack),
-                    tick,
-                );
-                if outcome.is_some_and(|outcome| outcome != HitOutcome::Rejected) {
-                    brain.hurt_by = HurtBy::by(hit.attacker, tick as u32);
-                    brain.love = 0;
-                    facts.push(Fact {
-                        mob: target,
-                        key,
-                        kind: FactKind::Hurt,
-                    });
-                }
+        let target = match hit.target {
+            HitTarget::Player(target, _) => {
+                self.player_hits.push(MobHit {
+                    attacker: hit.attacker,
+                    target,
+                    amount,
+                    damage_type: self.mob_attack,
+                });
+                publishing
+                    .player_entities
+                    .binary_search_by_key(&target, |(player, _)| *player)
+                    .ok()
+                    .and_then(|index| publishing.player_entities.get(index))
+                    .map(|(_, entity)| *entity)
             }
+            HitTarget::Mob(target, _) => entities.get(&target).copied(),
+        };
+        let (Some(target), Some(pending)) = (target, publishing.pending.as_deref_mut()) else {
+            return;
+        };
+        let mut source = DamageSource::of(self.mob_attack);
+        source.cause = Cause {
+            causing: Some(hit.attacker_key),
+            direct: Some(hit.attacker_key),
+        };
+        source.position = Some(position);
+        pending.push(DamageRequest::new(
+            target,
+            Hit::new(amount, source),
+            WriterKey::Entity {
+                key: hit.attacker_key,
+            },
+            publishing.tick,
+            0,
+        ));
+        if matches!(hit.target, HitTarget::Mob(..)) {
+            self.struck.push((target, hit.attacker));
         }
     }
 
@@ -523,13 +580,17 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let (Some(&mine), Some(&theirs)) = (entities.get(&proposer), entities.get(&partner)) else {
             return;
         };
-        let Ok([(my_state, mut my_brain), (their_state, mut their_brain)]) =
-            mobs.get_many_mut([mine, theirs])
+        let Ok(
+            [
+                (my_state, mut my_brain, my_vitals),
+                (their_state, mut their_brain, their_vitals),
+            ],
+        ) = mobs.get_many_mut([mine, theirs])
         else {
             return;
         };
-        let alive = |state: &EntityState| state.living.is_some_and(|living| living.is_alive());
-        if !alive(&my_state.0) || !alive(&their_state.0) {
+        let alive = |vitals: Option<&Vitals>| vitals.is_none_or(Vitals::is_alive);
+        if !alive(my_vitals) || !alive(their_vitals) {
             return;
         }
         if my_state
@@ -592,7 +653,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
         let Some((feet, kind, owner)) = entities
             .get(&proposer)
             .and_then(|entity| mobs.get(*entity).ok())
-            .map(|(state, brain)| (state.0.body.position, brain.kind, brain.owner))
+            .map(|(state, brain, _)| (state.0.body.position, brain.kind, brain.owner))
         else {
             return;
         };
@@ -619,7 +680,7 @@ impl<B: Send + Sync + 'static> MobAi<B> {
             let Some(&entity) = entities.get(&receiver) else {
                 continue;
             };
-            let Ok((_, mut brain)) = mobs.get_mut(entity) else {
+            let Ok((_, mut brain, _)) = mobs.get_mut(entity) else {
                 continue;
             };
             if brain.target.is_none() && brain.owner == owner {
@@ -644,11 +705,12 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
         out: &mut BrainOut,
         entity: Entity,
         id: EntityId,
-        state: &EntityState,
+        sensed: Sensed<'_>,
         attributes: Option<&MobAttributes>,
         mut brain: Mut<'_, BrainState>,
         mut intent: Mut<'_, MobIntent>,
     ) {
+        let state = sensed.state;
         let mut next = *brain;
         let observed = next.observe(
             self.panic_causes,
@@ -656,7 +718,7 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
             attributes,
             self.tick,
             id,
-            state,
+            sensed,
         );
         let kinds = [
             (observed.struck, FactKind::Hurt),
@@ -693,7 +755,7 @@ impl<B, V: BlockVolume> Pass<'_, B, V> {
                 });
             }
         }
-        if let Some(steered) = next.steer(self.world, &self.targets, self.tick, id, state) {
+        if let Some(steered) = next.steer(self.world, &self.targets, self.tick, id, sensed) {
             intent.set_if_neq(steered.intent);
             if steered.ended.is_some() {
                 out.ended.push(id);
