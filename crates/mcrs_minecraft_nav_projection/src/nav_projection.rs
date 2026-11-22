@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::mem;
 
 use mcrs_voxel::BlockPos;
 use mcrs_voxel::LocalPos;
@@ -36,9 +37,52 @@ struct NavVersion {
     section: Option<NavSection>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct Versions {
+    current: NavVersion,
+    older: Vec<NavVersion>,
+}
+
+impl Versions {
+    fn at(&self, tick: u64) -> Option<&NavSection> {
+        if tick >= self.current.tick {
+            return self.current.section.as_ref();
+        }
+        self.older
+            .iter()
+            .rev()
+            .find(|version| version.tick <= tick)?
+            .section
+            .as_ref()
+    }
+
+    fn trim(&mut self, oldest: u64) {
+        while let Some(first) = self.older.first() {
+            let next = self
+                .older
+                .get(1)
+                .map_or(self.current.tick, |next| next.tick);
+            if first.tick <= oldest && next <= oldest {
+                self.older.remove(0);
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn is_gone(&self) -> bool {
+        self.older.is_empty() && self.current.section.is_none()
+    }
+
+    fn len(&self) -> usize {
+        self.older.len() + 1
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct NavProjection {
-    sections: FxHashMap<SectionPos, VecDeque<NavVersion>>,
+    sections: FxHashMap<SectionPos, Versions>,
+    changed: VecDeque<(u64, SectionPos)>,
     table: NavTable,
     min_y: i32,
     max_y: i32,
@@ -49,6 +93,7 @@ impl NavProjection {
     pub fn new(table: NavTable, min_y: i32, max_y: i32) -> Self {
         Self {
             sections: FxHashMap::default(),
+            changed: VecDeque::new(),
             table,
             min_y,
             max_y,
@@ -73,6 +118,7 @@ impl NavProjection {
     pub fn set_table(&mut self, table: NavTable) {
         self.table = table;
         self.sections.clear();
+        self.changed.clear();
     }
 
     #[must_use]
@@ -95,63 +141,75 @@ impl NavProjection {
     }
 
     fn publish(&mut self, tick: u64, pos: SectionPos, section: Option<NavSection>) {
-        let versions = self.sections.entry(pos).or_default();
-        if let Some(last) = versions.back_mut()
-            && last.tick == tick
-        {
-            last.section = section;
-            return;
+        match self.sections.get_mut(&pos) {
+            Some(versions) if versions.current.tick == tick => versions.current.section = section,
+            Some(versions) => {
+                let previous = mem::replace(&mut versions.current, NavVersion { tick, section });
+                versions.older.push(previous);
+                self.changed.push_back((tick, pos));
+            }
+            None => {
+                self.sections.insert(
+                    pos,
+                    Versions {
+                        current: NavVersion { tick, section },
+                        older: Vec::new(),
+                    },
+                );
+                self.changed.push_back((tick, pos));
+            }
         }
-        versions.push_back(NavVersion { tick, section });
     }
 
     fn patch(&mut self, tick: u64, patch: NavPatch) {
-        let Some(versions) = self.sections.get_mut(&SectionPos::from(patch.pos)) else {
+        let pos = SectionPos::from(patch.pos);
+        let Some(versions) = self.sections.get_mut(&pos) else {
             return;
         };
-        let Some(last) = versions.back() else {
-            return;
-        };
-        let Some(current) = last.section.as_ref() else {
+        let Some(current) = versions.current.section.as_ref() else {
             return;
         };
         let at = LocalPos::from(patch.pos);
         if current.get(at) == patch.nav {
             return;
         }
-        if last.tick != tick {
-            let mut copy = current.clone();
-            copy.set(at, patch.nav);
-            versions.push_back(NavVersion {
-                tick,
-                section: Some(copy),
-            });
+        if versions.current.tick == tick {
+            if let Some(section) = versions.current.section.as_mut() {
+                section.set(at, patch.nav);
+            }
             return;
         }
-        if let Some(last) = versions.back_mut()
-            && let Some(section) = last.section.as_mut()
-        {
-            section.set(at, patch.nav);
-        }
+        let mut copy = current.clone();
+        copy.set(at, patch.nav);
+        let previous = mem::replace(
+            &mut versions.current,
+            NavVersion {
+                tick,
+                section: Some(copy),
+            },
+        );
+        versions.older.push(previous);
+        self.changed.push_back((tick, pos));
     }
 
     pub fn retire(&mut self, oldest: u64) {
-        self.sections.retain(|_, versions| {
-            while versions.len() > 1 && versions.get(1).is_some_and(|next| next.tick <= oldest) {
-                versions.pop_front();
+        while let Some(&(tick, pos)) = self.changed.front() {
+            if tick > oldest {
+                break;
             }
-            versions.len() > 1 || versions.back().is_some_and(|last| last.section.is_some())
-        });
+            self.changed.pop_front();
+            let Some(versions) = self.sections.get_mut(&pos) else {
+                continue;
+            };
+            versions.trim(oldest);
+            if versions.is_gone() {
+                self.sections.remove(&pos);
+            }
+        }
     }
 
     pub(crate) fn section_at(&self, at: SectionPos, tick: u64) -> Option<&NavSection> {
-        self.sections
-            .get(&at)?
-            .iter()
-            .rev()
-            .find(|version| version.tick <= tick)?
-            .section
-            .as_ref()
+        self.sections.get(&at)?.at(tick)
     }
 
     #[must_use]
@@ -161,14 +219,19 @@ impl NavProjection {
 
     #[must_use]
     pub fn versions(&self) -> usize {
-        self.sections.values().map(VecDeque::len).sum()
+        self.sections.values().map(Versions::len).sum()
+    }
+
+    #[must_use]
+    pub fn pending_retires(&self) -> usize {
+        self.changed.len()
     }
 
     #[must_use]
     pub fn heap_bytes(&self) -> usize {
         self.sections
             .values()
-            .flat_map(|versions| versions.iter())
+            .flat_map(|versions| core::iter::once(&versions.current).chain(versions.older.iter()))
             .map(|version| {
                 size_of::<NavVersion>() + version.section.as_ref().map_or(0, NavSection::heap_bytes)
             })
@@ -338,8 +401,14 @@ mod tests {
             );
         }
         assert_eq!(projection.versions(), 5);
+        assert_eq!(projection.pending_retires(), 5);
         projection.retire(3);
         assert_eq!(projection.versions(), 3, "ticks 3, 4, 5 stay");
+        assert_eq!(
+            projection.pending_retires(),
+            2,
+            "only the sections that changed after 3 wait"
+        );
         assert_eq!(projection.at(3).lookup(BLOCK), NavLookup::Found(NavId(3)));
         assert_eq!(
             projection.at(2).lookup(BLOCK),
@@ -357,5 +426,55 @@ mod tests {
         assert_eq!(view.lookup(BLOCK), NavLookup::Unloaded);
         assert_eq!(view.row(BLOCK), crate::NavRow::UNLOADED);
         assert!(!view.is_loaded(BLOCK));
+    }
+
+    #[test]
+    fn retire_touches_only_the_sections_that_changed() {
+        let mut projection = projection();
+        let quiet = SectionPos::new(9, 2, 9);
+        projection.apply(
+            1,
+            NavDelta {
+                landed: vec![section(here(), NavId(1)), section(quiet, NavId(2))],
+                ..NavDelta::default()
+            },
+        );
+        for tick in 2..=4u64 {
+            projection.apply(
+                tick,
+                NavDelta {
+                    patches: vec![NavPatch {
+                        pos: BLOCK,
+                        nav: NavId(tick as u16),
+                    }],
+                    ..NavDelta::default()
+                },
+            );
+        }
+        assert_eq!(
+            projection.pending_retires(),
+            5,
+            "two landings and three patches"
+        );
+        projection.retire(4);
+        assert_eq!(projection.pending_retires(), 0);
+        assert_eq!(projection.versions(), 2, "one version each");
+        assert_eq!(projection.at(4).lookup(BLOCK), NavLookup::Found(NavId(4)));
+        assert!(projection.at(4).section(quiet).is_some());
+    }
+
+    #[test]
+    fn a_new_table_forgets_every_section() {
+        let mut projection = projection();
+        projection.apply(
+            1,
+            NavDelta {
+                landed: vec![section(here(), NavId(1))],
+                ..NavDelta::default()
+            },
+        );
+        projection.set_table(NavTable::default());
+        assert_eq!(projection.sections(), 0);
+        assert_eq!(projection.pending_retires(), 0);
     }
 }
