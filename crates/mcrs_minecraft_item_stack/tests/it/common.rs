@@ -7,7 +7,7 @@ use mcrs_minecraft_nbt::tag::NbtTag;
 use mcrs_minecraft_wire::Encode;
 use mcrs_minecraft_wire::VarInt;
 
-pub(crate) const COMPONENT_TYPES: [&str; 110] = [
+pub(crate) const COMPONENT_TYPES: [&str; 122] = [
     "custom_data",
     "max_stack_size",
     "max_damage",
@@ -118,6 +118,18 @@ pub(crate) const COMPONENT_TYPES: [&str; 110] = [
     "frog/variant",
     "horse/variant",
     "painting/variant",
+    "llama/variant",
+    "axolotl/variant",
+    "cat/variant",
+    "cat/sound_variant",
+    "cat/collar",
+    "sheep/color",
+    "shulker/color",
+    "provides_pottery_pattern",
+    "sign_text_front",
+    "sign_text_back",
+    "waxed",
+    "cushion/color",
 ];
 
 pub(crate) fn stack(kind: u16, count: u8) -> ItemStack {
@@ -197,7 +209,7 @@ const OLDER_RECORDS: [(&str, &str); 5] = [
     ("item_model", "item_model"),
 ];
 
-const HOLDERS: [(&str, &str); 9] = [
+const HOLDERS: [(&str, &str); 10] = [
     ("piercing_weapon_default", "piercing_weapon"),
     ("piercing_weapon_explicit", "piercing_weapon"),
     ("piercing_weapon_full", "piercing_weapon"),
@@ -207,6 +219,7 @@ const HOLDERS: [(&str, &str); 9] = [
     ("instrument_ref", "instrument"),
     ("instrument_inline", "instrument"),
     ("instrument_inline_full", "instrument"),
+    ("jukebox_playable_ref", "jukebox_playable"),
 ];
 
 pub(crate) fn golden_cases(set: GoldenSet) -> Vec<GoldenCase> {

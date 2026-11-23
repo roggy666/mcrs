@@ -107,6 +107,10 @@ impl Names {
             NameTable::TrimMaterial => &["amethyst"],
             NameTable::TrimPattern => &["bolt", "coast"],
             NameTable::Instrument => &["ponder_goat_horn"],
+            NameTable::JukeboxSong => &["13", "pigstep"],
+            NameTable::VillagerType => &["desert", "jungle", "plains"],
+            NameTable::WolfVariant => &["pale"],
+            NameTable::CatVariant => &["jellie"],
             _ => &[],
         }
     }
@@ -749,7 +753,7 @@ struct PlainError {
     error: String,
 }
 
-const PLAIN_KINDS: [(&str, BuiltinKey); 22] = [
+const PLAIN_KINDS: [(&str, BuiltinKey); 45] = [
     ("max_stack_size", BuiltinKey::MaxStackSize),
     ("max_damage", BuiltinKey::MaxDamage),
     ("damage", BuiltinKey::Damage),
@@ -778,6 +782,35 @@ const PLAIN_KINDS: [(&str, BuiltinKey); 22] = [
         BuiltinKey::OminousBottleAmplifier,
     ),
     ("instrument", BuiltinKey::Instrument),
+    ("enchantable", BuiltinKey::Enchantable),
+    ("writable_book_content", BuiltinKey::WritableBookContent),
+    ("written_book_content", BuiltinKey::WrittenBookContent),
+    ("jukebox_playable", BuiltinKey::JukeboxPlayable),
+    ("villager/variant", BuiltinKey::VillagerVariant),
+    ("wolf/variant", BuiltinKey::WolfVariant),
+    ("cat/variant", BuiltinKey::CatVariant),
+    ("fox/variant", BuiltinKey::FoxVariant),
+    ("salmon/size", BuiltinKey::SalmonSize),
+    ("parrot/variant", BuiltinKey::ParrotVariant),
+    ("tropical_fish/pattern", BuiltinKey::TropicalFishPattern),
+    ("mooshroom/variant", BuiltinKey::MooshroomVariant),
+    ("rabbit/variant", BuiltinKey::RabbitVariant),
+    ("horse/variant", BuiltinKey::HorseVariant),
+    ("llama/variant", BuiltinKey::LlamaVariant),
+    ("axolotl/variant", BuiltinKey::AxolotlVariant),
+    ("wolf/collar", BuiltinKey::WolfCollar),
+    (
+        "tropical_fish/base_color",
+        BuiltinKey::TropicalFishBaseColor,
+    ),
+    (
+        "tropical_fish/pattern_color",
+        BuiltinKey::TropicalFishPatternColor,
+    ),
+    ("cat/collar", BuiltinKey::CatCollar),
+    ("sheep/color", BuiltinKey::SheepColor),
+    ("shulker/color", BuiltinKey::ShulkerColor),
+    ("cushion/color", BuiltinKey::CushionColor),
 ];
 
 fn plain_kind(kind: &str) -> Option<BuiltinKey> {
@@ -786,6 +819,8 @@ fn plain_kind(kind: &str) -> Option<BuiltinKey> {
         .find(|(name, _)| *name == kind)
         .map(|(_, component)| *component)
 }
+
+const LONGER_THAN_A_TITLE: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 const JSON_ONLY_ERRORS: [(&str, &str); 2] = [
     ("enchantment_glint_override", "1"),
@@ -800,6 +835,9 @@ fn registry_of(component: BuiltinKey) -> Option<NameTable> {
         BuiltinKey::Trim => Some(NameTable::TrimPattern),
         BuiltinKey::PotionContents => Some(NameTable::Potion),
         BuiltinKey::Instrument => Some(NameTable::Instrument),
+        BuiltinKey::JukeboxPlayable => Some(NameTable::JukeboxSong),
+        BuiltinKey::VillagerVariant => Some(NameTable::VillagerType),
+        BuiltinKey::WolfVariant => Some(NameTable::WolfVariant),
         _ => None,
     }
 }
@@ -845,7 +883,7 @@ fn the_components_that_the_game_saved_decode_and_write_the_same_bytes() {
         }
         checked += 1;
     }
-    assert!(checked >= 32, "the golden lost cases: {checked}");
+    assert!(checked >= 123, "the golden lost cases: {checked}");
 
     let mut rejected = 0;
     for error in &golden.errors {
@@ -878,7 +916,9 @@ fn the_components_that_the_game_saved_decode_and_write_the_same_bytes() {
             }
             _ if message.contains("within range")
                 || message.contains("must be positive")
-                || message.contains("must be non-negative") =>
+                || message.contains("must be non-negative")
+                || message.contains("too long")
+                || error.input.contains(LONGER_THAN_A_TITLE) =>
             {
                 SavedError::OutOfRange(component)
             }
@@ -894,7 +934,7 @@ fn the_components_that_the_game_saved_decode_and_write_the_same_bytes() {
         );
         rejected += 1;
     }
-    assert!(rejected >= 18, "the golden lost error cases: {rejected}");
+    assert!(rejected >= 52, "the golden lost error cases: {rejected}");
 }
 
 #[test]

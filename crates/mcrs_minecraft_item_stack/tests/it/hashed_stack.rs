@@ -66,6 +66,19 @@ impl Names {
             NameTable::Instrument => &[(4, "ponder_goat_horn")],
             NameTable::Potion => &[(13, "swiftness")],
             NameTable::PaintingVariant => &[(0, "alban"), (1, "aztec"), (24, "kebab")],
+            NameTable::JukeboxSong => &[(1, "13"), (15, "pigstep")],
+            NameTable::WolfVariant => &[(0, "ashen"), (3, "pale")],
+            NameTable::WolfSoundVariant => &[(1, "big")],
+            NameTable::PigVariant => &[(0, "cold")],
+            NameTable::PigSoundVariant => &[(2, "mini")],
+            NameTable::CowVariant => &[(2, "warm")],
+            NameTable::CowSoundVariant => &[(1, "moody")],
+            NameTable::ChickenVariant => &[(0, "cold")],
+            NameTable::ChickenSoundVariant => &[(1, "picky")],
+            NameTable::ZombieNautilusVariant => &[(1, "warm")],
+            NameTable::FrogVariant => &[(2, "warm")],
+            NameTable::CatVariant => &[(4, "jellie")],
+            NameTable::CatSoundVariant => &[(1, "royal")],
             _ => &[],
         };
         let indexed: &'static [&'static str] = match table {
@@ -77,6 +90,9 @@ impl Names {
             NameTable::Potion => &["water"],
             NameTable::TrimMaterial => &["amethyst"],
             NameTable::TrimPattern => &["bolt", "coast"],
+            NameTable::VillagerType => &[
+                "desert", "jungle", "plains", "savanna", "snow", "swamp", "taiga",
+            ],
             _ => &[],
         };
         (listed.iter().copied()).chain((0..).zip(indexed.iter().copied()))
@@ -123,7 +139,7 @@ struct PlainValue {
     hash: Option<i32>,
 }
 
-const PLAIN_KINDS: [&str; 24] = [
+const PLAIN_KINDS: [&str; 46] = [
     "max_stack_size",
     "max_damage",
     "damage",
@@ -148,6 +164,28 @@ const PLAIN_KINDS: [&str; 24] = [
     "instrument",
     "stored_enchantments",
     "painting/variant",
+    "enchantable",
+    "writable_book_content",
+    "written_book_content",
+    "jukebox_playable",
+    "villager/variant",
+    "wolf/variant",
+    "fox/variant",
+    "salmon/size",
+    "parrot/variant",
+    "tropical_fish/pattern",
+    "mooshroom/variant",
+    "rabbit/variant",
+    "horse/variant",
+    "llama/variant",
+    "axolotl/variant",
+    "wolf/collar",
+    "tropical_fish/base_color",
+    "tropical_fish/pattern_color",
+    "cat/collar",
+    "sheep/color",
+    "shulker/color",
+    "cushion/color",
 ];
 
 const LOW_BITS_ON_THE_WIRE: &str = r#"{"target":{"dimension":"mcrs:custom","pos":[0,4096,-1]}}"#;
@@ -184,13 +222,26 @@ fn record_cases() -> Vec<Recorded> {
 }
 
 fn registry_ref_cases() -> Vec<Recorded> {
-    const KINDS: [&str; 6] = [
+    const KINDS: [&str; 19] = [
         "enchantments",
         "attribute_modifiers",
         "tool",
         "equippable",
         "potion_contents",
         "suspicious_stew_effects",
+        "villager/variant",
+        "wolf/variant",
+        "wolf/sound_variant",
+        "pig/variant",
+        "pig/sound_variant",
+        "cow/variant",
+        "cow/sound_variant",
+        "chicken/variant",
+        "chicken/sound_variant",
+        "zombie_nautilus/variant",
+        "frog/variant",
+        "cat/variant",
+        "cat/sound_variant",
     ];
     let golden = fixture("item_registry_refs").text();
     let mut cases = Vec::new();
@@ -243,6 +294,73 @@ struct SeenProfile {
     wire: String,
 }
 
+const RECORDED_KINDS: [&str; 64] = [
+    "max_stack_size",
+    "max_damage",
+    "damage",
+    "unbreakable",
+    "item_model",
+    "rarity",
+    "enchantments",
+    "attribute_modifiers",
+    "tooltip_display",
+    "repair_cost",
+    "food",
+    "tool",
+    "piercing_weapon",
+    "attack_animation",
+    "interact_animation",
+    "map_id",
+    "map_decorations",
+    "profile",
+    "equippable",
+    "dyed_color",
+    "custom_model_data",
+    "enchantment_glint_override",
+    "lodestone_tracker",
+    "trim",
+    "potion_contents",
+    "custom_data",
+    "suspicious_stew_effects",
+    "ominous_bottle_amplifier",
+    "instrument",
+    "enchantable",
+    "writable_book_content",
+    "written_book_content",
+    "jukebox_playable",
+    "villager/variant",
+    "wolf/variant",
+    "fox/variant",
+    "salmon/size",
+    "parrot/variant",
+    "tropical_fish/pattern",
+    "mooshroom/variant",
+    "rabbit/variant",
+    "horse/variant",
+    "llama/variant",
+    "axolotl/variant",
+    "wolf/collar",
+    "tropical_fish/base_color",
+    "tropical_fish/pattern_color",
+    "cat/collar",
+    "sheep/color",
+    "shulker/color",
+    "cushion/color",
+    "villager/variant",
+    "wolf/variant",
+    "wolf/sound_variant",
+    "pig/variant",
+    "pig/sound_variant",
+    "cow/variant",
+    "cow/sound_variant",
+    "chicken/variant",
+    "chicken/sound_variant",
+    "zombie_nautilus/variant",
+    "frog/variant",
+    "cat/variant",
+    "cat/sound_variant",
+];
+
 #[test]
 fn a_component_has_the_hash_that_the_game_recorded() {
     let mut scratch = HashScratch::default();
@@ -281,43 +399,16 @@ fn a_component_has_the_hash_that_the_game_recorded() {
         );
         compared.push(case.kind);
     }
-    for kind in [
-        "max_stack_size",
-        "max_damage",
-        "damage",
-        "unbreakable",
-        "item_model",
-        "rarity",
-        "enchantments",
-        "attribute_modifiers",
-        "tooltip_display",
-        "repair_cost",
-        "food",
-        "tool",
-        "piercing_weapon",
-        "attack_animation",
-        "interact_animation",
-        "map_id",
-        "map_decorations",
-        "profile",
-        "equippable",
-        "dyed_color",
-        "custom_model_data",
-        "enchantment_glint_override",
-        "lodestone_tracker",
-        "trim",
-        "potion_contents",
-        "custom_data",
-        "suspicious_stew_effects",
-        "ominous_bottle_amplifier",
-        "instrument",
-    ] {
+    for kind in RECORDED_KINDS {
         assert!(
             compared.iter().any(|compared| compared == kind),
             "the goldens lost each case of {kind}"
         );
     }
-    assert!(compared.len() >= 50, "the goldens lost cases: {compared:?}");
+    assert!(
+        compared.len() >= 160,
+        "the goldens lost cases: {compared:?}"
+    );
 }
 
 #[test]

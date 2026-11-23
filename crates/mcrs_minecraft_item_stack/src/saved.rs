@@ -34,11 +34,19 @@ use crate::BlockTagId;
 use crate::Builtin;
 use crate::BuiltinKey;
 use crate::BundleContents;
+use crate::CatCollar;
+use crate::CatSoundVariant;
+use crate::CatVariant;
 use crate::ChargedProjectiles;
+use crate::ChickenSoundVariant;
+use crate::ChickenVariant;
 use crate::ComponentType;
 use crate::Container;
 use crate::ContainerLoot;
 use crate::Count;
+use crate::CowSoundVariant;
+use crate::CowVariant;
+use crate::CushionColor;
 use crate::CustomData;
 use crate::CustomModelData;
 use crate::CustomName;
@@ -47,6 +55,7 @@ use crate::DimensionPos;
 use crate::DyeColor;
 use crate::DyedColor;
 use crate::EffectInstance;
+use crate::Enchantable;
 use crate::EnchantmentGlintOverride;
 use crate::EnchantmentId;
 use crate::EnchantmentLevel;
@@ -61,6 +70,7 @@ use crate::FireworkExplosion;
 use crate::FireworkShape;
 use crate::Fireworks;
 use crate::Food;
+use crate::FrogVariant;
 use crate::InlineBannerPattern;
 use crate::InlineInstrument;
 use crate::InlineSoundEvent;
@@ -72,6 +82,8 @@ use crate::InteractAnimation;
 use crate::ItemModel;
 use crate::ItemName;
 use crate::ItemStack;
+use crate::JukeboxPlayable;
+use crate::JukeboxSongId;
 use crate::Kind;
 use crate::LodestoneTracker;
 use crate::MapDecoration;
@@ -89,6 +101,8 @@ use crate::PaintingVariant;
 use crate::PaintingVariantId;
 use crate::PatchEntry;
 use crate::PiercingWeapon;
+use crate::PigSoundVariant;
+use crate::PigVariant;
 use crate::PotionContents;
 use crate::PotionId;
 use crate::Profile;
@@ -96,6 +110,8 @@ use crate::Rarity;
 use crate::RegistryValue;
 use crate::RepairCost;
 use crate::SavedError;
+use crate::SheepColor;
+use crate::ShulkerColor;
 use crate::SlotGroup;
 use crate::SlotStack;
 use crate::SoundEventId;
@@ -111,8 +127,15 @@ use crate::TooltipDisplay;
 use crate::Trim;
 use crate::TrimMaterialId;
 use crate::TrimPatternId;
+use crate::TropicalFishBaseColor;
+use crate::TropicalFishPatternColor;
 use crate::Unbreakable;
 use crate::UndecodedValue;
+use crate::VillagerVariant;
+use crate::WolfCollar;
+use crate::WolfSoundVariant;
+use crate::WolfVariant;
+use crate::ZombieNautilusVariant;
 use crate::builtin_key::NAMESPACE;
 use crate::check_saved_form::MAX_COUNT;
 use crate::check_saved_form::NOT_NEGATIVE;
@@ -120,6 +143,7 @@ use crate::check_saved_form::OMINOUS_AMPLIFIER;
 use crate::check_saved_form::POSITIVE;
 use crate::check_saved_form::STACK_SIZE;
 use crate::entity_data::ENTITY_TYPE_KEY;
+use crate::list_name::ListName;
 use crate::nbt_depth::LIST_TEMPLATE_LEVELS;
 use crate::nbt_depth::SLOT_TEMPLATE_LEVELS;
 use crate::nbt_depth::STACK_LEVEL;
@@ -139,6 +163,7 @@ use crate::saved_text::read_lore;
 use crate::saved_text::read_text;
 use crate::tag_number::TagNumber;
 use crate::tag_sink::TagSink;
+use crate::variant_id::VariantId;
 use mcrs_minecraft_entity_attribute::ModifierOperation;
 use mcrs_minecraft_nbt::MAX_DEPTH;
 
@@ -400,6 +425,10 @@ fn read_value_at<L: NameLookup>(
 }
 
 #[inline(never)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one dispatch arm per component saved form"
+)]
 fn read_flat_value<L: NameLookup>(
     reader: &Reader<'_, L>,
     tag: &NbtTag,
@@ -478,6 +507,57 @@ fn read_flat_value<L: NameLookup>(
             reader.each(reader.list(tag)?, Reader::banner_layer)?,
         )),
         BuiltinKey::Bees => Builtin::Bees(Bees(reader.each(reader.list(tag)?, Reader::bee)?)),
+        BuiltinKey::Enchantable => Builtin::Enchantable(reader.enchantable(tag)?),
+        BuiltinKey::WritableBookContent => Builtin::WritableBookContent(reader.writable_book(tag)?),
+        BuiltinKey::WrittenBookContent => Builtin::WrittenBookContent(reader.written_book(tag)?),
+        BuiltinKey::JukeboxPlayable => Builtin::JukeboxPlayable(reader.jukebox_playable(tag)?),
+        BuiltinKey::VillagerVariant => {
+            Builtin::VillagerVariant(VillagerVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::WolfVariant => Builtin::WolfVariant(WolfVariant(reader.variant(tag)?)),
+        BuiltinKey::WolfSoundVariant => {
+            Builtin::WolfSoundVariant(WolfSoundVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::PigVariant => Builtin::PigVariant(PigVariant(reader.variant(tag)?)),
+        BuiltinKey::PigSoundVariant => {
+            Builtin::PigSoundVariant(PigSoundVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::CowVariant => Builtin::CowVariant(CowVariant(reader.variant(tag)?)),
+        BuiltinKey::CowSoundVariant => {
+            Builtin::CowSoundVariant(CowSoundVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::ChickenVariant => Builtin::ChickenVariant(ChickenVariant(reader.variant(tag)?)),
+        BuiltinKey::ChickenSoundVariant => {
+            Builtin::ChickenSoundVariant(ChickenSoundVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::ZombieNautilusVariant => {
+            Builtin::ZombieNautilusVariant(ZombieNautilusVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::FrogVariant => Builtin::FrogVariant(FrogVariant(reader.variant(tag)?)),
+        BuiltinKey::CatVariant => Builtin::CatVariant(CatVariant(reader.variant(tag)?)),
+        BuiltinKey::CatSoundVariant => {
+            Builtin::CatSoundVariant(CatSoundVariant(reader.variant(tag)?))
+        }
+        BuiltinKey::FoxVariant => Builtin::FoxVariant(reader.list_name(tag)?),
+        BuiltinKey::SalmonSize => Builtin::SalmonSize(reader.list_name(tag)?),
+        BuiltinKey::ParrotVariant => Builtin::ParrotVariant(reader.list_name(tag)?),
+        BuiltinKey::TropicalFishPattern => Builtin::TropicalFishPattern(reader.list_name(tag)?),
+        BuiltinKey::MooshroomVariant => Builtin::MooshroomVariant(reader.list_name(tag)?),
+        BuiltinKey::RabbitVariant => Builtin::RabbitVariant(reader.list_name(tag)?),
+        BuiltinKey::HorseVariant => Builtin::HorseVariant(reader.list_name(tag)?),
+        BuiltinKey::LlamaVariant => Builtin::LlamaVariant(reader.list_name(tag)?),
+        BuiltinKey::AxolotlVariant => Builtin::AxolotlVariant(reader.list_name(tag)?),
+        BuiltinKey::WolfCollar => Builtin::WolfCollar(WolfCollar(reader.dye_color(tag)?)),
+        BuiltinKey::TropicalFishBaseColor => {
+            Builtin::TropicalFishBaseColor(TropicalFishBaseColor(reader.dye_color(tag)?))
+        }
+        BuiltinKey::TropicalFishPatternColor => {
+            Builtin::TropicalFishPatternColor(TropicalFishPatternColor(reader.dye_color(tag)?))
+        }
+        BuiltinKey::CatCollar => Builtin::CatCollar(CatCollar(reader.dye_color(tag)?)),
+        BuiltinKey::SheepColor => Builtin::SheepColor(SheepColor(reader.dye_color(tag)?)),
+        BuiltinKey::ShulkerColor => Builtin::ShulkerColor(ShulkerColor(reader.dye_color(tag)?)),
+        BuiltinKey::CushionColor => Builtin::CushionColor(CushionColor(reader.dye_color(tag)?)),
         BuiltinKey::ContainerLoot => {
             let map = reader.map(tag)?;
             Builtin::ContainerLoot(ContainerLoot {
@@ -492,14 +572,14 @@ fn read_flat_value<L: NameLookup>(
     })
 }
 
-struct Reader<'names, L> {
-    component: BuiltinKey,
+pub(crate) struct Reader<'names, L> {
+    pub(crate) component: BuiltinKey,
     names: &'names L,
     depth: u32,
 }
 
 impl<L: NameLookup> Reader<'_, L> {
-    fn bad(&self) -> SavedError {
+    pub(crate) fn bad(&self) -> SavedError {
         SavedError::BadValue(self.component)
     }
 
@@ -507,7 +587,7 @@ impl<L: NameLookup> Reader<'_, L> {
         TagNumber::of(tag).ok_or(self.bad())
     }
 
-    fn int(&self, tag: &NbtTag, range: RangeInclusive<i32>) -> Result<i32, SavedError> {
+    pub(crate) fn int(&self, tag: &NbtTag, range: RangeInclusive<i32>) -> Result<i32, SavedError> {
         let value = self.number(tag)?.to_int();
         if range.contains(&value) {
             Ok(value)
@@ -524,11 +604,11 @@ impl<L: NameLookup> Reader<'_, L> {
         Ok(self.number(tag)?.is_true())
     }
 
-    fn string<'tag>(&self, tag: &'tag NbtTag) -> Result<&'tag str, SavedError> {
+    pub(crate) fn string<'tag>(&self, tag: &'tag NbtTag) -> Result<&'tag str, SavedError> {
         tag.extract_string().ok_or(self.bad())
     }
 
-    fn map<'tag>(&self, tag: &'tag NbtTag) -> Result<&'tag NbtCompound, SavedError> {
+    pub(crate) fn map<'tag>(&self, tag: &'tag NbtTag) -> Result<&'tag NbtCompound, SavedError> {
         tag.extract_compound().ok_or(self.bad())
     }
 
@@ -536,7 +616,7 @@ impl<L: NameLookup> Reader<'_, L> {
         tag.extract_list().ok_or(self.bad())
     }
 
-    fn necessary<'tag>(
+    pub(crate) fn necessary<'tag>(
         &self,
         map: &'tag NbtCompound,
         field: &str,
@@ -742,7 +822,7 @@ impl<L: NameLookup> Reader<'_, L> {
         Ok(equippable)
     }
 
-    fn optional<T>(
+    pub(crate) fn optional<T>(
         &self,
         map: &NbtCompound,
         field: &str,
@@ -751,7 +831,12 @@ impl<L: NameLookup> Reader<'_, L> {
         map.get(field).map(|tag| read(self, tag)).transpose()
     }
 
-    fn flag(&self, map: &NbtCompound, field: &str, absent: bool) -> Result<bool, SavedError> {
+    pub(crate) fn flag(
+        &self,
+        map: &NbtCompound,
+        field: &str,
+        absent: bool,
+    ) -> Result<bool, SavedError> {
         map.get(field).map_or(Ok(absent), |tag| self.boolean(tag))
     }
 
@@ -826,7 +911,7 @@ impl<L: NameLookup> Reader<'_, L> {
         })
     }
 
-    fn listed<T>(
+    pub(crate) fn listed<T>(
         &self,
         map: &NbtCompound,
         field: &str,
@@ -1151,6 +1236,30 @@ impl<L: NameLookup> Reader<'_, L> {
         weapon.sound = self.optional(map, "sound", Self::sound_event)?;
         weapon.hit_sound = self.optional(map, "hit_sound", Self::sound_event)?;
         Ok(weapon)
+    }
+
+    fn enchantable(&self, tag: &NbtTag) -> Result<Enchantable, SavedError> {
+        let map = self.map(tag)?;
+        Ok(Enchantable(
+            self.int(self.necessary(map, "value")?, POSITIVE)?,
+        ))
+    }
+
+    fn jukebox_playable(&self, tag: &NbtTag) -> Result<JukeboxPlayable, SavedError> {
+        let id = self.entry(NameTable::JukeboxSong, self.identifier(tag)?)?;
+        Ok(JukeboxPlayable(JukeboxSongId(id)))
+    }
+
+    fn variant<I: VariantId>(&self, tag: &NbtTag) -> Result<I, SavedError> {
+        Ok(I::new(self.entry(I::TABLE, self.identifier(tag)?)?))
+    }
+
+    fn list_name<T: ListName>(&self, tag: &NbtTag) -> Result<T, SavedError> {
+        T::from_name(self.string(tag)?).ok_or(self.bad())
+    }
+
+    fn dye_color(&self, tag: &NbtTag) -> Result<DyeColor, SavedError> {
+        DyeColor::from_name(self.string(tag)?).ok_or(self.bad())
     }
 
     fn swing_animation(&self, tag: &NbtTag) -> Result<SwingAnimation, SavedError> {

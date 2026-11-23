@@ -13,16 +13,25 @@ use crate::BlockSet;
 use crate::Builtin;
 use crate::BuiltinKey;
 use crate::BundleContents;
+use crate::CatCollar;
+use crate::CatSoundVariant;
+use crate::CatVariant;
 use crate::ChargedProjectiles;
+use crate::ChickenSoundVariant;
+use crate::ChickenVariant;
 use crate::ComponentType;
 use crate::Container;
 use crate::ContainerLoot;
+use crate::CowSoundVariant;
+use crate::CowVariant;
+use crate::CushionColor;
 use crate::CustomData;
 use crate::CustomModelData;
 use crate::CustomName;
 use crate::Damage;
 use crate::DyedColor;
 use crate::EffectInstance;
+use crate::Enchantable;
 use crate::EnchantmentGlintOverride;
 use crate::Enchantments;
 use crate::EntityData;
@@ -31,6 +40,7 @@ use crate::Equippable;
 use crate::FireworkExplosion;
 use crate::Fireworks;
 use crate::Food;
+use crate::FrogVariant;
 use crate::HashError;
 use crate::InlineInstrument;
 use crate::Instrument;
@@ -38,6 +48,8 @@ use crate::InstrumentId;
 use crate::InteractAnimation;
 use crate::ItemName;
 use crate::ItemStack;
+use crate::JukeboxPlayable;
+use crate::JukeboxSongId;
 use crate::LodestoneTracker;
 use crate::Lore;
 use crate::MapDecorations;
@@ -52,10 +64,14 @@ use crate::PaintingVariant;
 use crate::PaintingVariantId;
 use crate::PatchEntry;
 use crate::PiercingWeapon;
+use crate::PigSoundVariant;
+use crate::PigVariant;
 use crate::PotionContents;
 use crate::RegistryValue;
 use crate::RepairCost;
 use crate::SavedError;
+use crate::SheepColor;
+use crate::ShulkerColor;
 use crate::SlotGroup;
 use crate::SoundEventRef;
 use crate::StewEffect;
@@ -66,13 +82,21 @@ use crate::Tool;
 use crate::ToolRule;
 use crate::TooltipDisplay;
 use crate::Trim;
+use crate::TropicalFishBaseColor;
+use crate::TropicalFishPatternColor;
 use crate::Unbreakable;
+use crate::VillagerVariant;
 use crate::WireError;
+use crate::WolfCollar;
+use crate::WolfSoundVariant;
+use crate::WolfVariant;
+use crate::ZombieNautilusVariant;
 use crate::check_saved_form::MAX_COUNT;
 use crate::check_saved_form::NOT_NEGATIVE;
 use crate::check_saved_form::OMINOUS_AMPLIFIER;
 use crate::check_saved_form::POSITIVE;
 use crate::check_saved_form::STACK_SIZE;
+use crate::list_name::ListName;
 use crate::lore::MAX_LINES;
 use crate::nbt_depth::LIST_TEMPLATE_LEVELS;
 use crate::nbt_depth::SLOT_TEMPLATE_LEVELS;
@@ -86,6 +110,7 @@ use crate::saved_sink::MapKey;
 use crate::saved_sink::NamedEntry;
 use crate::saved_sink::SavedSink;
 use crate::saved_sink::WireOnly;
+use crate::variant_id::VariantId;
 use mcrs_minecraft_nbt::MAX_DEPTH;
 
 pub(crate) const DISPLAY_DEFAULT: &str = "default";
@@ -182,6 +207,10 @@ fn saved_form_at<S: SavedSink, L: NameLookup>(
 }
 
 #[inline(never)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one dispatch arm per component saved form"
+)]
 fn flat_saved_form<S: SavedSink, L: NameLookup>(
     walk: &Walk<'_, L>,
     value: &Builtin,
@@ -268,6 +297,44 @@ fn flat_saved_form<S: SavedSink, L: NameLookup>(
                 ),
             ]))
         }),
+        Builtin::Enchantable(Enchantable(value)) => {
+            let value = walk.int(sink, *value, POSITIVE)?;
+            Ok(sink.fields([Field::new("value", value)]))
+        }
+        Builtin::WritableBookContent(book) => walk.writable_book(sink, book),
+        Builtin::WrittenBookContent(book) => walk.written_book(sink, book),
+        Builtin::JukeboxPlayable(JukeboxPlayable(JukeboxSongId(id))) => {
+            walk.entry(sink, NameTable::JukeboxSong, *id)
+        }
+        Builtin::VillagerVariant(VillagerVariant(id)) => walk.variant(sink, *id),
+        Builtin::WolfVariant(WolfVariant(id)) => walk.variant(sink, *id),
+        Builtin::WolfSoundVariant(WolfSoundVariant(id)) => walk.variant(sink, *id),
+        Builtin::PigVariant(PigVariant(id)) => walk.variant(sink, *id),
+        Builtin::PigSoundVariant(PigSoundVariant(id)) => walk.variant(sink, *id),
+        Builtin::CowVariant(CowVariant(id)) => walk.variant(sink, *id),
+        Builtin::CowSoundVariant(CowSoundVariant(id)) => walk.variant(sink, *id),
+        Builtin::ChickenVariant(ChickenVariant(id)) => walk.variant(sink, *id),
+        Builtin::ChickenSoundVariant(ChickenSoundVariant(id)) => walk.variant(sink, *id),
+        Builtin::ZombieNautilusVariant(ZombieNautilusVariant(id)) => walk.variant(sink, *id),
+        Builtin::FrogVariant(FrogVariant(id)) => walk.variant(sink, *id),
+        Builtin::CatVariant(CatVariant(id)) => walk.variant(sink, *id),
+        Builtin::CatSoundVariant(CatSoundVariant(id)) => walk.variant(sink, *id),
+        Builtin::FoxVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::SalmonSize(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::ParrotVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::TropicalFishPattern(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::MooshroomVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::RabbitVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::HorseVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::LlamaVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::AxolotlVariant(variant) => Ok(sink.leaf(Leaf::String(variant.name()))),
+        Builtin::WolfCollar(WolfCollar(color))
+        | Builtin::TropicalFishBaseColor(TropicalFishBaseColor(color))
+        | Builtin::TropicalFishPatternColor(TropicalFishPatternColor(color))
+        | Builtin::CatCollar(CatCollar(color))
+        | Builtin::SheepColor(SheepColor(color))
+        | Builtin::ShulkerColor(ShulkerColor(color))
+        | Builtin::CushionColor(CushionColor(color)) => Ok(sink.leaf(Leaf::String(color.name()))),
         Builtin::ContainerLoot(loot) => Ok(walk.container_loot(sink, loot)),
     }
 }
@@ -280,7 +347,7 @@ pub(crate) fn is_instrument_range(value: f32) -> bool {
     value.total_cmp(&0.0).is_gt() && value <= f32::MAX
 }
 
-fn listed<S: SavedSink, T>(
+pub(crate) fn listed<S: SavedSink, T>(
     sink: &mut S,
     items: &[T],
     element: impl FnMut(&mut S, &T) -> Result<S::Node, Fault>,
@@ -291,8 +358,8 @@ fn listed<S: SavedSink, T>(
     sink.list(items.iter(), element).map(Some)
 }
 
-struct Walk<'names, L> {
-    component: BuiltinKey,
+pub(crate) struct Walk<'names, L> {
+    pub(crate) component: BuiltinKey,
     names: &'names L,
     depth: u32,
 }
@@ -322,7 +389,11 @@ impl<L: NameLookup> Walk<'_, L> {
         Ok(sink.leaf(Leaf::Name(self.name(table, id)?)))
     }
 
-    fn text<S: SavedSink>(&self, sink: &mut S, text: &Text) -> Result<S::Node, Fault> {
+    fn variant<S: SavedSink, I: VariantId>(&self, sink: &S, id: I) -> Result<S::Node, Fault> {
+        self.entry(sink, I::TABLE, id.get())
+    }
+
+    pub(crate) fn text<S: SavedSink>(&self, sink: &mut S, text: &Text) -> Result<S::Node, Fault> {
         sink.text(text).ok_or(Fault::BadValue(self.component))
     }
 

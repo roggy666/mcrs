@@ -32,10 +32,18 @@ use crate::BlockTagId;
 use crate::Builtin;
 use crate::BuiltinKey;
 use crate::BundleContents;
+use crate::CatCollar;
+use crate::CatSoundVariant;
+use crate::CatVariant;
 use crate::ChargedProjectiles;
+use crate::ChickenSoundVariant;
+use crate::ChickenVariant;
 use crate::ComponentType;
 use crate::Container;
 use crate::Count;
+use crate::CowSoundVariant;
+use crate::CowVariant;
+use crate::CushionColor;
 use crate::CustomData;
 use crate::CustomModelData;
 use crate::CustomName;
@@ -44,6 +52,7 @@ use crate::DimensionPos;
 use crate::DyeColor;
 use crate::DyedColor;
 use crate::EffectInstance;
+use crate::Enchantable;
 use crate::EnchantmentGlintOverride;
 use crate::EnchantmentId;
 use crate::EnchantmentLevel;
@@ -58,6 +67,7 @@ use crate::FireworkExplosion;
 use crate::FireworkShape;
 use crate::Fireworks;
 use crate::Food;
+use crate::FrogVariant;
 use crate::InlineBannerPattern;
 use crate::InlineInstrument;
 use crate::InlineSoundEvent;
@@ -69,6 +79,8 @@ use crate::InteractAnimation;
 use crate::ItemModel;
 use crate::ItemName;
 use crate::ItemStack;
+use crate::JukeboxPlayable;
+use crate::JukeboxSongId;
 use crate::Kind;
 use crate::LodestoneTracker;
 use crate::Lore;
@@ -83,12 +95,16 @@ use crate::OminousBottleAmplifier;
 use crate::PaintingVariant;
 use crate::PaintingVariantId;
 use crate::PiercingWeapon;
+use crate::PigSoundVariant;
+use crate::PigVariant;
 use crate::PotionContents;
 use crate::PotionId;
 use crate::Profile;
 use crate::Rarity;
 use crate::RegistryValue;
 use crate::RepairCost;
+use crate::SheepColor;
+use crate::ShulkerColor;
 use crate::SlotGroup;
 use crate::SoundEventId;
 use crate::SoundEventRef;
@@ -103,9 +119,17 @@ use crate::TooltipDisplay;
 use crate::Trim;
 use crate::TrimMaterialId;
 use crate::TrimPatternId;
+use crate::TropicalFishBaseColor;
+use crate::TropicalFishPatternColor;
 use crate::Unbreakable;
+use crate::VillagerVariant;
 use crate::WireError;
+use crate::WolfCollar;
+use crate::WolfSoundVariant;
+use crate::WolfVariant;
+use crate::ZombieNautilusVariant;
 use crate::check_saved_form::MAX_COUNT;
+use crate::list_name::ListName;
 use crate::lore::MAX_LINES;
 use crate::nbt_depth::LIST_TEMPLATE_LEVELS;
 use crate::nbt_depth::SLOT_TEMPLATE_LEVELS;
@@ -115,6 +139,7 @@ use crate::saved_form::Fault;
 use crate::saved_form::saved_form;
 use crate::split_nbt::split_nbt;
 use crate::tag_sink::TagSink;
+use crate::variant_id::VariantId;
 use crate::wire::Entries;
 use crate::wire::read_patch;
 use crate::wire::write_patch;
@@ -188,6 +213,10 @@ pub(crate) fn read_value_at<L: NameLookup>(
 }
 
 #[inline(never)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one dispatch arm per component wire form"
+)]
 fn read_flat_value<L: NameLookup>(
     reader: &Reader<'_, L>,
     input: &mut &[u8],
@@ -285,22 +314,87 @@ fn read_flat_value<L: NameLookup>(
             Builtin::BannerPatterns(BannerPatterns(reader.list(input, Reader::banner_layer)?))
         }
         BuiltinKey::Bees => Builtin::Bees(Bees(reader.list(input, Reader::bee)?)),
+        BuiltinKey::Enchantable => Builtin::Enchantable(reader.enchantable(input)?),
+        BuiltinKey::WritableBookContent => {
+            Builtin::WritableBookContent(reader.writable_book(input)?)
+        }
+        BuiltinKey::WrittenBookContent => Builtin::WrittenBookContent(reader.written_book(input)?),
+        BuiltinKey::JukeboxPlayable => Builtin::JukeboxPlayable(reader.jukebox_playable(input)?),
+        BuiltinKey::VillagerVariant => {
+            Builtin::VillagerVariant(VillagerVariant(reader.variant(input)?))
+        }
+        BuiltinKey::WolfVariant => Builtin::WolfVariant(WolfVariant(reader.variant(input)?)),
+        BuiltinKey::WolfSoundVariant => {
+            Builtin::WolfSoundVariant(WolfSoundVariant(reader.variant(input)?))
+        }
+        BuiltinKey::PigVariant => Builtin::PigVariant(PigVariant(reader.variant(input)?)),
+        BuiltinKey::PigSoundVariant => {
+            Builtin::PigSoundVariant(PigSoundVariant(reader.variant(input)?))
+        }
+        BuiltinKey::CowVariant => Builtin::CowVariant(CowVariant(reader.variant(input)?)),
+        BuiltinKey::CowSoundVariant => {
+            Builtin::CowSoundVariant(CowSoundVariant(reader.variant(input)?))
+        }
+        BuiltinKey::ChickenVariant => {
+            Builtin::ChickenVariant(ChickenVariant(reader.variant(input)?))
+        }
+        BuiltinKey::ChickenSoundVariant => {
+            Builtin::ChickenSoundVariant(ChickenSoundVariant(reader.variant(input)?))
+        }
+        BuiltinKey::ZombieNautilusVariant => {
+            Builtin::ZombieNautilusVariant(ZombieNautilusVariant(reader.variant(input)?))
+        }
+        BuiltinKey::FrogVariant => Builtin::FrogVariant(FrogVariant(reader.variant(input)?)),
+        BuiltinKey::CatVariant => Builtin::CatVariant(CatVariant(reader.variant(input)?)),
+        BuiltinKey::CatSoundVariant => {
+            Builtin::CatSoundVariant(CatSoundVariant(reader.variant(input)?))
+        }
+        BuiltinKey::FoxVariant => Builtin::FoxVariant(reader.list_name(input)?),
+        BuiltinKey::SalmonSize => Builtin::SalmonSize(reader.list_name(input)?),
+        BuiltinKey::ParrotVariant => Builtin::ParrotVariant(reader.list_name(input)?),
+        BuiltinKey::TropicalFishPattern => Builtin::TropicalFishPattern(reader.list_name(input)?),
+        BuiltinKey::MooshroomVariant => Builtin::MooshroomVariant(reader.list_name(input)?),
+        BuiltinKey::RabbitVariant => Builtin::RabbitVariant(reader.list_name(input)?),
+        BuiltinKey::HorseVariant => Builtin::HorseVariant(reader.list_name(input)?),
+        BuiltinKey::LlamaVariant => Builtin::LlamaVariant(reader.list_name(input)?),
+        BuiltinKey::AxolotlVariant => Builtin::AxolotlVariant(reader.list_name(input)?),
+        BuiltinKey::WolfCollar => {
+            Builtin::WolfCollar(WolfCollar(reader.list_entry(input, &DyeColor::ALL)?))
+        }
+        BuiltinKey::TropicalFishBaseColor => Builtin::TropicalFishBaseColor(TropicalFishBaseColor(
+            reader.list_entry(input, &DyeColor::ALL)?,
+        )),
+        BuiltinKey::TropicalFishPatternColor => Builtin::TropicalFishPatternColor(
+            TropicalFishPatternColor(reader.list_entry(input, &DyeColor::ALL)?),
+        ),
+        BuiltinKey::CatCollar => {
+            Builtin::CatCollar(CatCollar(reader.list_entry(input, &DyeColor::ALL)?))
+        }
+        BuiltinKey::SheepColor => {
+            Builtin::SheepColor(SheepColor(reader.list_entry(input, &DyeColor::ALL)?))
+        }
+        BuiltinKey::ShulkerColor => {
+            Builtin::ShulkerColor(ShulkerColor(reader.list_entry(input, &DyeColor::ALL)?))
+        }
+        BuiltinKey::CushionColor => {
+            Builtin::CushionColor(CushionColor(reader.list_entry(input, &DyeColor::ALL)?))
+        }
         BuiltinKey::ContainerLoot => reader.saved_form_as_nbt(input)?,
     })
 }
 
-struct Reader<'names, L> {
-    component: BuiltinKey,
+pub(crate) struct Reader<'names, L> {
+    pub(crate) component: BuiltinKey,
     names: &'names L,
     depth: u32,
 }
 
 impl<L: NameLookup> Reader<'_, L> {
-    fn bad(&self) -> WireError {
+    pub(crate) fn bad(&self) -> WireError {
         WireError::BadValue(self.component)
     }
 
-    fn var_int(&self, input: &mut &[u8]) -> Result<i32, WireError> {
+    pub(crate) fn var_int(&self, input: &mut &[u8]) -> Result<i32, WireError> {
         read_var_int(input, |error| WireError::of_value(error, self.component))
     }
 
@@ -336,7 +430,7 @@ impl<L: NameLookup> Reader<'_, L> {
         Ok(*bytes)
     }
 
-    fn boolean(&self, input: &mut &[u8]) -> Result<bool, WireError> {
+    pub(crate) fn boolean(&self, input: &mut &[u8]) -> Result<bool, WireError> {
         match self.bytes(input)? {
             [0] => Ok(false),
             [1] => Ok(true),
@@ -509,7 +603,7 @@ impl<L: NameLookup> Reader<'_, L> {
         Ok(equippable)
     }
 
-    fn optional<T>(
+    pub(crate) fn optional<T>(
         &self,
         input: &mut &[u8],
         read: impl FnOnce(&Self, &mut &[u8]) -> Result<T, WireError>,
@@ -594,11 +688,11 @@ impl<L: NameLookup> Reader<'_, L> {
         Ok(ArgbColor(i32::from_be_bytes(self.bytes(input)?)))
     }
 
-    fn string(&self, input: &mut &[u8]) -> Result<String, WireError> {
+    pub(crate) fn string(&self, input: &mut &[u8]) -> Result<String, WireError> {
         String::decode(input).map_err(|error| WireError::of_value(&error, self.component))
     }
 
-    fn list<T>(
+    pub(crate) fn list<T>(
         &self,
         input: &mut &[u8],
         read: impl FnMut(&Self, &mut &[u8]) -> Result<T, WireError>,
@@ -634,7 +728,7 @@ impl<L: NameLookup> Reader<'_, L> {
         Ok(values)
     }
 
-    fn limited_list<T>(
+    pub(crate) fn limited_list<T>(
         &self,
         input: &mut &[u8],
         max: usize,
@@ -810,6 +904,23 @@ impl<L: NameLookup> Reader<'_, L> {
         }
     }
 
+    fn enchantable(&self, input: &mut &[u8]) -> Result<Enchantable, WireError> {
+        Enchantable::new(self.var_int(input)?).ok_or(WireError::OutOfRange(self.component))
+    }
+
+    fn jukebox_playable(&self, input: &mut &[u8]) -> Result<JukeboxPlayable, WireError> {
+        let id = self.registry_form(input, NameTable::JukeboxSong)?;
+        Ok(JukeboxPlayable(JukeboxSongId(id.ok_or(self.bad())?)))
+    }
+
+    fn variant<I: VariantId>(&self, input: &mut &[u8]) -> Result<I, WireError> {
+        Ok(I::new(self.known_id(input, I::TABLE)?))
+    }
+
+    fn list_name<T: ListName>(&self, input: &mut &[u8]) -> Result<T, WireError> {
+        T::from_id(self.var_int(input)?).ok_or(self.bad())
+    }
+
     fn instrument(
         &self,
         input: &mut &[u8],
@@ -936,17 +1047,61 @@ pub(crate) fn write_value<L: NameLookup>(
         Builtin::BannerPatterns(value) => writer.list(&value.0, output, Writer::banner_layer)?,
         Builtin::Container(container) => writer.container(container, output)?,
         Builtin::Bees(value) => writer.list(&value.0, output, Writer::bee)?,
+        Builtin::Enchantable(Enchantable(value)) => {
+            if *value < 1 {
+                return Err(WireError::OutOfRange(writer.component));
+            }
+            put_var_int(output, *value);
+        }
+        Builtin::WritableBookContent(book) => writer.writable_book(book, output)?,
+        Builtin::WrittenBookContent(book) => writer.written_book(book, output)?,
+        Builtin::JukeboxPlayable(playable) => write_registry_reference(output, playable.0.0),
+        Builtin::VillagerVariant(VillagerVariant(id)) => put_variant(output, *id),
+        Builtin::WolfVariant(WolfVariant(id)) => put_variant(output, *id),
+        Builtin::WolfSoundVariant(WolfSoundVariant(id)) => put_variant(output, *id),
+        Builtin::PigVariant(PigVariant(id)) => put_variant(output, *id),
+        Builtin::PigSoundVariant(PigSoundVariant(id)) => put_variant(output, *id),
+        Builtin::CowVariant(CowVariant(id)) => put_variant(output, *id),
+        Builtin::CowSoundVariant(CowSoundVariant(id)) => put_variant(output, *id),
+        Builtin::ChickenVariant(ChickenVariant(id)) => put_variant(output, *id),
+        Builtin::ChickenSoundVariant(ChickenSoundVariant(id)) => put_variant(output, *id),
+        Builtin::ZombieNautilusVariant(ZombieNautilusVariant(id)) => put_variant(output, *id),
+        Builtin::FrogVariant(FrogVariant(id)) => put_variant(output, *id),
+        Builtin::CatVariant(CatVariant(id)) => put_variant(output, *id),
+        Builtin::CatSoundVariant(CatSoundVariant(id)) => put_variant(output, *id),
+        Builtin::FoxVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::SalmonSize(variant) => put_var_int(output, variant.id()),
+        Builtin::ParrotVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::TropicalFishPattern(variant) => put_var_int(output, variant.id()),
+        Builtin::MooshroomVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::RabbitVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::HorseVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::LlamaVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::AxolotlVariant(variant) => put_var_int(output, variant.id()),
+        Builtin::WolfCollar(WolfCollar(color))
+        | Builtin::TropicalFishBaseColor(TropicalFishBaseColor(color))
+        | Builtin::TropicalFishPatternColor(TropicalFishPatternColor(color))
+        | Builtin::CatCollar(CatCollar(color))
+        | Builtin::SheepColor(SheepColor(color))
+        | Builtin::ShulkerColor(ShulkerColor(color))
+        | Builtin::CushionColor(CushionColor(color)) => {
+            writer.list_id(&DyeColor::ALL, *color, output)?
+        }
         Builtin::ContainerLoot(_) => writer.saved_form_as_nbt(value, output)?,
     }
     Ok(())
 }
 
-fn put_boolean(output: &mut Vec<u8>, value: bool) {
+pub(crate) fn put_boolean(output: &mut Vec<u8>, value: bool) {
     output.push(u8::from(value));
 }
 
-struct Writer<'names, L> {
-    component: BuiltinKey,
+fn put_variant<I: VariantId>(output: &mut Vec<u8>, id: I) {
+    put_var_int(output, i32::from(id.get()));
+}
+
+pub(crate) struct Writer<'names, L> {
+    pub(crate) component: BuiltinKey,
     names: &'names L,
     depth: u32,
 }
@@ -1067,7 +1222,7 @@ impl<L: NameLookup> Writer<'_, L> {
         )
     }
 
-    fn optional<T>(
+    pub(crate) fn optional<T>(
         &self,
         value: Option<T>,
         output: &mut Vec<u8>,
@@ -1094,13 +1249,13 @@ impl<L: NameLookup> Writer<'_, L> {
         }
     }
 
-    fn string(&self, value: &str, output: &mut Vec<u8>) -> Result<(), WireError> {
+    pub(crate) fn string(&self, value: &str, output: &mut Vec<u8>) -> Result<(), WireError> {
         value
             .encode(&mut *output)
             .map_err(|_| WireError::OutOfRange(self.component))
     }
 
-    fn list<T>(
+    pub(crate) fn list<T>(
         &self,
         values: &[T],
         output: &mut Vec<u8>,
@@ -1254,7 +1409,7 @@ impl<L: NameLookup> Writer<'_, L> {
         })
     }
 
-    fn limited_list<T>(
+    pub(crate) fn limited_list<T>(
         &self,
         values: &[T],
         max: usize,

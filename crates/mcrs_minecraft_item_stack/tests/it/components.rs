@@ -1,6 +1,7 @@
 use std::hash::DefaultHasher;
 use std::hash::Hash;
 use std::hash::Hasher;
+use std::mem::size_of;
 use std::num::NonZeroU8;
 
 use mcrs_minecraft_entity_attribute::ModifierOperation;
@@ -8,11 +9,14 @@ use mcrs_minecraft_item_stack::AttributeId;
 use mcrs_minecraft_item_stack::AttributeModifier;
 use mcrs_minecraft_item_stack::BlockSet;
 use mcrs_minecraft_item_stack::BlockTagId;
+use mcrs_minecraft_item_stack::Builtin;
 use mcrs_minecraft_item_stack::ComponentType;
 use mcrs_minecraft_item_stack::Damage;
+use mcrs_minecraft_item_stack::Enchantable;
 use mcrs_minecraft_item_stack::EnchantmentId;
 use mcrs_minecraft_item_stack::EnchantmentLevel;
 use mcrs_minecraft_item_stack::Enchantments;
+use mcrs_minecraft_item_stack::Filterable;
 use mcrs_minecraft_item_stack::Food;
 use mcrs_minecraft_item_stack::ItemModel;
 use mcrs_minecraft_item_stack::Lore;
@@ -22,6 +26,7 @@ use mcrs_minecraft_item_stack::RepairCost;
 use mcrs_minecraft_item_stack::Tool;
 use mcrs_minecraft_item_stack::ToolRule;
 use mcrs_minecraft_item_stack::TooltipDisplay;
+use mcrs_minecraft_item_stack::WritableBookContent;
 use mcrs_minecraft_resource::ResourceLocation;
 use mcrs_minecraft_resource::ResourceLocationBuf;
 use mcrs_minecraft_text::Text;
@@ -151,7 +156,10 @@ fn constructors_accept_only_the_ranges_of_the_saved_form() {
             .is_some()
     };
     let lore = |lines: usize| Lore::new(vec![Text::default(); lines]).is_some();
-    let cases: [(&str, bool, bool); 27] = [
+    let page = |units: &str, count: usize| {
+        WritableBookContent::new(vec![Filterable::new(units.to_owned()); count]).is_some()
+    };
+    let cases: [(&str, bool, bool); 37] = [
         ("max stack size 0", MaxStackSize::new(0).is_some(), false),
         ("max stack size 1", MaxStackSize::new(1).is_some(), true),
         ("max stack size 99", MaxStackSize::new(99).is_some(), true),
@@ -183,6 +191,32 @@ fn constructors_accept_only_the_ranges_of_the_saved_form() {
         ("the largest speed", rule(f32::MAX), true),
         ("speed 1.5", rule(1.5), true),
         ("speed -infinity", rule(f32::NEG_INFINITY), false),
+        ("enchantable 0", Enchantable::new(0).is_some(), false),
+        ("enchantable 1", Enchantable::new(1).is_some(), true),
+        (
+            "enchantable max",
+            Enchantable::new(i32::MAX).is_some(),
+            true,
+        ),
+        ("100 pages", page("p", 100), true),
+        ("101 pages", page("p", 101), false),
+        ("a page of 1024 units", page(&"a".repeat(1024), 1), true),
+        ("a page of 1025 units", page(&"a".repeat(1025), 1), false),
+        (
+            "a page of 512 pairs",
+            page(&"\u{1F600}".repeat(512), 1),
+            true,
+        ),
+        (
+            "a page of 513 pairs",
+            page(&"\u{1F600}".repeat(513), 1),
+            false,
+        ),
+        (
+            "a page of 1024 bytes in 341 code points",
+            page(&"\u{20AC}".repeat(341), 1),
+            true,
+        ),
     ];
     for (name, accepted, expected) in cases {
         assert_eq!(accepted, expected, "{name}");
@@ -202,4 +236,13 @@ fn an_identifier_is_equal_in_its_borrowed_and_owned_forms() {
     let other =
         ItemModel::new(ResourceLocationBuf::read("minecraft:stone").expect("a valid identifier"));
     assert_relation("two models", &other, &borrowed, false);
+}
+
+#[test]
+fn a_builtin_value_keeps_the_size_of_its_largest_variant() {
+    assert!(
+        size_of::<Builtin>() <= 192,
+        "a new variant grew the patch entry past the equippable value: {}",
+        size_of::<Builtin>()
+    );
 }
