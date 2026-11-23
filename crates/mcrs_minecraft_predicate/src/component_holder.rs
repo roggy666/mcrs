@@ -97,6 +97,7 @@ impl<'a> ComponentHolder<'a> {
         }
     }
 
+    #[expect(clippy::too_many_lines, reason = "one arm per component type")]
     pub(crate) fn has(self, kind: DataComponentType) -> bool {
         match kind {
             DataComponentType::MaxStackSize => self.effective::<MaxStackSize>().is_some(),
