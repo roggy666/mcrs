@@ -2587,9 +2587,9 @@ wire form `01`. `{"value":128}` has the wire form `80 01`. The inputs `{"value":
 are decode errors. Prototypes: 77 prototypes have this component, with 11 different values from 1
 to 25. The value is 15 for 21 of them. The other 1609 prototypes do not have it.
 
-**STK-SHP-065** (`source_suggested`, wire). A filterable value is a value with a raw form and an
-optional filtered form. The rule of a component states the form of the two values: a string or a
-text. A filterable value has these fields:
+**STK-SHP-065** (`source_suggested_black_box_confirmed`, wire). A filterable value is a value with a
+raw form and an optional filtered form. The rule of a component states the form of the two values:
+a string or a text. A filterable value has these fields:
 
 | Field | Saved form | Range | Absent | Wire form |
 |-------|------------|-------|--------|-----------|
@@ -2606,7 +2606,7 @@ The writer of the saved form always writes the map. It omits `filtered` when `fi
 value. The hash node is the map node of that map. Equality: two filterable values are equal when
 the raw forms are equal, and the filtered forms are equal or absent in both.
 
-**STK-SHP-066** (`source_suggested`, wire). `minecraft:writable_book_content`:
+**STK-SHP-066** (`source_suggested_black_box_confirmed`, wire). `minecraft:writable_book_content`:
 
 | Field | Saved form | Range | Absent | Wire form |
 |-------|------------|-------|--------|-----------|
@@ -2620,7 +2620,7 @@ writer omits `pages` when the list is empty. Thus the empty component has the sa
 wire form `00` and the hash -982207288. Prototypes: 1 prototype has this component. It is
 `minecraft:writable_book`, with the empty map `{}`. The other 1685 prototypes do not have it.
 
-**STK-SHP-067** (`source_suggested`, wire). `minecraft:written_book_content`:
+**STK-SHP-067** (`source_suggested_black_box_confirmed`, wire). `minecraft:written_book_content`:
 
 | Field | Saved form | Range | Absent | Wire form |
 |-------|------------|-------|--------|-----------|
