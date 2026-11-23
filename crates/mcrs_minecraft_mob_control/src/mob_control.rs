@@ -2,6 +2,7 @@ use glam::DVec3;
 use mcrs_minecraft_brain::Applied;
 use mcrs_minecraft_brain::Intents;
 use mcrs_minecraft_brain::LookIntent;
+use mcrs_minecraft_pathfind::Flight;
 use mcrs_minecraft_pathfind::FoundPath;
 use mcrs_minecraft_pathfind::Navigation;
 use mcrs_minecraft_pathfind::PathWorld;
@@ -12,6 +13,7 @@ use crate::BodyRotation;
 use crate::ControlInput;
 use crate::ControlOutput;
 use crate::ControlSteering;
+use crate::FlightControl;
 use crate::Follower;
 use crate::LookControl;
 use crate::LookDefaults;
@@ -39,6 +41,14 @@ impl MobControl {
             movement: MoveControl::default(),
             look: LookControl::default(),
             body: BodyRotation::default(),
+        }
+    }
+
+    #[must_use]
+    pub fn flying(defaults: LookDefaults, flight: FlightControl) -> Self {
+        Self {
+            movement: MoveControl::flying(flight),
+            ..Self::new(defaults)
         }
     }
 
@@ -77,7 +87,10 @@ impl MobControl {
         navigation: &mut Navigation,
         world: &W,
     ) -> ControlOutput {
-        let followed = self.follower.step(input, navigation, world);
+        let flight = self.movement.flight().map(|flight| Flight {
+            can_float: flight.can_float,
+        });
+        let followed = self.follower.step(input, navigation, world, flight);
         if let Some(wanted) = followed.wanted {
             self.movement.set_wanted(wanted);
         }
@@ -90,7 +103,7 @@ impl MobControl {
         ControlOutput {
             steering: Some(ControlSteering {
                 sideways: input.sideways * DECAY,
-                vertical: 0.0,
+                vertical: moved.vertical,
                 forward: moved.forward,
                 jump: moved.jump,
                 speed: moved.speed.unwrap_or(input.speed),
@@ -100,6 +113,7 @@ impl MobControl {
             head_yaw: Some(head.head_yaw),
             body_yaw: None,
             path_ended: followed.ended,
+            no_gravity: moved.no_gravity,
         }
     }
 

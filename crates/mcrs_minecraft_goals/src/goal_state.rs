@@ -5,6 +5,7 @@ use crate::Gate;
 use crate::LookAroundGoal;
 use crate::LookAtPlayerGoal;
 use crate::StrollGoal;
+use crate::WanderGoal;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum GoalState {
@@ -17,6 +18,7 @@ pub enum GoalState {
     Stroll(StrollGoal),
     LookAtPlayer(LookAtPlayerGoal),
     LookAround(LookAroundGoal),
+    Wander(WanderGoal),
     Melee(MeleeState),
     Leap(Gate),
     Avoid(AvoidState),

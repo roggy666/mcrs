@@ -63,6 +63,7 @@ pub use attribute_base_table::attribute_bases;
 pub use client_motion::ClientMotion;
 pub use entity_type_data::EntityTypeData;
 pub use life::Life;
+pub use mob_data::FlightData;
 pub use mob_data::MobData;
 pub use precise_sync::PreciseSync;
 pub use sprint_modifier::SPRINT_MODIFIER;

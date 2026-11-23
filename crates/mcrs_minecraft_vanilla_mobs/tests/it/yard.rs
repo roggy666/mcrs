@@ -120,6 +120,7 @@ impl Yard {
             key: mob.key,
             position: mob.position,
             velocity: Vec3::ZERO,
+            yaw: 0.0,
             kind: kind(mob.kind),
             flags: MobFlags::ALIVE
                 .union(MobFlags::ON_GROUND)

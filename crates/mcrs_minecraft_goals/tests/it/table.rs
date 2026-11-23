@@ -81,6 +81,7 @@ fn view(key: u128, damage: Option<DamageRecord>) -> MobView {
         key: EntityUuid::from_u128(key << 64),
         position: DVec3::new(32.5, 0.0, 32.5),
         velocity: Vec3::ZERO,
+        yaw: 0.0,
         kind: ANIMAL,
         flags: MobFlags::ALIVE.union(MobFlags::ON_GROUND),
         health: 10.0,
@@ -298,7 +299,7 @@ static BABY_PANIC: GoalTable = GoalTable {
     },
 };
 
-fn panic_path_of(age: i32) -> Option<f32> {
+fn panic_path_of(age: i16) -> Option<f32> {
     let ground = FlatGround {
         side: 64,
         pond: None,

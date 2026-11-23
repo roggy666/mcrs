@@ -50,32 +50,44 @@ impl GoalWorld for FlatGround {
                 flags: CellFlags::LEGACY_SOLID,
                 malus: -1.0,
                 walk_value: 0.0,
+                path: PathType::Blocked,
             };
         }
         match at.y {
             ..0 => GroundCell {
-                flags: CellFlags::LEGACY_SOLID.union(CellFlags::STABLE_FLOOR),
+                flags: CellFlags::LEGACY_SOLID
+                    .union(CellFlags::STABLE_FLOOR)
+                    .union(CellFlags::STANDABLE),
                 malus: -1.0,
                 walk_value: 0.0,
+                path: PathType::Blocked,
             },
             0 if self.pond.is_some_and(|pond| pond.holds(at)) => GroundCell {
                 flags: CellFlags::STABLE_FLOOR
                     .union(CellFlags::NO_COLLISION)
+                    .union(CellFlags::STANDABLE)
                     .union(CellFlags::WATER),
                 malus: WATER_MALUS,
                 walk_value: 0.0,
+                path: PathType::Water,
             },
             0 => GroundCell {
                 flags: CellFlags::STABLE_FLOOR
                     .union(CellFlags::NO_COLLISION)
-                    .union(CellFlags::GRASS_BELOW),
+                    .union(CellFlags::GRASS_BELOW)
+                    .union(CellFlags::STANDABLE)
+                    .union(CellFlags::AIR),
                 malus: 0.0,
                 walk_value: 10.0,
+                path: PathType::Walkable,
             },
             _ => GroundCell {
-                flags: CellFlags::NO_COLLISION,
+                flags: CellFlags::NO_COLLISION
+                    .union(CellFlags::AIR)
+                    .union(CellFlags::AIR_BELOW),
                 malus: 0.0,
                 walk_value: 0.5,
+                path: PathType::Open,
             },
         }
     }
@@ -115,6 +127,14 @@ impl PathWorld for FlatGround {
 
     fn column_loaded(&self, _: BlockPos) -> bool {
         true
+    }
+
+    fn clear_between(&self, from: DVec3, to: DVec3) -> bool {
+        let steps = libm::ceil((to - from).length() * 4.0).max(1.0) as u32;
+        (0..=steps).all(|step| {
+            let point = from + (to - from) * (f64::from(step) / f64::from(steps));
+            PathWorld::path_cell(self, BlockPos::from(point)).is_air()
+        })
     }
 
     fn collides(&self, min: DVec3, max: DVec3) -> bool {

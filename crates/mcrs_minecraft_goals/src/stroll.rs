@@ -1,4 +1,5 @@
 use glam::DVec3;
+use mcrs_minecraft_brain::Landing;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::Turn;
 
@@ -73,6 +74,13 @@ fn stroll_destination<W: BrainWorld + ?Sized>(
     let mut random = turn.random(STROLL_SEARCH);
     let world = turn.world;
     let feet = turn.view.position;
+    if search == StrollSearch::Fly {
+        let kind = turn.kinds.get(turn.view.kind)?;
+        let landing = kind
+            .flight
+            .map_or(Landing::StandOn, |flight| flight.landing);
+        return crate::flight::stroll_destination(turn, kind, landing, &mut random);
+    }
     if search == StrollSearch::Land {
         return random_position::land_search(world, feet, SearchRange::new(10, 7), &mut random);
     }

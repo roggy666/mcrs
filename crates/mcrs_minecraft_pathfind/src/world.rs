@@ -14,6 +14,8 @@ pub trait PathWorld {
     fn column_loaded(&self, at: BlockPos) -> bool;
 
     fn collides(&self, min: DVec3, max: DVec3) -> bool;
+
+    fn clear_between(&self, from: DVec3, to: DVec3) -> bool;
 }
 
 pub trait SearchWorld {
@@ -26,6 +28,15 @@ pub trait SearchWorld {
     fn column_loaded(&mut self, at: BlockPos) -> bool;
 
     fn collides(&mut self, min: DVec3, max: DVec3) -> bool;
+}
+
+#[must_use]
+pub fn fluid_free<W: PathWorld + ?Sized>(world: &W, from: DVec3, to: DVec3) -> bool {
+    let steps = libm::ceil((to - from).length() * 4.0).max(1.0) as u32;
+    (0..=steps).all(|step| {
+        let point = from + (to - from) * (f64::from(step) / f64::from(steps));
+        !world.path_cell(BlockPos::from(point)).floatable()
+    })
 }
 
 #[must_use]
@@ -53,6 +64,10 @@ pub(crate) fn floor_level_in<W: SearchWorld + ?Sized>(
 impl<W: PathWorld + ?Sized> PathWorld for &W {
     fn path_cell(&self, at: BlockPos) -> PathCell {
         (**self).path_cell(at)
+    }
+
+    fn clear_between(&self, from: DVec3, to: DVec3) -> bool {
+        (**self).clear_between(from, to)
     }
 
     fn min_y(&self) -> i32 {

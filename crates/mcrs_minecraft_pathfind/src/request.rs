@@ -113,6 +113,11 @@ pub fn can_update_path(on_ground: bool, in_liquid: bool, passenger: bool) -> boo
 }
 
 #[must_use]
+pub fn can_update_path_flying(can_float: bool, in_liquid: bool, passenger: bool) -> bool {
+    (can_float && in_liquid) || !passenger
+}
+
+#[must_use]
 pub fn adjust_target<W: PathWorld + ?Sized>(world: &W, target: BlockPos) -> BlockPos {
     let min_y = world.min_y();
     let max_y = world.max_y();

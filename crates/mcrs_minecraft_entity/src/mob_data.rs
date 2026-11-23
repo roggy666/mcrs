@@ -5,6 +5,13 @@ pub struct MobData {
     pub pitch_limit: f32,
     pub head_yaw_limit: f32,
     pub ageable: bool,
+    pub flight: Option<FlightData>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct FlightData {
+    pub hovers: bool,
+    pub can_float: bool,
 }
 
 impl MobData {
@@ -13,6 +20,7 @@ impl MobData {
         pitch_limit: 40.0,
         head_yaw_limit: 75.0,
         ageable: false,
+        flight: None,
     };
 }
 

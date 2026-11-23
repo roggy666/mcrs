@@ -1,8 +1,10 @@
+use mcrs_minecraft_path_type::PathType;
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct GroundCell {
     pub flags: CellFlags,
     pub malus: f32,
     pub walk_value: f32,
+    pub path: PathType,
 }
 
 impl GroundCell {
@@ -15,7 +17,7 @@ impl GroundCell {
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
-pub struct CellFlags(u8);
+pub struct CellFlags(u16);
 
 impl CellFlags {
     pub const NONE: Self = Self(0);
@@ -25,6 +27,11 @@ impl CellFlags {
     pub const NO_COLLISION: Self = Self(1 << 3);
     pub const GRASS_BELOW: Self = Self(1 << 4);
     pub const EDIBLE: Self = Self(1 << 5);
+    pub const AIR: Self = Self(1 << 6);
+    pub const AIR_BELOW: Self = Self(1 << 7);
+    pub const LEAVES_BELOW: Self = Self(1 << 8);
+    pub const LOG_BELOW: Self = Self(1 << 9);
+    pub const STANDABLE: Self = Self(1 << 10);
 
     #[must_use]
     pub const fn union(self, other: Self) -> Self {

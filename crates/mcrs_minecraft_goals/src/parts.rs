@@ -17,6 +17,9 @@ pub const BEG_TIME: Part = Part(0x0A00);
 pub const TARGET_WAIT: Part = Part(0x0B00);
 pub const OWNER_TELEPORT: Part = Part(0x0C00);
 pub const FLEE_SUN_SEARCH: Part = Part(0x0D00);
+pub const FLY_START: Part = Part(0x0E00);
+pub const WANDER_WAIT: Part = Part(0x0F00);
+pub const WANDER_SEARCH: Part = Part(0x0F01);
 
 #[must_use]
 pub const fn slot_part(part: Part, slot: usize) -> Part {

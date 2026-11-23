@@ -302,6 +302,7 @@ fn panic_modifier(table: &'static GoalTable) -> Option<f32> {
             key: EntityUuid::from_u128(key << 64),
             position: DVec3::new(32.5, 0.0, 32.5),
             velocity: Vec3::ZERO,
+            yaw: 0.0,
             kind: kind(EntityType::Pig),
             flags: MobFlags::ALIVE.union(MobFlags::ON_GROUND),
             health: 10.0,

@@ -552,7 +552,9 @@ pub static PARROT_TABLE: GoalTable = GoalTable {
                 who: Panicker::Any,
             },
         ),
-        GoalRow::new(1, JUMP_MOVE, GoalKind::Sit),
+        GoalRow::new(0, JUMP, GoalKind::Float),
+        GoalRow::new(1, LOOK, look(8.0)),
+        GoalRow::new(2, JUMP_MOVE, GoalKind::Sit),
         GoalRow::new(
             2,
             MOVE_LOOK,
@@ -562,7 +564,14 @@ pub static PARROT_TABLE: GoalTable = GoalTable {
                 stop: 1.0,
             },
         ),
-        GoalRow::new(3, LOOK, look(8.0)),
+        GoalRow::new(
+            2,
+            MOVE,
+            GoalKind::Stroll {
+                speed: 1.0,
+                search: StrollSearch::Fly,
+            },
+        ),
     ],
     targets: &[],
     rules: RULES,
@@ -570,9 +579,11 @@ pub static PARROT_TABLE: GoalTable = GoalTable {
 
 pub static BEE_TABLE: GoalTable = GoalTable {
     goals: &[
-        GoalRow::new(1, MOVE_LOOK, breed(1.0, Kinds::Own, Mates::InLove)),
-        GoalRow::new(2, MOVE_LOOK, tempt(BEE_FOOD, 1.25)),
+        GoalRow::new(2, MOVE_LOOK, breed(1.0, Kinds::Own, Mates::InLove)),
+        GoalRow::new(3, MOVE_LOOK, tempt(BEE_FOOD, 1.25)),
         GoalRow::new(5, NONE, follow(1.25, Kinds::Own)),
+        GoalRow::new(8, MOVE, GoalKind::Wander { speed: 1.0 }),
+        GoalRow::new(9, JUMP, GoalKind::Float),
     ],
     targets: &[],
     rules: RULES,

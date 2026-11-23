@@ -3,6 +3,7 @@ use mcrs_minecraft_brain::Applied;
 use mcrs_minecraft_brain::PathIntent;
 use mcrs_minecraft_brain::Progress;
 use mcrs_minecraft_pathfind::Acceptance;
+use mcrs_minecraft_pathfind::Flight;
 use mcrs_minecraft_pathfind::FollowInput;
 use mcrs_minecraft_pathfind::FoundPath;
 use mcrs_minecraft_pathfind::Navigation;
@@ -81,6 +82,7 @@ impl Follower {
         input: &ControlInput,
         navigation: &mut Navigation,
         world: &W,
+        flight: Option<Flight>,
     ) -> FollowerStep {
         let flags = input.flags;
         let step = follow(
@@ -91,8 +93,10 @@ impl Follower {
                 in_liquid: flags.contains(BodyFlags::IN_LIQUID),
                 passenger: flags.contains(BodyFlags::PASSENGER),
                 width: input.body.width,
+                height: input.body.height,
                 speed: input.speed,
                 time: input.tick,
+                flight,
             },
             world,
         );

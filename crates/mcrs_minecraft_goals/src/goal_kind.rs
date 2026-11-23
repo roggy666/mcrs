@@ -69,6 +69,9 @@ pub enum GoalKind {
         range: f32,
     },
     LookAround,
+    Wander {
+        speed: f32,
+    },
     Melee {
         speed: f32,
         pursuit: Pursuit,
@@ -136,6 +139,7 @@ pub enum Mates {
 pub enum StrollSearch {
     Default,
     Land,
+    Fly,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

@@ -8,6 +8,7 @@ use mcrs_minecraft_brain::PoseBits;
 use mcrs_minecraft_damage::LastHit;
 use mcrs_minecraft_entity::EntityTypeData;
 use mcrs_minecraft_mob_control::ControlInput;
+use mcrs_minecraft_mob_control::FlightControl;
 use mcrs_minecraft_mob_control::LookDefaults;
 use mcrs_minecraft_mob_control::MeleeReflex;
 use mcrs_minecraft_mob_control::MobControl;
@@ -42,11 +43,13 @@ pub struct BrainState {
     pub owner: EntityRef,
     pub follow_range: f32,
     pub attack_damage: f32,
+    pub flying_speed: f32,
 }
 
 impl BrainState {
     pub const DEFAULT_FOLLOW_RANGE: f32 = 16.0;
     pub const DEFAULT_ATTACK_DAMAGE: f32 = 2.0;
+    pub const DEFAULT_FLYING_SPEED: f32 = 0.02;
 
     #[must_use]
     pub fn new(
@@ -58,10 +61,22 @@ impl BrainState {
         Some(Self {
             kind,
             rules,
-            control: MobControl::new(LookDefaults {
-                turn_speed: mob.head_turn_speed,
-                pitch_limit: mob.pitch_limit,
-            }),
+            control: match mob.flight {
+                Some(flight) => MobControl::flying(
+                    LookDefaults {
+                        turn_speed: mob.head_turn_speed,
+                        pitch_limit: mob.pitch_limit,
+                    },
+                    FlightControl {
+                        hovers: flight.hovers,
+                        can_float: flight.can_float,
+                    },
+                ),
+                None => MobControl::new(LookDefaults {
+                    turn_speed: mob.head_turn_speed,
+                    pitch_limit: mob.pitch_limit,
+                }),
+            },
             travelled: None,
             turned: None,
             idle_time: 0,
@@ -82,6 +97,7 @@ impl BrainState {
             owner: EntityRef::NONE,
             follow_range: Self::DEFAULT_FOLLOW_RANGE,
             attack_damage: Self::DEFAULT_ATTACK_DAMAGE,
+            flying_speed: Self::DEFAULT_FLYING_SPEED,
         })
     }
 

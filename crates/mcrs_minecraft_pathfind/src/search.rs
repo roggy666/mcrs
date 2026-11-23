@@ -8,6 +8,7 @@ use crate::Region;
 use crate::Request;
 use crate::SearchWorld;
 use crate::Searcher;
+use crate::fly;
 use crate::ground;
 use crate::node::distance;
 use crate::searcher::Scene;
@@ -85,7 +86,11 @@ pub fn search_begin<W: SearchWorld + ?Sized>(
     if searcher.targets.is_empty() {
         return false;
     }
-    let start = ground::start_node(searcher, &mut scene);
+    let start = if mob.flies() {
+        fly::start_node(searcher, &mut scene)
+    } else {
+        ground::start_node(searcher, &mut scene)
+    };
     let start_pos = searcher.node(start).map_or(mob_block, |node| node.pos);
     let h = heuristic(searcher, start);
     if let Some(node) = searcher.node_mut(start) {
@@ -157,7 +162,11 @@ pub fn search_advance<W: SearchWorld + ?Sized>(
         if node.distance_to(run.start_pos) >= request.length {
             continue;
         }
-        ground::neighbours(searcher, &mut scene, current, &mut neighbours);
+        if mob.flies() {
+            fly::neighbours(searcher, &mut scene, current, &mut neighbours);
+        } else {
+            ground::neighbours(searcher, &mut scene, current, &mut neighbours);
+        }
         for &next in &neighbours {
             let Some(q) = searcher.node(next).copied() else {
                 continue;

@@ -7,6 +7,7 @@ mod breed;
 mod eat_grass;
 #[cfg(feature = "testing")]
 mod flat_ground;
+mod flight;
 mod float;
 mod follow_adult;
 mod gate;
@@ -31,6 +32,7 @@ mod tempt;
 
 #[cfg(feature = "testing")]
 pub use flat_ground::*;
+pub use flight::*;
 pub use float::*;
 pub use gate::*;
 pub use goal_kind::*;

@@ -1,7 +1,9 @@
 use mcrs_minecraft_brain::Dimensions;
 use mcrs_minecraft_brain::KindData;
 use mcrs_minecraft_brain::KindFlags;
+use mcrs_minecraft_brain::KindFlight;
 use mcrs_minecraft_brain::KindTable;
+use mcrs_minecraft_brain::Landing;
 use mcrs_minecraft_brain::MobKind;
 use mcrs_minecraft_entity::entity_type_keys::EntityType;
 use mcrs_minecraft_pathfind::PathType;
@@ -22,11 +24,11 @@ pub fn kind_table() -> KindTable {
 
 #[rustfmt::skip]
 pub const KINDS: &[(EntityType, KindData)] = &[
-    (EntityType::Allay, KindData::new(Dimensions::new(0.35, 0.6, 0.36), KindFlags::NONE)),
+    (EntityType::Allay, KindData::new(Dimensions::new(0.35, 0.6, 0.36), KindFlags::NONE).with_flight(KindFlight { can_float: true, landing: Landing::StandOn })),
     (EntityType::Armadillo, KindData::new(Dimensions::new(0.7, 0.65, 0.26), KindFlags::AGEABLE.union(KindFlags::ANIMAL))),
     (EntityType::Axolotl, KindData::new(Dimensions::new(0.75, 0.42, 0.2751), KindFlags::AGEABLE.union(KindFlags::ANIMAL))),
     (EntityType::Bat, KindData::new(Dimensions::new(0.5, 0.9, 0.45), KindFlags::NONE)),
-    (EntityType::Bee, KindData::new(Dimensions::new(0.55, 0.5, 0.3), KindFlags::AGEABLE.union(KindFlags::ANIMAL))),
+    (EntityType::Bee, KindData::new(Dimensions::new(0.55, 0.5, 0.3), KindFlags::AGEABLE.union(KindFlags::ANIMAL)).with_flight(KindFlight { can_float: false, landing: Landing::NotAir }).with_malus(&[(PathType::Fire, -1.0), (PathType::Water, -1.0), (PathType::WaterBorder, 16.0), (PathType::AvoidInAir, -1.0), (PathType::Fence, -1.0)])),
     (EntityType::Blaze, KindData::new(Dimensions::new(0.6, 1.8, 1.53), KindFlags::FIRE_IMMUNE)),
     (EntityType::Bogged, KindData::new(Dimensions::new(0.6, 1.99, 1.74), KindFlags::NONE)),
     (EntityType::Breeze, KindData::new(Dimensions::new(0.6, 1.77, 1.3452), KindFlags::NONE)),
@@ -70,7 +72,7 @@ pub const KINDS: &[(EntityType, KindData)] = &[
     (EntityType::Ocelot, KindData::new(Dimensions::new(0.6, 0.7, 0.595), KindFlags::AGEABLE.union(KindFlags::ANIMAL))),
     (EntityType::Panda, KindData::new(Dimensions::new(1.3, 1.25, 1.0625), KindFlags::AGEABLE.union(KindFlags::ANIMAL))),
     (EntityType::Parched, KindData::new(Dimensions::new(0.6, 1.99, 1.74), KindFlags::NONE)),
-    (EntityType::Parrot, KindData::new(Dimensions::new(0.5, 0.9, 0.54), KindFlags::CAN_BE_TAME)),
+    (EntityType::Parrot, KindData::new(Dimensions::new(0.5, 0.9, 0.54), KindFlags::CAN_BE_TAME).with_flight(KindFlight { can_float: true, landing: Landing::StandOn }).with_malus(&[(PathType::FireInNeighbor, -1.0), (PathType::Fire, -1.0), (PathType::AvoidInAir, -1.0)])),
     (EntityType::Phantom, KindData::new(Dimensions::new(0.9, 0.5, 0.175), KindFlags::NONE)),
     (EntityType::Pig, KindData::new(Dimensions::new(0.9, 0.9, 0.765), KindFlags::AGEABLE.union(KindFlags::ANIMAL)).with_baby(Dimensions::new(0.45, 0.45, 0.40625))),
     (EntityType::Piglin, KindData::new(Dimensions::new(0.6, 1.95, 1.79), KindFlags::AGEABLE)),

@@ -20,7 +20,7 @@ use crate::inside_shape::inside_shape;
 use crate::named_block::NamedBlock;
 use crate::path_types::PathTypes;
 
-const TAG_FLAGS: [(TagKey<'static, Block>, BlockFlags); 13] = [
+const TAG_FLAGS: [(TagKey<'static, Block>, BlockFlags); 14] = [
     (block_tag_keys::CAULDRONS, BlockFlags::CAULDRON),
     (block_tag_keys::DOORS, BlockFlags::DOOR),
     (block_tag_keys::CLIMBABLE, BlockFlags::CLIMBABLE),
@@ -43,6 +43,7 @@ const TAG_FLAGS: [(TagKey<'static, Block>, BlockFlags); 13] = [
     (block_tag_keys::PRESSURE_PLATES, BlockFlags::INSIDE_ACTION),
     (block_tag_keys::BUTTONS, BlockFlags::INSIDE_ACTION),
     (block_tag_keys::FIRE, BlockFlags::INSIDE_ACTION),
+    (block_tag_keys::LOGS, BlockFlags::LOGS),
 ];
 
 const BED_BOUNCE: f32 = 0.75;

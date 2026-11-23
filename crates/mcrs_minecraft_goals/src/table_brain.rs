@@ -6,6 +6,7 @@ use mcrs_minecraft_brain::BrainRules;
 use mcrs_minecraft_brain::GoalSpec;
 use mcrs_minecraft_brain::Goals;
 use mcrs_minecraft_brain::Intents;
+use mcrs_minecraft_brain::Landing;
 use mcrs_minecraft_brain::MobBrain;
 use mcrs_minecraft_brain::MobFlags;
 use mcrs_minecraft_brain::Panic;
@@ -146,6 +147,7 @@ fn initial_state(kind: &GoalKind) -> GoalState {
         GoalKind::Stroll { .. } => GoalState::Stroll(Default::default()),
         GoalKind::LookAtPlayer { .. } => GoalState::LookAtPlayer(Default::default()),
         GoalKind::LookAround => GoalState::LookAround(Default::default()),
+        GoalKind::Wander { .. } => GoalState::Wander(Default::default()),
         GoalKind::Melee { .. } => GoalState::Melee(Default::default()),
         GoalKind::Leap { .. } => GoalState::Leap(Default::default()),
         GoalKind::Avoid { .. } => GoalState::Avoid(Default::default()),
@@ -278,6 +280,7 @@ impl<W: BrainWorld + ?Sized> ListRun<'_, '_, '_, '_, W> {
                 GoalState::Stroll(stroll) => stroll.gate_mut().end(),
                 GoalState::LookAtPlayer(look) => look.gate_mut().end(),
                 GoalState::LookAround(look) => look.gate_mut().end(),
+                GoalState::Wander(wander) => wander.gate_mut().end(),
                 GoalState::Eat(eat) => eat.gate.end(),
                 GoalState::Leap(gate) => gate.end(),
                 GoalState::Target(target) => target.gate.end(),
@@ -342,6 +345,20 @@ fn ranged_params(goal: &GoalKind) -> Option<RangedParams> {
         }),
         _ => None,
     }
+}
+
+fn wander_can_start<W: BrainWorld + ?Sized>(
+    cx: &mut Cx<'_, '_, '_, W>,
+    wander: &mut crate::WanderGoal,
+) -> bool {
+    let running = cx.path_running();
+    let view = cx.turn.view;
+    cx.destination = cx.turn.kinds.get(view.kind).and_then(|kind| {
+        let landing = kind.flight.map_or(Landing::NotAir, |flight| flight.landing);
+        wander.start_destination(cx.turn, kind, landing, running)
+    });
+    note_gate(cx, wander.gate().due());
+    cx.destination.is_some()
 }
 
 fn note_gate<W: BrainWorld + ?Sized>(cx: &mut Cx<'_, '_, '_, W>, due: Option<u64>) {
@@ -425,6 +442,7 @@ impl<W: BrainWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
                 note_gate(cx, look.gate().due());
                 started
             }
+            (GoalKind::Wander { .. }, GoalState::Wander(wander)) => wander_can_start(cx, wander),
             (GoalKind::Melee { .. }, GoalState::Melee(state)) => melee::can_start(cx, state),
             (GoalKind::Leap { .. }, GoalState::Leap(gate)) => {
                 let started = leap::can_start(cx, gate);
@@ -473,6 +491,7 @@ impl<W: BrainWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
                 let running = cx.path_running();
                 crate::StrollGoal::can_continue(cx.turn, running)
             }
+            (GoalKind::Wander { .. }, _) => cx.path_running(),
             (GoalKind::LookAtPlayer { range }, GoalState::LookAtPlayer(look)) => {
                 cx.busy();
                 look.can_continue(cx.turn, f64::from(*range))
@@ -510,7 +529,7 @@ impl<W: BrainWorld + ?Sized> Goals for ListRun<'_, '_, '_, '_, W> {
                         cx.request_path(destination, *speed);
                     }
                 }
-                (GoalKind::Stroll { speed, .. }, _) => {
+                (GoalKind::Stroll { speed, .. } | GoalKind::Wander { speed }, _) => {
                     if let Some(destination) = cx.destination.take() {
                         cx.request_path(destination, *speed);
                     }

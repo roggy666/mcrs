@@ -69,14 +69,26 @@ pub fn ground_cell<R: NavRows + ?Sized>(
             shapes.shape_without_context(here.class).is_none(),
             CellFlags::NO_COLLISION,
         ),
+        (here.flags.contains(BlockFlags::AIR), CellFlags::AIR),
+        (below.flags.contains(BlockFlags::AIR), CellFlags::AIR_BELOW),
+        (below.path == PathType::Leaves, CellFlags::LEAVES_BELOW),
+        (below.flags.contains(BlockFlags::LOGS), CellFlags::LOG_BELOW),
+        (
+            shapes
+                .shape_without_context(below.class)
+                .is_some_and(|shape| shape.top_face_full()),
+            CellFlags::STANDABLE,
+        ),
     ];
     let flags = marks
         .into_iter()
         .filter(|(set, _)| *set)
         .fold(CellFlags::NONE, |flags, (_, flag)| flags.union(flag));
+    let path = block_path_type(rows, at, here, below);
     GroundCell {
         flags,
-        malus: block_path_type(rows, at, here, below).default_malus(),
+        path,
+        malus: path.default_malus(),
         walk_value: if below.flags.contains(BlockFlags::GRASS_BLOCK) {
             GRASS_WALK_VALUE
         } else {

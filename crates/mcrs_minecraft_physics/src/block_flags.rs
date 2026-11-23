@@ -31,5 +31,6 @@ bitflags::bitflags! {
         const LAVA = 1 << 27;
         const AIR = 1 << 28;
         const CAULDRON = 1 << 29;
+        const LOGS = 1 << 30;
     }
 }

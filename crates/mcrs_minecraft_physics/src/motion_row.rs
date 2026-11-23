@@ -25,6 +25,8 @@ pub struct MotionRow {
     pub step_height: f64,
     pub lifetime: Option<u32>,
     pub projectile: Option<ProjectileRow>,
+    pub descent_damping: Option<f64>,
+    pub fall_check: bool,
 }
 
 impl MotionRow {
@@ -41,6 +43,8 @@ impl MotionRow {
             step_height: 0.6,
             lifetime: None,
             projectile: None,
+            descent_damping: None,
+            fall_check: true,
         }
     }
 
@@ -57,6 +61,8 @@ impl MotionRow {
             step_height: 0.0,
             lifetime: None,
             projectile: None,
+            descent_damping: None,
+            fall_check: true,
         }
     }
 

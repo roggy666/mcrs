@@ -1,6 +1,7 @@
 use crate::client_motion::ClientMotion;
 use crate::entity_type_keys::EntityType;
 use crate::life::Life;
+use crate::mob_data::FlightData;
 use crate::mob_data::MobData;
 use crate::precise_sync::PreciseSync;
 use crate::variant_indices::VariantIndices;
@@ -141,6 +142,13 @@ impl EntityTypeData {
         eye_height: 0.36,
         tracking_range: 8,
         update_interval: 2,
+        life: Life::Mob(MobData {
+            flight: Some(FlightData {
+                hovers: true,
+                can_float: true,
+            }),
+            ..MobData::DEFAULT
+        }),
         ..MOB_DEFAULTS
     };
 
@@ -180,7 +188,14 @@ impl EntityTypeData {
         eye_height: 0.3,
         tracking_range: 8,
         baby_scale: Some(0.5),
-        life: ANIMAL,
+        life: Life::Mob(MobData {
+            ageable: true,
+            flight: Some(FlightData {
+                hovers: true,
+                can_float: false,
+            }),
+            ..MobData::DEFAULT
+        }),
         ..MOB_DEFAULTS
     };
 
@@ -560,6 +575,13 @@ impl EntityTypeData {
         height: 0.9,
         eye_height: 0.54,
         tracking_range: 8,
+        life: Life::Mob(MobData {
+            flight: Some(FlightData {
+                hovers: false,
+                can_float: true,
+            }),
+            ..MobData::DEFAULT
+        }),
         ..MOB_DEFAULTS
     };
 

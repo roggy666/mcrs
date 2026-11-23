@@ -12,6 +12,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+mcrs_minecraft_path_type = { path = "../mcrs_minecraft_path_type" }
 mcrs_voxel.workspace = true
 glam = { workspace = true, features = ["nostd-libm"] }
 libm.workspace = true

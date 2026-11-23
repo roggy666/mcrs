@@ -54,6 +54,21 @@ impl Shape {
     }
 
     #[must_use]
+    pub fn top_face_full(&self) -> bool {
+        let [nx, ny, nz] = self.cell_counts();
+        let spans_unit = |axis: Axis| {
+            let lines = self.lines(axis);
+            lines.first().is_some_and(|first| *first <= 0.0)
+                && lines.last().is_some_and(|last| *last >= 1.0)
+        };
+        ny > 0
+            && spans_unit(Axis::X)
+            && spans_unit(Axis::Z)
+            && self.lines(Axis::Y).last().is_some_and(|top| *top >= 1.0)
+            && (0..nx).all(|x| (0..nz).all(|z| self.is_solid(x, ny - 1, z)))
+    }
+
+    #[must_use]
     pub fn is_solid(&self, x: usize, y: usize, z: usize) -> bool {
         match &self.cells {
             Cells::Block([rx, ry, rz]) => in_range(rx, x) && in_range(ry, y) && in_range(rz, z),

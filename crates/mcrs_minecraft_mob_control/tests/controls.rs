@@ -30,6 +30,7 @@ const PIG_LOOK: LookDefaults = LookDefaults {
 
 const PIG: BodyData = BodyData {
     width: EntityTypeData::PIG.width,
+    height: EntityTypeData::PIG.height,
     eye_height: EntityTypeData::PIG.eye_height,
     step_height: 0.6,
     head_yaw_limit: MobData::DEFAULT.head_yaw_limit,
@@ -63,6 +64,10 @@ impl PathWorld for Open {
     fn collides(&self, _: DVec3, _: DVec3) -> bool {
         false
     }
+
+    fn clear_between(&self, _: DVec3, _: DVec3) -> bool {
+        true
+    }
 }
 
 fn found_for(intents: &Intents) -> Option<FoundPath> {
@@ -94,6 +99,7 @@ impl Walker {
                 sideways: 0.0,
                 speed: 0.0,
                 movement_speed: 0.25,
+                flying_speed: 0.02,
                 feet_block_top: None,
             },
             moves: true,
@@ -399,5 +405,73 @@ fn a_walking_head_stays_within_the_head_yaw_limit_of_the_body() {
     assert!(
         (widest - 75.0).abs() < 1e-3,
         "the head turns to the target behind as far as the limit allows: {widest}"
+    );
+}
+
+#[test]
+fn fly_006_a_flying_control_steers_up_toward_its_wanted_point_without_gravity() {
+    let mut flyer = Walker::new(DVec3::new(0.5, 10.0, 0.5));
+    flyer.control = MobControl::flying(
+        PIG_LOOK,
+        mcrs_minecraft_mob_control::FlightControl {
+            hovers: false,
+            can_float: true,
+        },
+    );
+    flyer.input.flags = BodyFlags::NONE;
+    flyer.input.flying_speed = 0.4;
+    flyer.apply(walk_to(DVec3::new(0.5, 14.0, 0.5)));
+    let output = flyer.tick();
+    let steering = output.steering.expect("a steering");
+    assert!(
+        (steering.vertical - 0.4).abs() < 1.0e-6,
+        "the vertical input is the flying speed when the point is above: {}",
+        steering.vertical
+    );
+    assert!((steering.forward - 0.4).abs() < 1.0e-6);
+    assert_eq!(
+        output.no_gravity,
+        Some(true),
+        "a move sets the no-gravity flag"
+    );
+    assert!(!steering.jump, "a flying control never jumps");
+    for _ in 0..200 {
+        if flyer.tick().path_ended.is_some() {
+            break;
+        }
+    }
+    let output = flyer.tick();
+    assert_eq!(
+        output.no_gravity,
+        Some(false),
+        "a type that does not hover clears the flag while it waits"
+    );
+    assert_eq!(output.steering.unwrap().vertical, 0.0);
+}
+
+#[test]
+fn fly_006_a_hovering_type_keeps_the_no_gravity_flag_while_it_waits() {
+    let mut bee = Walker::new(DVec3::new(0.5, 10.0, 0.5));
+    bee.control = MobControl::flying(
+        PIG_LOOK,
+        mcrs_minecraft_mob_control::FlightControl {
+            hovers: true,
+            can_float: false,
+        },
+    );
+    bee.input.flags = BodyFlags::NONE;
+    let output = bee.tick();
+    assert_eq!(
+        output.no_gravity, None,
+        "a hovering type leaves the flag as it is"
+    );
+    bee.input.flags = BodyFlags::ON_GROUND;
+    bee.input.movement_speed = 0.3;
+    bee.apply(walk_to(DVec3::new(4.5, 10.0, 0.5)));
+    let steering = bee.tick().steering.expect("a steering");
+    assert!(
+        (steering.forward - 0.3).abs() < 1.0e-6,
+        "on the ground the speed comes from the movement speed: {}",
+        steering.forward
     );
 }

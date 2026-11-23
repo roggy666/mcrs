@@ -111,6 +111,15 @@ impl PathWorld for ProjectionWorld<'_> {
         self.view.is_loaded(at)
     }
 
+    fn clear_between(&self, from: DVec3, to: DVec3) -> bool {
+        sight_clear(
+            &NavSight::new(self.view),
+            &self.tables.physics.collision,
+            from,
+            to,
+        ) && mcrs_minecraft_pathfind::fluid_free(self, from, to)
+    }
+
     fn collides(&self, min: DVec3, max: DVec3) -> bool {
         let mob = MobPath::standing(
             DVec3::new((min.x + max.x) / 2.0, min.y, (min.z + max.z) / 2.0),

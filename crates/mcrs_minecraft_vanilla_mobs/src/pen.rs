@@ -509,6 +509,7 @@ fn view(index: usize, pig: &HostPig, in_water: bool) -> MobView {
         key: pig.key,
         position: pig.position,
         velocity: Vec3::ZERO,
+        yaw: 0.0,
         kind: kind(EntityType::Pig),
         flags,
         health: 10.0,

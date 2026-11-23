@@ -20,5 +20,16 @@ pub fn mob_row(kind: &EntityTypeData) -> MotionRow {
     if category == Category::Flier {
         row.gravity = 0.0;
     }
+    if kind.entity_type == EntityType::Parrot {
+        row.descent_damping = Some(PARROT_DESCENT_DAMPING);
+    }
+    if matches!(
+        kind.entity_type,
+        EntityType::Parrot | EntityType::Bee | EntityType::Allay | EntityType::Bat
+    ) {
+        row.fall_check = false;
+    }
     row
 }
+
+const PARROT_DESCENT_DAMPING: f64 = 0.6;

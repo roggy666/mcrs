@@ -116,6 +116,12 @@ impl BrainState {
             Attribute::AttackDamage,
             Self::DEFAULT_ATTACK_DAMAGE,
         );
+        self.flying_speed = attribute_of(
+            attributes,
+            self.kind,
+            Attribute::FlyingSpeed,
+            Self::DEFAULT_FLYING_SPEED,
+        );
     }
 
     fn grow(&mut self, alive: bool, stalled: bool) {
@@ -258,11 +264,19 @@ impl BrainStateExt for BrainState {
                 key: state.key,
                 position,
                 velocity: state.body.velocity.as_vec3(),
+                yaw: state
+                    .living
+                    .as_ref()
+                    .map_or(0.0, |living| living.orientation.yaw),
                 kind: MobKind(self.kind.entity_type.id().number()),
                 flags: MobFlags::of(marks),
                 health: sensed.vitals.map_or(0.0, |vitals| vitals.health),
                 follow_range: self.follow_range,
-                age: self.age,
+                age: i16::try_from(self.age).unwrap_or(if self.age < 0 {
+                    i16::MIN
+                } else {
+                    i16::MAX
+                }),
                 love: self.love,
                 idle_time: u16::try_from(self.idle_time).unwrap_or(u16::MAX),
                 damage,
@@ -375,6 +389,7 @@ impl BrainStateExt for BrainState {
             rotations: turned.unwrap_or_else(|| rotations(&living)),
             body: BodyData {
                 width: self.kind.width,
+                height: self.kind.height,
                 eye_height: self.kind.eye_height,
                 step_height: living.attributes.step_height as f32,
                 head_yaw_limit,
@@ -385,6 +400,7 @@ impl BrainStateExt for BrainState {
             sideways: living.input.sideways,
             speed: living.speed,
             movement_speed: living.attributes.movement_speed,
+            flying_speed: f64::from(self.flying_speed),
             feet_block_top: world.feet_top(BlockPos::from(position)),
         };
         let out = self.control.before_travel(&input, navigation, world);
@@ -404,6 +420,7 @@ impl BrainStateExt for BrainState {
             head_yaw: out.head_yaw.or(turned.map(|turned| turned.head_yaw)),
             body_yaw: turned.map(|turned| turned.body_yaw),
             velocity,
+            no_gravity: out.no_gravity,
         };
         Some(Steered {
             intent,

@@ -82,7 +82,7 @@ impl Candidate {
             kind: Some(view.kind),
             flags: CandidateFlags::of(marks),
             owner: view.owner,
-            age: view.age,
+            age: i32::from(view.age),
             love: view.love,
             hurt_by: view.hurt_by,
             hands: [ItemKind::EMPTY; 2],

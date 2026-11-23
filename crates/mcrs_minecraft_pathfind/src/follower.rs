@@ -20,8 +20,15 @@ pub struct FollowInput {
     pub in_liquid: bool,
     pub passenger: bool,
     pub width: f32,
+    pub height: f32,
     pub speed: f32,
     pub time: u64,
+    pub flight: Option<Flight>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct Flight {
+    pub can_float: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -52,12 +59,19 @@ pub fn follow<W: PathWorld + ?Sized>(
             ended: None,
         };
     }
-    let can_update = input.on_ground || input.in_liquid || input.passenger;
+    let can_update = match input.flight {
+        Some(flight) => {
+            crate::can_update_path_flying(flight.can_float, input.in_liquid, input.passenger)
+        }
+        None => crate::can_update_path(input.on_ground, input.in_liquid, input.passenger),
+    };
     if can_update {
-        advance_on_ground(navigation, input);
+        advance_on_ground(navigation, input, world);
         if let Some(end) = stuck_check(navigation, input) {
             return ended(navigation, end, speed_modifier);
         }
+    } else if input.flight.is_some() {
+        advance_in_flight(navigation, input);
     } else {
         advance_in_air(navigation, input);
     }
@@ -74,7 +88,7 @@ pub fn follow<W: PathWorld + ?Sized>(
     let point = next.point(input.width);
     let block = BlockPos::from(point);
     let below = world.path_cell(block.below());
-    let y = if below.is_air() {
+    let y = if input.flight.is_some() || below.is_air() {
         point.y
     } else {
         floor_level(world, block, false)
@@ -96,7 +110,11 @@ fn ended(navigation: &mut Navigation, end: PathEnd, speed_modifier: f32) -> Foll
     }
 }
 
-fn advance_on_ground(navigation: &mut Navigation, input: &FollowInput) {
+fn advance_on_ground<W: PathWorld + ?Sized>(
+    navigation: &mut Navigation,
+    input: &FollowInput,
+    world: &W,
+) {
     let position = input.position;
     let Some(path) = navigation.path.as_mut() else {
         return;
@@ -112,7 +130,12 @@ fn advance_on_ground(navigation: &mut Navigation, input: &FollowInput) {
         let close = (position.x - (f64::from(next.x) + 0.5)).abs() < limit
             && (position.z - (f64::from(next.z) + 0.5)).abs() < limit
             && (position.y - f64::from(next.y)).abs() < 1.0;
-        if close || corner_rule(path.next_node(), path.after_next(), position) {
+        let direct = input.flight.is_some().then(|| {
+            let point = next.point(width);
+            DVec3::new(point.x, point.y + f64::from(input.height) * 0.5, point.z)
+        });
+        let clear = |to: DVec3| world.clear_between(position, to);
+        if close || corner_rule(path.next_node(), path.after_next(), position, direct, clear) {
             path.advance();
             advanced = true;
         }
@@ -126,6 +149,8 @@ fn corner_rule(
     next: Option<&crate::PathNode>,
     after: Option<&crate::PathNode>,
     position: DVec3,
+    direct: Option<DVec3>,
+    clear: impl Fn(DVec3) -> bool,
 ) -> bool {
     let (Some(next), Some(after)) = (next, after) else {
         return false;
@@ -140,6 +165,9 @@ fn corner_rule(
     let e = after.bottom_centre();
     if position.distance_squared(c) >= CORNER_DISTANCE {
         return false;
+    }
+    if direct.is_some_and(clear) {
+        return true;
     }
     let u = c - position;
     let v = e - position;
@@ -173,6 +201,20 @@ fn advance_in_air(navigation: &mut Navigation, input: &FollowInput) {
         }
     }
     if advanced {
+        navigation.reset_stuck(position);
+    }
+}
+
+fn advance_in_flight(navigation: &mut Navigation, input: &FollowInput) {
+    let Some(path) = navigation.path.as_mut() else {
+        return;
+    };
+    let position = input.position;
+    let block = BlockPos::from(position);
+    if let Some(next) = path.next_node()
+        && BlockPos::from(next.point(input.width)) == block
+    {
+        path.advance();
         navigation.reset_stuck(position);
     }
 }

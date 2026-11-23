@@ -6,6 +6,7 @@ pub struct ControlOutput {
     pub head_yaw: Option<f32>,
     pub body_yaw: Option<f32>,
     pub path_ended: Option<PathEnd>,
+    pub no_gravity: Option<bool>,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]

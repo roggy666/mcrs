@@ -15,6 +15,19 @@ pub struct KindData {
     pub head_yaw_limit: f32,
     pub tempt_range: f32,
     pub malus: &'static [(PathType, f32)],
+    pub flight: Option<KindFlight>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct KindFlight {
+    pub can_float: bool,
+    pub landing: Landing,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum Landing {
+    StandOn,
+    NotAir,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -85,7 +98,24 @@ impl KindData {
             head_yaw_limit: Self::DEFAULT_HEAD_YAW_LIMIT,
             tempt_range: Self::DEFAULT_TEMPT_RANGE,
             malus: &[],
+            flight: None,
         }
+    }
+
+    #[must_use]
+    pub const fn with_flight(self, flight: KindFlight) -> Self {
+        Self {
+            flight: Some(flight),
+            ..self
+        }
+    }
+
+    #[must_use]
+    pub fn malus_of(&self, path: PathType) -> f32 {
+        self.malus
+            .iter()
+            .find(|(kind, _)| *kind == path)
+            .map_or(path.default_malus(), |(_, malus)| *malus)
     }
 
     #[must_use]

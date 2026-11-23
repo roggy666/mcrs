@@ -437,6 +437,9 @@ fn steer(motion: &mut EntityState, vitals: Option<&Vitals>, intent: Option<&MobI
         return false;
     };
     apply_intent(intent, living);
+    if let Some(no_gravity) = intent.no_gravity {
+        motion.no_gravity = no_gravity;
+    }
     let leaps = intent.velocity.is_some();
     if let Some(velocity) = intent.velocity {
         motion.body.velocity = velocity;

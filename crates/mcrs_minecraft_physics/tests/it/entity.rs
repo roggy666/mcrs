@@ -551,3 +551,29 @@ fn ord_005_a_flier_keeps_its_height_and_moves_by_its_input_with_the_air_drag_on_
         ghast.body.position.y
     );
 }
+
+#[test]
+fn fly_009_a_parrot_damps_its_descent_by_0_6_after_the_travel_step() {
+    let mut fixture = TestFixture::new();
+    floor(&mut fixture.world, fixture.blocks.stone);
+    let row = MotionRow {
+        descent_damping: Some(0.6),
+        ..MotionRow::living(
+            mcrs_minecraft_physics::Category::Omnidirectional,
+            mcrs_minecraft_pose::Dimensions::scalable(0.5, 0.9),
+        )
+    };
+    let mut parrot = entity(DVec3::new(0.5, 12.0, 0.5), DVec3::ZERO, true);
+    let mut seen = Vec::new();
+    for _ in 0..4 {
+        tick(&mut fixture, &row, &mut parrot, true);
+        seen.push(parrot.body.velocity.y);
+    }
+    let expected = [-0.043_68, -0.067_53, -0.080_55, -0.087_66];
+    for (step, (got, want)) in seen.iter().zip(expected).enumerate() {
+        assert!(
+            (got - want).abs() < 2.0e-4,
+            "tick {step}: the vertical velocity is (v - 0.08) × 0.91F × 0.6: {got} against {want}"
+        );
+    }
+}

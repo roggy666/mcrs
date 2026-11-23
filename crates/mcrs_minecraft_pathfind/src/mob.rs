@@ -25,6 +25,14 @@ impl NavFlags {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum NavKind {
+    Ground,
+    Flying {
+        starts: [BlockPos; crate::fly::START_CANDIDATES],
+    },
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MobPath {
     pub position: DVec3,
@@ -38,6 +46,7 @@ pub struct MobPath {
     pub malus: MalusTable,
     pub fall_limit: i32,
     pub flags: NavFlags,
+    pub nav: NavKind,
 }
 
 impl MobPath {
@@ -62,6 +71,7 @@ impl MobPath {
             malus: MalusTable::default(),
             fall_limit: Self::DEFAULT_FALL_LIMIT,
             flags: NavFlags::DEFAULT,
+            nav: NavKind::Ground,
         }
     }
 
@@ -78,6 +88,11 @@ impl MobPath {
     #[must_use]
     pub fn cells_high(&self) -> i32 {
         libm::floorf(self.height + 1.0) as i32
+    }
+
+    #[must_use]
+    pub const fn flies(&self) -> bool {
+        matches!(self.nav, NavKind::Flying { .. })
     }
 
     #[must_use]

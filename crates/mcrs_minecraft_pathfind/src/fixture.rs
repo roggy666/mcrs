@@ -99,6 +99,15 @@ impl PathWorld for MapWorld {
         true
     }
 
+    fn clear_between(&self, from: DVec3, to: DVec3) -> bool {
+        let steps = ((to - from).length() * 8.0).ceil().max(1.0) as u32;
+        (0..=steps).all(|step| {
+            let point = from + (to - from) * (f64::from(step) / f64::from(steps));
+            let cell = self.path_cell(BlockPos::from(point));
+            !cell.bits.contains(CellBits::SHAPE) && !cell.floatable()
+        })
+    }
+
     fn collides(&self, min: DVec3, max: DVec3) -> bool {
         let low = BlockPos::from(min);
         let high = BlockPos::from(max - DVec3::splat(1.0e-7));

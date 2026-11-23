@@ -10,4 +10,5 @@ pub struct MobIntent {
     pub head_yaw: Option<f32>,
     pub body_yaw: Option<f32>,
     pub velocity: Option<DVec3>,
+    pub no_gravity: Option<bool>,
 }

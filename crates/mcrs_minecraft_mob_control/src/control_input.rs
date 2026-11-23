@@ -10,6 +10,7 @@ pub struct ControlInput {
     pub sideways: f32,
     pub speed: f32,
     pub movement_speed: f64,
+    pub flying_speed: f64,
     pub feet_block_top: Option<f64>,
 }
 
@@ -24,6 +25,7 @@ pub struct Rotations {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BodyData {
     pub width: f32,
+    pub height: f32,
     pub eye_height: f32,
     pub step_height: f32,
     pub head_yaw_limit: f32,

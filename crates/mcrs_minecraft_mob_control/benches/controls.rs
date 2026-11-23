@@ -54,6 +54,10 @@ impl PathWorld for Open {
     fn collides(&self, _: DVec3, _: DVec3) -> bool {
         false
     }
+
+    fn clear_between(&self, _: DVec3, _: DVec3) -> bool {
+        true
+    }
 }
 
 fn found_for(intents: &Intents) -> Option<FoundPath> {
@@ -120,6 +124,7 @@ fn mobs() -> Vec<Mob> {
                 rotations: Rotations::default(),
                 body: BodyData {
                     width: EntityTypeData::PIG.width,
+                    height: EntityTypeData::PIG.height,
                     eye_height: EntityTypeData::PIG.eye_height,
                     step_height: 0.6,
                     head_yaw_limit: MobData::DEFAULT.head_yaw_limit,
@@ -128,6 +133,7 @@ fn mobs() -> Vec<Mob> {
                 sideways: 0.0,
                 speed: 0.0,
                 movement_speed: 0.25,
+                flying_speed: 0.02,
                 feet_block_top: None,
             };
             Mob {

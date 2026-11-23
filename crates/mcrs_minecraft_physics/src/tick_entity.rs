@@ -189,10 +189,16 @@ fn tick_living<W: CollisionWorld, B: BodyView>(
         },
         dy,
         flying: false,
-        updates_fall: !flier,
+        updates_fall: !flier && row.fall_check,
         weaving: living.effects.weaving,
     };
     entity.contact = block_effects::apply(view, &context, body, Some(&mut living), actions);
+    if let Some(factor) = row.descent_damping
+        && !body.flags.on_ground
+        && body.velocity.y < 0.0
+    {
+        body.velocity.y *= factor;
+    }
     entity.living = Some(living);
     TickOutcome::default()
 }

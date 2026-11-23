@@ -98,7 +98,11 @@ impl Searcher {
         if let Some(&kind) = self.block_types.get(&key(at)) {
             return kind;
         }
-        let kind = block_path_type(scene, at);
+        let kind = if scene.mob.flies() {
+            crate::fly::block_path_type(scene, at)
+        } else {
+            block_path_type(scene, at)
+        };
         self.block_types.insert(key(at), kind);
         kind
     }
@@ -237,6 +241,14 @@ pub(crate) fn block_path_type<W: SearchWorld + ?Sized>(
     if let Some(kind) = PathType::over(below) {
         return kind;
     }
+    neighbour_check(scene, at, PathType::Walkable)
+}
+
+pub(crate) fn neighbour_check<W: SearchWorld + ?Sized>(
+    scene: &mut Scene<'_, W>,
+    at: BlockPos,
+    default: PathType,
+) -> PathType {
     for dx in -1..=1 {
         for dy in -1..=1 {
             for dz in -1..=1 {
@@ -250,5 +262,5 @@ pub(crate) fn block_path_type<W: SearchWorld + ?Sized>(
             }
         }
     }
-    PathType::Walkable
+    default
 }

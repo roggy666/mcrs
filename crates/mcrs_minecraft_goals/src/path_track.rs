@@ -17,6 +17,8 @@ use mcrs_minecraft_brain::Turn;
 use mcrs_minecraft_brain::TurnScratch;
 use mcrs_minecraft_pathfind::FoundPath;
 use mcrs_minecraft_pathfind::MobPath;
+use mcrs_minecraft_pathfind::NavFlags;
+use mcrs_minecraft_pathfind::NavKind;
 use mcrs_minecraft_pathfind::PathSearchWorld;
 use mcrs_minecraft_pathfind::Request;
 use mcrs_minecraft_pathfind::RequestKind;
@@ -24,9 +26,13 @@ use mcrs_minecraft_pathfind::SearchStep;
 use mcrs_minecraft_pathfind::SearchWorld;
 use mcrs_minecraft_pathfind::adjust_target;
 use mcrs_minecraft_pathfind::can_update_path;
+use mcrs_minecraft_pathfind::can_update_path_flying;
 use mcrs_minecraft_pathfind::search_advance;
 use mcrs_minecraft_pathfind::search_begin;
+use mcrs_minecraft_pathfind::start_candidates;
 use mcrs_voxel::BlockPos;
+
+use crate::FLY_START;
 
 const RECOMPUTE_GATE: u64 = 20;
 const LEAST_LENGTH: f32 = 16.0;
@@ -110,6 +116,15 @@ fn mob_path<W: ?Sized>(turn: &Turn<'_, W>) -> MobPath {
         for (path_type, malus) in kind.malus {
             mob.malus.set(*path_type, *malus);
         }
+        if let Some(flight) = kind.flight {
+            if flight.can_float {
+                mob.flags = mob.flags.union(NavFlags::CAN_FLOAT);
+            }
+            let mut random = turn.random(FLY_START);
+            mob.nav = NavKind::Flying {
+                starts: start_candidates(mob.min, mob.max, |bound| random.below(bound)),
+            };
+        }
     }
     mob
 }
@@ -124,7 +139,13 @@ fn run<W: PathSearchWorld + ?Sized>(
     request: &Request,
 ) -> Run {
     let mob = mob_path(turn);
-    if !can_update_path(mob.on_ground, mob.in_liquid, false) {
+    let passenger = turn.view.flags.contains(MobFlags::PASSENGER);
+    let updatable = if mob.flies() {
+        can_update_path_flying(mob.can(NavFlags::CAN_FLOAT), mob.in_liquid, passenger)
+    } else {
+        can_update_path(mob.on_ground, mob.in_liquid, false)
+    };
+    if !updatable {
         return Run::NoPath;
     }
     let mut request = request.clone();
@@ -135,7 +156,9 @@ fn run<W: PathSearchWorld + ?Sized>(
         if !turn.world.column_loaded(target) {
             return Run::NoPath;
         }
-        request.targets = alloc::vec![adjust_target(turn.world, target)];
+        if !mob.flies() {
+            request.targets = alloc::vec![adjust_target(turn.world, target)];
+        }
     }
     if let Some(slice) = scratch.slice.as_deref()
         && slice.key == turn.view.key
