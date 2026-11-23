@@ -17,16 +17,24 @@ use mcrs_minecraft_item_stack::EnchantmentLevel;
 use mcrs_minecraft_item_stack::Enchantments;
 use mcrs_minecraft_item_stack::InteractAnimation;
 use mcrs_minecraft_item_stack::ItemStack;
+use mcrs_minecraft_item_stack::JukeboxPlayable;
+use mcrs_minecraft_item_stack::JukeboxSongId;
 use mcrs_minecraft_item_stack::Kind;
 use mcrs_minecraft_item_stack::MaxDamage;
 use mcrs_minecraft_item_stack::MaxStackSize;
 use mcrs_minecraft_item_stack::NameLookup;
 use mcrs_minecraft_item_stack::NameTable;
 use mcrs_minecraft_item_stack::PiercingWeapon;
+use mcrs_minecraft_item_stack::RegistryValue;
 use mcrs_minecraft_item_stack::SlotGroup;
 use mcrs_minecraft_item_stack::SwingAnimation;
 use mcrs_minecraft_item_stack::SwingKind;
+use mcrs_minecraft_item_stack::Trim;
+use mcrs_minecraft_item_stack::TrimMaterialId;
+use mcrs_minecraft_item_stack::TrimPatternId;
 use mcrs_minecraft_item_stack::Unbreakable;
+use mcrs_minecraft_item_stack::VillagerTypeId;
+use mcrs_minecraft_item_stack::VillagerVariant;
 use mcrs_minecraft_item_table::ItemTable;
 use mcrs_minecraft_predicate::BakedItemPredicate;
 use mcrs_minecraft_predicate::ItemSubject;
@@ -50,6 +58,10 @@ impl NameLookup for RegistryLookup {
             NameTable::Block => "minecraft:block",
             NameTable::ComponentType => "minecraft:data_component_type",
             NameTable::SoundEvent => "minecraft:sound_event",
+            NameTable::TrimMaterial => "minecraft:trim_material",
+            NameTable::TrimPattern => "minecraft:trim_pattern",
+            NameTable::JukeboxSong => "minecraft:jukebox_song",
+            NameTable::VillagerType => "minecraft:villager_type",
             _ => return None,
         };
         registries().id_of(ResourceLocation::read(registry).ok()?, name)
@@ -678,6 +690,115 @@ fn exact_and_presence_predicates_match_swing_and_piercing_components() {
             "REG-FLD-548",
             r#"{"predicates": {"minecraft:interact_animation": {}}}"#,
             Held::Stack(sword()),
+            false,
+        ),
+    ]);
+}
+
+#[test]
+#[expect(clippy::too_many_lines, reason = "one table of cases")]
+fn trim_jukebox_and_villager_predicates_test_the_registry_entry_of_the_component() {
+    let trimmed = sword().set(Trim {
+        material: RegistryValue::Reference(TrimMaterialId(id(
+            "minecraft:trim_material",
+            "minecraft:gold",
+        ))),
+        pattern: RegistryValue::Reference(TrimPatternId(id(
+            "minecraft:trim_pattern",
+            "minecraft:sentry",
+        ))),
+    });
+    let disc = sword().set(JukeboxPlayable(JukeboxSongId(id(
+        "minecraft:jukebox_song",
+        "minecraft:pigstep",
+    ))));
+    let egg = sword().set(VillagerVariant(VillagerTypeId(id(
+        "minecraft:villager_type",
+        "minecraft:desert",
+    ))));
+    check(&[
+        (
+            "STK-SHP-047",
+            r#"{"predicates": {"minecraft:trim": {"material": "minecraft:gold"}}}"#,
+            Held::Stack(trimmed.clone()),
+            true,
+        ),
+        (
+            "STK-SHP-047",
+            r#"{"predicates": {"minecraft:trim": {"material": "minecraft:iron"}}}"#,
+            Held::Stack(trimmed.clone()),
+            false,
+        ),
+        (
+            "STK-SHP-047",
+            r#"{"predicates": {"minecraft:trim": {"pattern": ["minecraft:sentry", "minecraft:vex"]}}}"#,
+            Held::Stack(trimmed.clone()),
+            true,
+        ),
+        (
+            "STK-SHP-047",
+            r#"{"predicates": {"minecraft:trim": {}}}"#,
+            Held::Stack(sword()),
+            false,
+        ),
+        (
+            "STK-SHP-047",
+            r#"{"components": {"minecraft:trim": {"material": "minecraft:gold", "pattern": "minecraft:sentry"}}}"#,
+            Held::Stack(trimmed.clone()),
+            true,
+        ),
+        (
+            "STK-SHP-047",
+            r#"{"components": {"minecraft:trim": {"material": "minecraft:gold", "pattern": "minecraft:vex"}}}"#,
+            Held::Stack(trimmed),
+            false,
+        ),
+        (
+            "STK-SHP-068",
+            r#"{"predicates": {"minecraft:jukebox_playable": {"song": "minecraft:pigstep"}}}"#,
+            Held::Stack(disc.clone()),
+            true,
+        ),
+        (
+            "STK-SHP-068",
+            r#"{"predicates": {"minecraft:jukebox_playable": {"song": "minecraft:cat"}}}"#,
+            Held::Stack(disc.clone()),
+            false,
+        ),
+        (
+            "STK-SHP-068",
+            r#"{"predicates": {"minecraft:jukebox_playable": {}}}"#,
+            Held::Stack(sword()),
+            false,
+        ),
+        (
+            "STK-SHP-068",
+            r#"{"components": {"minecraft:jukebox_playable": "minecraft:pigstep"}}"#,
+            Held::Stack(disc),
+            true,
+        ),
+        (
+            "STK-SHP-070",
+            r#"{"predicates": {"minecraft:villager/variant": ["minecraft:plains", "minecraft:desert"]}}"#,
+            Held::Stack(egg.clone()),
+            true,
+        ),
+        (
+            "STK-SHP-070",
+            r#"{"predicates": {"minecraft:villager/variant": "minecraft:savanna"}}"#,
+            Held::Stack(egg.clone()),
+            false,
+        ),
+        (
+            "STK-SHP-070",
+            r#"{"components": {"minecraft:villager/variant": "minecraft:desert"}}"#,
+            Held::Stack(egg.clone()),
+            true,
+        ),
+        (
+            "STK-SHP-070",
+            r#"{"components": {"minecraft:villager/variant": "minecraft:plains"}}"#,
+            Held::Stack(egg),
             false,
         ),
     ]);

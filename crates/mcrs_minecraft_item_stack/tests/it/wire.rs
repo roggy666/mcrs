@@ -17,15 +17,21 @@ use mcrs_minecraft_item_stack::Container;
 use mcrs_minecraft_item_stack::CustomData;
 use mcrs_minecraft_item_stack::CustomName;
 use mcrs_minecraft_item_stack::Damage;
+use mcrs_minecraft_item_stack::DyeColor;
+use mcrs_minecraft_item_stack::Enchantable;
 use mcrs_minecraft_item_stack::EnchantmentId;
 use mcrs_minecraft_item_stack::EnchantmentLevel;
 use mcrs_minecraft_item_stack::Enchantments;
+use mcrs_minecraft_item_stack::Filterable;
 use mcrs_minecraft_item_stack::Food;
+use mcrs_minecraft_item_stack::FoxVariant;
 use mcrs_minecraft_item_stack::HashError;
 use mcrs_minecraft_item_stack::HashScratch;
 use mcrs_minecraft_item_stack::HashedStack;
 use mcrs_minecraft_item_stack::ItemModel;
 use mcrs_minecraft_item_stack::ItemStack;
+use mcrs_minecraft_item_stack::JukeboxPlayable;
+use mcrs_minecraft_item_stack::JukeboxSongId;
 use mcrs_minecraft_item_stack::Lore;
 use mcrs_minecraft_item_stack::MapDecorations;
 use mcrs_minecraft_item_stack::MaxDamage;
@@ -43,8 +49,14 @@ use mcrs_minecraft_item_stack::SwingKind;
 use mcrs_minecraft_item_stack::Tool;
 use mcrs_minecraft_item_stack::ToolRule;
 use mcrs_minecraft_item_stack::TooltipDisplay;
+use mcrs_minecraft_item_stack::TropicalFishPattern;
 use mcrs_minecraft_item_stack::Unbreakable;
+use mcrs_minecraft_item_stack::VillagerTypeId;
+use mcrs_minecraft_item_stack::VillagerVariant;
 use mcrs_minecraft_item_stack::WireError;
+use mcrs_minecraft_item_stack::WolfCollar;
+use mcrs_minecraft_item_stack::WritableBookContent;
+use mcrs_minecraft_item_stack::WrittenBookContent;
 use mcrs_minecraft_item_stack::hash_stack;
 use mcrs_minecraft_item_stack::read_saved;
 use mcrs_minecraft_item_stack::read_wire;
@@ -121,6 +133,22 @@ impl Names {
             NameTable::Instrument => vec![(4, "ponder_goat_horn")],
             NameTable::BannerPattern => vec![(4, "creeper")],
             NameTable::PaintingVariant => vec![(0, "alban"), (1, "aztec"), (24, "kebab")],
+            NameTable::JukeboxSong => vec![(1, "13"), (15, "pigstep")],
+            NameTable::VillagerType => indexed(&[
+                "desert", "jungle", "plains", "savanna", "snow", "swamp", "taiga",
+            ]),
+            NameTable::WolfVariant => vec![(0, "ashen"), (3, "pale")],
+            NameTable::WolfSoundVariant => vec![(1, "big")],
+            NameTable::PigVariant => vec![(0, "cold")],
+            NameTable::PigSoundVariant => vec![(2, "mini")],
+            NameTable::CowVariant => vec![(2, "warm")],
+            NameTable::CowSoundVariant => vec![(1, "moody")],
+            NameTable::ChickenVariant => vec![(0, "cold")],
+            NameTable::ChickenSoundVariant => vec![(1, "picky")],
+            NameTable::ZombieNautilusVariant => vec![(1, "warm")],
+            NameTable::FrogVariant => vec![(2, "warm")],
+            NameTable::CatVariant => vec![(4, "jellie")],
+            NameTable::CatSoundVariant => vec![(1, "royal")],
             _ => Vec::new(),
         }
     }
@@ -275,6 +303,47 @@ fn one_entry_cases() -> Vec<(&'static str, ItemStack, &'static str, &'static str
             stone().set(MapDecorations::new([]).expect("no key repeats")),
             "31",
             "0a 00",
+        ),
+        ("enchantable", stone().set(Enchantable(15)), "1f", "0f"),
+        (
+            "writable_book_content",
+            stone().set(WritableBookContent::EMPTY),
+            "38",
+            "00",
+        ),
+        (
+            "written_book_content",
+            stone().set(WrittenBookContent::new(
+                Filterable::new("t".to_owned()),
+                "a".to_owned(),
+            )),
+            "39",
+            "01 74 00 01 61 00 00 00",
+        ),
+        (
+            "jukebox_playable",
+            stone().set(JukeboxPlayable(JukeboxSongId(15))),
+            "42",
+            "10",
+        ),
+        (
+            "villager/variant",
+            stone().set(VillagerVariant(VillagerTypeId(0))),
+            "58",
+            "00",
+        ),
+        (
+            "wolf/collar",
+            stone().set(WolfCollar(DyeColor::LightBlue)),
+            "5b",
+            "03",
+        ),
+        ("fox/variant", stone().set(FoxVariant::Snow), "5c", "01"),
+        (
+            "tropical_fish/pattern",
+            stone().set(TropicalFishPattern::Sunstreak),
+            "5f",
+            "80 02",
         ),
     ]
 }
@@ -754,7 +823,7 @@ fn nested_compound(levels: usize) -> NbtCompound {
 
 type Read = fn(&mut &[u8], &Names) -> Result<Option<ItemStack>, WireError>;
 
-fn error_reads() -> [(&'static str, Read, WireError); 15] {
+fn error_reads() -> [(&'static str, Read, WireError); 17] {
     let bare: Read = read_wire;
     let prefixed: Read = read_wire_with_length;
     [
@@ -826,6 +895,16 @@ fn error_reads() -> [(&'static str, Read, WireError); 15] {
             bare,
             WireError::BadValue(BuiltinKey::PaintingVariant),
         ),
+        (
+            "01 01 01 00 42 00",
+            bare,
+            WireError::BadValue(BuiltinKey::JukeboxPlayable),
+        ),
+        (
+            "01 01 01 00 5c 02",
+            bare,
+            WireError::BadValue(BuiltinKey::FoxVariant),
+        ),
     ]
 }
 
@@ -879,7 +958,10 @@ struct PlainValue {
     wire: Option<String>,
 }
 
-const DECODED_PLAIN: [&str; 32] = [
+const DECODED: usize = 201;
+const KEPT: usize = 25;
+
+const DECODED_PLAIN: [&str; 55] = [
     "max_stack_size",
     "max_damage",
     "damage",
@@ -912,6 +994,29 @@ const DECODED_PLAIN: [&str; 32] = [
     "container_loot",
     "stored_enchantments",
     "painting/variant",
+    "enchantable",
+    "writable_book_content",
+    "written_book_content",
+    "jukebox_playable",
+    "villager/variant",
+    "wolf/variant",
+    "cat/variant",
+    "fox/variant",
+    "salmon/size",
+    "parrot/variant",
+    "tropical_fish/pattern",
+    "mooshroom/variant",
+    "rabbit/variant",
+    "horse/variant",
+    "llama/variant",
+    "axolotl/variant",
+    "wolf/collar",
+    "tropical_fish/base_color",
+    "tropical_fish/pattern_color",
+    "cat/collar",
+    "sheep/color",
+    "shulker/color",
+    "cushion/color",
 ];
 
 fn assert_same_component(kind: &str, written: &[u8], expected: &[u8], header: usize) {
@@ -1001,7 +1106,7 @@ fn the_wire_components_that_the_game_wrote_read_to_the_saved_value_and_write_bac
         assert_same_component(&value.kind, &wire(read.as_ref()), &bare, header.len());
         decoded += 1;
     }
-    assert_eq!((decoded, kept), (113, 73));
+    assert_eq!((decoded, kept), (DECODED, KEPT));
 }
 
 #[derive(Deserialize)]
@@ -1032,7 +1137,7 @@ fn with_one_component(kind: &str, component: &str) -> Vec<u8> {
     [unhex("01 01 01 00"), vec![type_id], unhex(component)].concat()
 }
 
-const TYPED_KINDS: [(&str, BuiltinKey); 9] = [
+const TYPED_KINDS: [(&str, BuiltinKey); 15] = [
     ("profile", BuiltinKey::Profile),
     ("potion_contents", BuiltinKey::PotionContents),
     ("container", BuiltinKey::Container),
@@ -1042,6 +1147,12 @@ const TYPED_KINDS: [(&str, BuiltinKey); 9] = [
     ("bundle_contents", BuiltinKey::BundleContents),
     ("stored_enchantments", BuiltinKey::StoredEnchantments),
     ("painting/variant", BuiltinKey::PaintingVariant),
+    ("enchantable", BuiltinKey::Enchantable),
+    ("writable_book_content", BuiltinKey::WritableBookContent),
+    ("written_book_content", BuiltinKey::WrittenBookContent),
+    ("jukebox_playable", BuiltinKey::JukeboxPlayable),
+    ("villager/variant", BuiltinKey::VillagerVariant),
+    ("cat/variant", BuiltinKey::CatVariant),
 ];
 
 fn typed_kind(kind: &str) -> Option<BuiltinKey> {
@@ -1106,7 +1217,7 @@ fn the_own_wire_forms_that_the_game_decoded_read_to_its_saved_form_and_write_bac
         assert_eq!(read_saved(&written, &Names), Ok(from_json), "{}", case.wire);
         decoded += 1;
     }
-    assert_eq!(decoded, 8);
+    assert_eq!(decoded, 16);
 
     let mut rejected = 0;
     for case in &golden.decode_errors {
@@ -1126,13 +1237,24 @@ fn the_own_wire_forms_that_the_game_decoded_read_to_its_saved_form_and_write_bac
                 component: key,
                 table: NameTable::PaintingVariant,
             },
+            BuiltinKey::JukeboxPlayable => WireError::UnknownEntry {
+                component: key,
+                table: NameTable::JukeboxSong,
+            },
+            BuiltinKey::VillagerVariant => WireError::UnknownEntry {
+                component: key,
+                table: NameTable::VillagerType,
+            },
+            BuiltinKey::Enchantable
+            | BuiltinKey::WritableBookContent
+            | BuiltinKey::WrittenBookContent => WireError::OutOfRange(key),
             _ => WireError::BadValue(key),
         };
         let bare = with_one_component(&case.kind, &case.wire);
         assert_eq!(read_all(&bare, read_wire), Err(expected), "{}", case.wire);
         rejected += 1;
     }
-    assert_eq!(rejected, 8);
+    assert_eq!(rejected, 16);
 }
 
 #[test]
@@ -1449,4 +1571,52 @@ fn swing_animation_rejects_invalid_kind_and_negative_duration_on_wire() {
         write_wire(Some(&negative_stack), &Names, &mut Vec::new()),
         Err(WireError::OutOfRange(BuiltinKey::AttackAnimation))
     );
+}
+
+const LIST_KINDS: [(&str, BuiltinKey); 9] = [
+    ("fox/variant", BuiltinKey::FoxVariant),
+    ("salmon/size", BuiltinKey::SalmonSize),
+    ("parrot/variant", BuiltinKey::ParrotVariant),
+    ("tropical_fish/pattern", BuiltinKey::TropicalFishPattern),
+    ("mooshroom/variant", BuiltinKey::MooshroomVariant),
+    ("rabbit/variant", BuiltinKey::RabbitVariant),
+    ("horse/variant", BuiltinKey::HorseVariant),
+    ("llama/variant", BuiltinKey::LlamaVariant),
+    ("axolotl/variant", BuiltinKey::AxolotlVariant),
+];
+
+#[test]
+fn a_list_name_reads_only_the_ids_of_its_table_where_the_game_reads_a_fallback() {
+    let golden: DecodeGolden =
+        serde_json::from_str(&fixture("item_plain").text()).expect("the golden is JSON");
+    let mut in_table = 0;
+    let mut fallbacks = 0;
+    for case in &golden.decodes {
+        let Some((_, key)) = LIST_KINDS.iter().find(|(kind, _)| *kind == case.kind) else {
+            continue;
+        };
+        let bare = with_one_component(&case.kind, &case.wire);
+        let named = read_saved(
+            &saved(&format!(
+                r#"{{id:"minecraft:stone",components:{{"minecraft:{}":{}}}}}"#,
+                case.kind, case.json
+            )),
+            &Names,
+        )
+        .expect("the game gave a name of the list");
+        if wire(Some(&named)) == bare {
+            assert_eq!(read_all(&bare, read_wire), Ok(Some(named)), "{}", case.wire);
+            in_table += 1;
+        } else {
+            assert_eq!(
+                read_all(&bare, read_wire),
+                Err(WireError::BadValue(*key)),
+                "D17: {} {}",
+                case.kind,
+                case.wire
+            );
+            fallbacks += 1;
+        }
+    }
+    assert_eq!((in_table, fallbacks), (3, 22));
 }

@@ -41,7 +41,7 @@ pub(crate) struct NamedRegistry {
     pub(crate) key: &'static str,
 }
 
-pub(crate) const NAMED_REGISTRIES: [NamedRegistry; 14] = [
+pub(crate) const NAMED_REGISTRIES: [NamedRegistry; 28] = [
     NamedRegistry {
         table: NameTable::Attribute,
         key: "minecraft:attribute",
@@ -97,6 +97,62 @@ pub(crate) const NAMED_REGISTRIES: [NamedRegistry; 14] = [
     NamedRegistry {
         table: NameTable::PaintingVariant,
         key: "minecraft:painting_variant",
+    },
+    NamedRegistry {
+        table: NameTable::JukeboxSong,
+        key: "minecraft:jukebox_song",
+    },
+    NamedRegistry {
+        table: NameTable::VillagerType,
+        key: "minecraft:villager_type",
+    },
+    NamedRegistry {
+        table: NameTable::WolfVariant,
+        key: "minecraft:wolf_variant",
+    },
+    NamedRegistry {
+        table: NameTable::WolfSoundVariant,
+        key: "minecraft:wolf_sound_variant",
+    },
+    NamedRegistry {
+        table: NameTable::PigVariant,
+        key: "minecraft:pig_variant",
+    },
+    NamedRegistry {
+        table: NameTable::PigSoundVariant,
+        key: "minecraft:pig_sound_variant",
+    },
+    NamedRegistry {
+        table: NameTable::CowVariant,
+        key: "minecraft:cow_variant",
+    },
+    NamedRegistry {
+        table: NameTable::CowSoundVariant,
+        key: "minecraft:cow_sound_variant",
+    },
+    NamedRegistry {
+        table: NameTable::ChickenVariant,
+        key: "minecraft:chicken_variant",
+    },
+    NamedRegistry {
+        table: NameTable::ChickenSoundVariant,
+        key: "minecraft:chicken_sound_variant",
+    },
+    NamedRegistry {
+        table: NameTable::ZombieNautilusVariant,
+        key: "minecraft:zombie_nautilus_variant",
+    },
+    NamedRegistry {
+        table: NameTable::FrogVariant,
+        key: "minecraft:frog_variant",
+    },
+    NamedRegistry {
+        table: NameTable::CatVariant,
+        key: "minecraft:cat_variant",
+    },
+    NamedRegistry {
+        table: NameTable::CatSoundVariant,
+        key: "minecraft:cat_sound_variant",
     },
 ];
 
