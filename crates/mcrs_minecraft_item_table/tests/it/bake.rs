@@ -1,4 +1,6 @@
+use std::collections::BTreeSet;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -12,8 +14,13 @@ use mcrs_minecraft_item_stack::BlockState;
 use mcrs_minecraft_item_stack::BlockStateProperty;
 use mcrs_minecraft_item_stack::BundleContents;
 use mcrs_minecraft_item_stack::ChargedProjectiles;
+use mcrs_minecraft_item_stack::ChickenVariant;
+use mcrs_minecraft_item_stack::ChickenVariantId;
 use mcrs_minecraft_item_stack::Container;
+use mcrs_minecraft_item_stack::CushionColor;
 use mcrs_minecraft_item_stack::Damage;
+use mcrs_minecraft_item_stack::DyeColor;
+use mcrs_minecraft_item_stack::Enchantable;
 use mcrs_minecraft_item_stack::EnchantmentGlintOverride;
 use mcrs_minecraft_item_stack::Enchantments;
 use mcrs_minecraft_item_stack::Equippable;
@@ -23,6 +30,8 @@ use mcrs_minecraft_item_stack::Instrument;
 use mcrs_minecraft_item_stack::InstrumentId;
 use mcrs_minecraft_item_stack::ItemModel;
 use mcrs_minecraft_item_stack::ItemName;
+use mcrs_minecraft_item_stack::JukeboxPlayable;
+use mcrs_minecraft_item_stack::JukeboxSongId;
 use mcrs_minecraft_item_stack::Kind;
 use mcrs_minecraft_item_stack::Lore;
 use mcrs_minecraft_item_stack::MapDecorations;
@@ -42,6 +51,8 @@ use mcrs_minecraft_item_stack::SuspiciousStewEffects;
 use mcrs_minecraft_item_stack::Tool;
 use mcrs_minecraft_item_stack::TooltipDisplay;
 use mcrs_minecraft_item_stack::Unbreakable;
+use mcrs_minecraft_item_stack::WritableBookContent;
+use mcrs_minecraft_item_stack::WrittenBookContent;
 use mcrs_minecraft_item_table::BakedItems;
 use mcrs_minecraft_item_table::DefinitionFile;
 use mcrs_minecraft_item_table::Prototype;
@@ -62,6 +73,22 @@ struct Entry {
     protocol_id: u16,
 }
 
+const PACK_TABLES: [(NameTable, &str); 13] = [
+    (NameTable::JukeboxSong, "jukebox_song"),
+    (NameTable::WolfVariant, "wolf_variant"),
+    (NameTable::WolfSoundVariant, "wolf_sound_variant"),
+    (NameTable::PigVariant, "pig_variant"),
+    (NameTable::PigSoundVariant, "pig_sound_variant"),
+    (NameTable::CowVariant, "cow_variant"),
+    (NameTable::CowSoundVariant, "cow_sound_variant"),
+    (NameTable::ChickenVariant, "chicken_variant"),
+    (NameTable::ChickenSoundVariant, "chicken_sound_variant"),
+    (NameTable::ZombieNautilusVariant, "zombie_nautilus_variant"),
+    (NameTable::FrogVariant, "frog_variant"),
+    (NameTable::CatVariant, "cat_variant"),
+    (NameTable::CatSoundVariant, "cat_sound_variant"),
+];
+
 struct Registries {
     tables: HashMap<NameTable, HashMap<String, u16>>,
 }
@@ -81,7 +108,7 @@ impl Registries {
                 .map(|(name, entry)| (name, entry.protocol_id))
                 .collect()
         };
-        let tables = HashMap::from([
+        let mut tables = HashMap::from([
             (NameTable::Attribute, static_table("minecraft:attribute")),
             (NameTable::Block, static_table("minecraft:block")),
             (
@@ -116,7 +143,14 @@ impl Registries {
                 NameTable::EntityTypeTag,
                 pack_table(&vanilla_dir().join("tags/entity_type")),
             ),
+            (
+                NameTable::VillagerType,
+                static_table("minecraft:villager_type"),
+            ),
         ]);
+        for (table, folder) in PACK_TABLES {
+            tables.insert(table, pack_table(&vanilla_dir().join(folder)));
+        }
         Self { tables }
     }
 }
@@ -130,7 +164,11 @@ fn pack_table(root: &Path) -> HashMap<String, u16> {
             if path.is_dir() {
                 pending.push(path);
             } else if let Ok(relative) = path.with_extension("").strip_prefix(root) {
-                names.push(format!("minecraft:{}", relative.to_string_lossy()));
+                let segments: Vec<String> = relative
+                    .iter()
+                    .map(|segment| segment.to_string_lossy().into_owned())
+                    .collect();
+                names.push(format!("minecraft:{}", segments.join("/")));
             }
         }
     }
@@ -461,6 +499,108 @@ fn each_prototype_has_the_neutral_value_of_each_neutral_type() {
             .get::<ItemModel>()
             .map(|model| model.get().to_string());
         assert_eq!(model.as_ref(), Some(identifier), "STK-SHP-012");
+    }
+}
+
+#[test]
+fn the_prototypes_have_the_enchantable_book_jukebox_and_variant_values_of_the_specification() {
+    let cases: [(&str, usize, usize); 9] = [
+        (
+            "STK-SHP-064 enchantable",
+            count(|prototype| prototype.get::<Enchantable>().is_some()),
+            77,
+        ),
+        (
+            "STK-SHP-064 value 15",
+            count(|prototype| prototype.get() == Some(&Enchantable(15))),
+            21,
+        ),
+        (
+            "STK-SHP-064 different values",
+            prototypes()
+                .filter_map(|prototype| prototype.get::<Enchantable>())
+                .map(|enchantable| enchantable.0)
+                .collect::<BTreeSet<i32>>()
+                .len(),
+            11,
+        ),
+        (
+            "STK-SHP-066 the empty writable book",
+            count(|prototype| prototype.get() == Some(&WritableBookContent::EMPTY)),
+            1,
+        ),
+        (
+            "STK-SHP-067 written book",
+            count(|prototype| prototype.get::<WrittenBookContent>().is_some()),
+            0,
+        ),
+        (
+            "STK-SHP-068 jukebox playable",
+            count(|prototype| prototype.get::<JukeboxPlayable>().is_some()),
+            23,
+        ),
+        (
+            "STK-SHP-068 different songs",
+            prototypes()
+                .filter_map(|prototype| prototype.get::<JukeboxPlayable>())
+                .map(|playable| playable.0)
+                .collect::<BTreeSet<JukeboxSongId>>()
+                .len(),
+            23,
+        ),
+        (
+            "STK-SHP-070 chicken variant",
+            count(|prototype| prototype.get::<ChickenVariant>().is_some()),
+            3,
+        ),
+        (
+            "STK-SHP-072 cushion colour",
+            prototypes()
+                .filter_map(|prototype| prototype.get::<CushionColor>())
+                .map(|color| color.0)
+                .collect::<HashSet<DyeColor>>()
+                .len(),
+            16,
+        ),
+    ];
+    for (rule, actual, expected) in cases {
+        assert_eq!(actual, expected, "{rule}");
+    }
+
+    let registries = Registries::load();
+    let chicken = |name: &str| {
+        let variant = registries
+            .id(
+                NameTable::ChickenVariant,
+                ResourceLocation::new("minecraft", name).expect("a valid name"),
+            )
+            .expect("the pack has the chicken variant");
+        ChickenVariant(ChickenVariantId(variant))
+    };
+    let eggs = [
+        ("minecraft:egg", "temperate"),
+        ("minecraft:blue_egg", "cold"),
+        ("minecraft:brown_egg", "warm"),
+    ];
+    for (item, variant) in eggs {
+        let kind = CORPUS
+            .baked
+            .table
+            .id(
+                NameTable::Item,
+                ResourceLocation::read(item).expect("an identifier"),
+            )
+            .expect("the item exists");
+        let prototype = CORPUS
+            .baked
+            .table
+            .prototype(Kind(kind))
+            .expect("a prototype");
+        assert_eq!(
+            prototype.get(),
+            Some(&chicken(variant)),
+            "STK-SHP-070 {item}"
+        );
     }
 }
 
