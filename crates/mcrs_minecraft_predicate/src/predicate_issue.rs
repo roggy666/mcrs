@@ -17,6 +17,10 @@ pub enum PredicateIssue {
     UnloadedEntityTypes,
     UnloadedDamageTypeTags,
     NestingTooDeep,
+    UnloadedTrimMaterialTags,
+    UnloadedTrimPatternTags,
+    UnloadedJukeboxSongTags,
+    UnloadedVillagerTypeTags,
 }
 
 impl fmt::Display for PredicateIssue {
@@ -42,6 +46,10 @@ impl fmt::Display for PredicateIssue {
             PredicateIssue::UnloadedEntityTypeTags => "entity type tags",
             PredicateIssue::UnloadedEntityTypes => "entity type registry",
             PredicateIssue::UnloadedDamageTypeTags => "damage type tags",
+            PredicateIssue::UnloadedTrimMaterialTags => "trim material tags",
+            PredicateIssue::UnloadedTrimPatternTags => "trim pattern tags",
+            PredicateIssue::UnloadedJukeboxSongTags => "jukebox song tags",
+            PredicateIssue::UnloadedVillagerTypeTags => "villager type tags",
         };
         write!(f, "the registry set has no {missing}")
     }
