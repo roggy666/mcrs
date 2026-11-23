@@ -1,0 +1,191 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true,
+    "packet_order": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve04probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve04probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival inve04probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "join_peer",
+      "join": "inve04probepeer"
+    },
+    {
+      "id": "teleport_peer",
+      "console": {
+        "lines": [
+          "tp inve04probepeer 2.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "stone_in_hotbar_3",
+      "console": {
+        "lines": [
+          "item replace entity inve04probeplyr hotbar.3 with stone 5"
+        ]
+      }
+    },
+    {
+      "id": "dirt_in_hotbar_4",
+      "console": {
+        "lines": [
+          "item replace entity inve04probeplyr hotbar.4 with dirt 5"
+        ]
+      }
+    },
+    {
+      "id": "select_3",
+      "select_slot": {
+        "client": "inve04probeplyr",
+        "slot": 3
+      },
+      "packet_order": true
+    },
+    {
+      "id": "after_select_3_read_selected",
+      "console": {
+        "lines": [
+          "data get entity inve04probeplyr SelectedItemSlot"
+        ]
+      }
+    },
+    {
+      "id": "select_9",
+      "select_slot": {
+        "client": "inve04probeplyr",
+        "slot": 9
+      },
+      "packet_order": true
+    },
+    {
+      "id": "after_select_9_read_selected",
+      "console": {
+        "lines": [
+          "data get entity inve04probeplyr SelectedItemSlot"
+        ]
+      }
+    },
+    {
+      "id": "select_minus_1",
+      "select_slot": {
+        "client": "inve04probeplyr",
+        "slot": -1
+      },
+      "packet_order": true
+    },
+    {
+      "id": "after_select_minus_1_read_selected",
+      "console": {
+        "lines": [
+          "data get entity inve04probeplyr SelectedItemSlot"
+        ]
+      }
+    },
+    {
+      "id": "apples_in_hotbar_3",
+      "console": {
+        "lines": [
+          "item replace entity inve04probeplyr hotbar.3 with golden_apple 2"
+        ]
+      }
+    },
+    {
+      "id": "eat_whole",
+      "use_item": {
+        "client": "inve04probeplyr",
+        "hand": "main",
+        "sequence": 1
+      }
+    },
+    {
+      "id": "eat_whole_wait",
+      "wait": {
+        "ms": 2500
+      }
+    },
+    {
+      "id": "eat_whole_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve04probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "eat_then_select_4",
+      "sequence": {
+        "steps": [
+          {
+            "use_item": {
+              "client": "inve04probeplyr",
+              "hand": "main",
+              "sequence": 2
+            }
+          },
+          {
+            "wait": {
+              "ms": 300
+            }
+          },
+          {
+            "select_slot": {
+              "client": "inve04probeplyr",
+              "slot": 4
+            }
+          },
+          {
+            "wait": {
+              "ms": 2500
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "eat_then_select_4_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve04probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "after_eat_read_selected",
+      "console": {
+        "lines": [
+          "data get entity inve04probeplyr SelectedItemSlot"
+        ]
+      }
+    }
+  ]
+}

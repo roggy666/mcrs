@@ -88,7 +88,6 @@ type Flying<'w, 's> = Query<
 
 type Targets<'w, 's> = Query<'w, 's, (&'static Vitals, Option<&'static Defence>)>;
 
-/// The body of a player reaches at most this far out of the column of its position.
 const PLAYER_REACH: f64 = 4.0;
 
 #[derive(Clone, Copy, Debug)]

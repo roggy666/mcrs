@@ -1,0 +1,1257 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve10probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "dirt_in_each_main_slot",
+      "observed": {
+        "console": {
+          "output": [
+            "Gave 2304 [Dirt] to inve10probeplyr"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 38,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 39,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 40,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 41,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 42,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 43,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 44,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 11,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 12,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 13,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 14,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 15,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 18,
+          "slot": 16,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 19,
+          "slot": 17,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 20,
+          "slot": 18,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 21,
+          "slot": 19,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 22,
+          "slot": 20,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 23,
+          "slot": 21,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 24,
+          "slot": 22,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 25,
+          "slot": 23,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 26,
+          "slot": 24,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 27,
+          "slot": 25,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 28,
+          "slot": 26,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 29,
+          "slot": 27,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 30,
+          "slot": 28,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 31,
+          "slot": 29,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 32,
+          "slot": 30,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 33,
+          "slot": 31,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 34,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 35,
+          "slot": 33,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 36,
+          "slot": 34,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 37,
+          "slot": 35,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "helmet_in_head",
+      "observed": {
+        "console": {
+          "output": [
+            "inve10probeplyr has made the advancement [Suit Up]",
+            "Replaced 1 slot(s) on inve10probeplyr with [Iron Helmet]"
+          ],
+          "chat": [
+            {
+              "client": "inve10probeplyr",
+              "text": {
+                "translate": "chat.type.advancement.task",
+                "with": [
+                  {
+                    "text": "inve10probeplyr",
+                    "click_event": {
+                      "action": "suggest_command",
+                      "command": "/tell inve10probeplyr "
+                    },
+                    "hover_event": {
+                      "action": "show_entity",
+                      "id": "minecraft:player",
+                      "uuid": [
+                        1019448112,
+                        -1266272943,
+                        -2089277442,
+                        768335406
+                      ],
+                      "name": "inve10probeplyr"
+                    },
+                    "insertion": "inve10probeplyr"
+                  },
+                  {
+                    "translate": "chat.square_brackets",
+                    "with": [
+                      {
+                        "translate": "advancements.story.obtain_armor.title",
+                        "hover_event": {
+                          "action": "show_text",
+                          "value": {
+                            "translate": "advancements.story.obtain_armor.title",
+                            "extra": [
+                              "\n",
+                              {
+                                "translate": "advancements.story.obtain_armor.description"
+                              }
+                            ],
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ],
+                    "color": "green"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 38,
+          "slot": 5,
+          "stack": {
+            "item": "minecraft:iron_helmet",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "boots_in_feet",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve10probeplyr with [Iron Boots]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 39,
+          "slot": 8,
+          "stack": {
+            "item": "minecraft:iron_boots",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "shield_in_off_hand",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve10probeplyr with [Shield]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 40,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:shield",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "select_slot_5",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "cursor_stone_10",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve10probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "grid_granite_3",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on inve10probeplyr with [Granite]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 41,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 42,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 43,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:granite",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "restart",
+      "observed": "restarted",
+      "inventory": [],
+      "player_file": {
+        "Inventory": "[{Slot:0b,count:64,id:\"minecraft:dirt\"},{Slot:1b,count:64,id:\"minecraft:dirt\"},{Slot:2b,count:64,id:\"minecraft:dirt\"},{Slot:3b,count:64,id:\"minecraft:dirt\"},{Slot:4b,count:64,id:\"minecraft:dirt\"},{Slot:5b,count:64,id:\"minecraft:dirt\"},{Slot:6b,count:64,id:\"minecraft:dirt\"},{Slot:7b,count:64,id:\"minecraft:dirt\"},{Slot:8b,count:64,id:\"minecraft:dirt\"},{Slot:9b,count:64,id:\"minecraft:dirt\"},{Slot:10b,count:64,id:\"minecraft:dirt\"},{Slot:11b,count:64,id:\"minecraft:dirt\"},{Slot:12b,count:64,id:\"minecraft:dirt\"},{Slot:13b,count:64,id:\"minecraft:dirt\"},{Slot:14b,count:64,id:\"minecraft:dirt\"},{Slot:15b,count:64,id:\"minecraft:dirt\"},{Slot:16b,count:64,id:\"minecraft:dirt\"},{Slot:17b,count:64,id:\"minecraft:dirt\"},{Slot:18b,count:64,id:\"minecraft:dirt\"},{Slot:19b,count:64,id:\"minecraft:dirt\"},{Slot:20b,count:64,id:\"minecraft:dirt\"},{Slot:21b,count:64,id:\"minecraft:dirt\"},{Slot:22b,count:64,id:\"minecraft:dirt\"},{Slot:23b,count:64,id:\"minecraft:dirt\"},{Slot:24b,count:64,id:\"minecraft:dirt\"},{Slot:25b,count:64,id:\"minecraft:dirt\"},{Slot:26b,count:64,id:\"minecraft:dirt\"},{Slot:27b,count:64,id:\"minecraft:dirt\"},{Slot:28b,count:64,id:\"minecraft:dirt\"},{Slot:29b,count:64,id:\"minecraft:dirt\"},{Slot:30b,count:64,id:\"minecraft:dirt\"},{Slot:31b,count:64,id:\"minecraft:dirt\"},{Slot:32b,count:64,id:\"minecraft:dirt\"},{Slot:33b,count:64,id:\"minecraft:dirt\"},{Slot:34b,count:64,id:\"minecraft:dirt\"},{Slot:35b,count:64,id:\"minecraft:dirt\"}]",
+        "SelectedItemSlot": "5",
+        "equipment": "{feet:{count:1,id:\"minecraft:iron_boots\"},head:{count:1,id:\"minecraft:iron_helmet\"},offhand:{count:1,id:\"minecraft:shield\"}}"
+      }
+    },
+    {
+      "id": "join_again",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve10probeplyr",
+          "kind": "set_held_slot",
+          "slot": 5
+        },
+        {
+          "client": "inve10probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:iron_helmet",
+              "count": 1,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            {
+              "item": "minecraft:iron_boots",
+              "count": 1,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:shield",
+              "count": 1,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            }
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "after_restart_count_item_entities",
+      "observed": {
+        "console": {
+          "output": [
+            "Test passed. Count: 2"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_restart_reset_item_list",
+      "observed": {
+        "console": {
+          "output": [
+            "Nothing changed. The specified properties already have these values"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_restart_list_item_entities",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_restart_read_item_list",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching items"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

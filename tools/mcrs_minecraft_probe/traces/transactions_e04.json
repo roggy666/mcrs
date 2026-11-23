@@ -1,0 +1,957 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe04probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at 1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_10_in_hotbar_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe04probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "granite_7_in_cursor_before_open",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe04probeplyr with [Granite]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:granite",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "open_chest",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "click_with_cursor_claim_after_open",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "read_chest_after_cursor_claim",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_with_other_container_id",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_with_inventory_container_id",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "spectator",
+      "observed": {
+        "console": {
+          "output": [
+            "Set itxe04probeplyr's game mode to Spectator Mode"
+          ],
+          "chat": [
+            {
+              "client": "itxe04probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.spectator"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_as_spectator",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 2,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "survival_again",
+      "observed": {
+        "console": {
+          "output": [
+            "Set itxe04probeplyr's game mode to Survival Mode"
+          ],
+          "chat": [
+            {
+              "client": "itxe04probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.survival"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_slot_500",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_slot_minus_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_slot_63",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_bad_slots_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe04probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "move_away",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe04probeplyr to 12.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_close",
+          "container": 1
+        }
+      ]
+    },
+    {
+      "id": "wait_after_move",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "click_after_move",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "after_move_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe04probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "back_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe04probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_inventory_menu_with_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_player_inventory",
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:granite",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:granite",
+            "count": 7,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "after_inventory_menu_close_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe04probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}, {count: 7, Slot: 1b, id: \"minecraft:granite\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "to_creative",
+      "observed": {
+        "console": {
+          "output": [
+            "Set itxe04probeplyr's game mode to Creative Mode"
+          ],
+          "chat": [
+            {
+              "client": "itxe04probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.creative"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "to_nether",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe04probeplyr has made the advancement [We Need to Go Deeper]",
+            "Teleported itxe04probeplyr to 0.500000, 40.500000, 0.500000"
+          ],
+          "chat": [
+            {
+              "client": "itxe04probeplyr",
+              "text": {
+                "translate": "chat.type.advancement.task",
+                "with": [
+                  {
+                    "text": "itxe04probeplyr",
+                    "click_event": {
+                      "action": "suggest_command",
+                      "command": "/tell itxe04probeplyr "
+                    },
+                    "hover_event": {
+                      "action": "show_entity",
+                      "id": "minecraft:player",
+                      "uuid": [
+                        653678645,
+                        65024661,
+                        -1256554765,
+                        1448054106
+                      ],
+                      "name": "itxe04probeplyr"
+                    },
+                    "insertion": "itxe04probeplyr"
+                  },
+                  {
+                    "translate": "chat.square_brackets",
+                    "with": [
+                      {
+                        "translate": "advancements.story.enter_the_nether.title",
+                        "hover_event": {
+                          "action": "show_text",
+                          "value": {
+                            "translate": "advancements.story.enter_the_nether.title",
+                            "extra": [
+                              "\n",
+                              {
+                                "translate": "advancements.story.enter_the_nether.description"
+                              }
+                            ],
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ],
+                    "color": "green"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 4,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:granite",
+              "count": 7,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        }
+      ]
+    },
+    {
+      "id": "back_to_overworld",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe04probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 5,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:granite",
+              "count": 7,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        }
+      ]
+    },
+    {
+      "id": "open_chest_after_dimension_change",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe04probeplyr",
+          "kind": "open_screen",
+          "container": 2,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe04probeplyr",
+          "kind": "container_set_content",
+          "container": 2,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:stone",
+              "count": 10,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:granite",
+              "count": 7,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "close_chest_after_dimension_change",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

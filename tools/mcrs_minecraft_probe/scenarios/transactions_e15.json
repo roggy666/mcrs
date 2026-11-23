@@ -1,0 +1,531 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe15probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe15probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe15probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_three_slots_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr inventory.1 with stone 62",
+          "item replace entity itxe15probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_three_slots_01_quick_craft_slot_m999_button_0",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 0,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_02_quick_craft_slot_9_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_03_quick_craft_slot_10_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 10,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_04_quick_craft_slot_11_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 11,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_05_quick_craft_slot_m999_button_2",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 2,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "kind_1_three_slots_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr inventory.1 with stone 62",
+          "item replace entity itxe15probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "kind_1_three_slots_01_quick_craft_slot_m999_button_4",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 4,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_three_slots_02_quick_craft_slot_9_button_5",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 9,
+        "button": 5,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_three_slots_03_quick_craft_slot_10_button_5",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 10,
+        "button": 5,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_three_slots_04_quick_craft_slot_11_button_5",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 11,
+        "button": 5,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_three_slots_05_quick_craft_slot_m999_button_6",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 6,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_three_slots_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_one_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_one_slot_01_quick_craft_slot_m999_button_0",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 0,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_one_slot_02_quick_craft_slot_9_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_one_slot_03_quick_craft_slot_m999_button_2",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 2,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_one_slot_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "kind_1_one_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "kind_1_one_slot_01_quick_craft_slot_m999_button_4",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 4,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_one_slot_02_quick_craft_slot_9_button_5",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 9,
+        "button": 5,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_one_slot_03_quick_craft_slot_m999_button_6",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 6,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_1_one_slot_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_one_full_slot_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr inventory.1 with stone 62",
+          "item replace entity itxe15probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_one_full_slot_01_quick_craft_slot_m999_button_0",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 0,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_one_full_slot_02_quick_craft_slot_10_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 10,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_one_full_slot_03_quick_craft_slot_m999_button_2",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 2,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 10
+        }
+      }
+    },
+    {
+      "id": "kind_0_one_full_slot_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_two_slots_one_item_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr player.cursor with stone 1"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_two_slots_one_item_01_quick_craft_slot_m999_button_0",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 0,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "kind_0_two_slots_one_item_02_quick_craft_slot_9_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "kind_0_two_slots_one_item_03_quick_craft_slot_10_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 10,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "kind_0_two_slots_one_item_04_quick_craft_slot_m999_button_2",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 2,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "kind_0_two_slots_one_item_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_reset",
+      "console": {
+        "lines": [
+          "clear itxe15probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe15probeplyr player.cursor with stone 2"
+        ]
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_01_quick_craft_slot_m999_button_0",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 0,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_02_quick_craft_slot_9_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 9,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_03_quick_craft_slot_10_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 10,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_04_quick_craft_slot_11_button_1",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": 11,
+        "button": 1,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_05_quick_craft_slot_m999_button_2",
+      "click": {
+        "client": "itxe15probeplyr",
+        "slot": -999,
+        "button": 2,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "kind_0_three_slots_two_items_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe15probeplyr Inventory"
+        ]
+      }
+    }
+  ]
+}

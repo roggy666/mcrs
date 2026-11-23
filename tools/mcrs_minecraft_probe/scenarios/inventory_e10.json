@@ -1,0 +1,141 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve10probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve10probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival inve10probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "dirt_in_each_main_slot",
+      "console": {
+        "lines": [
+          "give inve10probeplyr dirt 2304"
+        ]
+      }
+    },
+    {
+      "id": "helmet_in_head",
+      "console": {
+        "lines": [
+          "item replace entity inve10probeplyr armor.head with iron_helmet"
+        ]
+      }
+    },
+    {
+      "id": "boots_in_feet",
+      "console": {
+        "lines": [
+          "item replace entity inve10probeplyr armor.feet with iron_boots"
+        ]
+      }
+    },
+    {
+      "id": "shield_in_off_hand",
+      "console": {
+        "lines": [
+          "item replace entity inve10probeplyr weapon.offhand with shield"
+        ]
+      }
+    },
+    {
+      "id": "select_slot_5",
+      "select_slot": {
+        "client": "inve10probeplyr",
+        "slot": 5
+      }
+    },
+    {
+      "id": "cursor_stone_10",
+      "console": {
+        "lines": [
+          "item replace entity inve10probeplyr player.cursor with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "grid_granite_3",
+      "console": {
+        "lines": [
+          "item replace entity inve10probeplyr player.crafting.0 with granite 3"
+        ]
+      }
+    },
+    {
+      "id": "restart",
+      "restart_server": {},
+      "read_player_file": {
+        "client": "inve10probeplyr",
+        "fields": [
+          "Inventory",
+          "equipment",
+          "SelectedItemSlot"
+        ]
+      }
+    },
+    {
+      "id": "join_again",
+      "join": "inve10probeplyr"
+    },
+    {
+      "id": "after_restart_count_item_entities",
+      "console": {
+        "lines": [
+          "execute if entity @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "after_restart_reset_item_list",
+      "console": {
+        "lines": [
+          "data remove storage mcrs:probe items"
+        ]
+      }
+    },
+    {
+      "id": "after_restart_list_item_entities",
+      "console": {
+        "lines": [
+          "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity inve10probeplyr Item"
+        ]
+      }
+    },
+    {
+      "id": "after_restart_read_item_list",
+      "console": {
+        "lines": [
+          "data get storage mcrs:probe items"
+        ]
+      }
+    }
+  ]
+}

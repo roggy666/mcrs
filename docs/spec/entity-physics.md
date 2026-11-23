@@ -2964,16 +2964,23 @@ boxes of the other entities from the start of the tick (PHY-CMP-012). Two collid
 through each other, because the later one always sees the box of the earlier one after its step.
 PHY-DEV-002 records the difference from the reference.
 
-**PHY-CMP-019** (`source_suggested`, semantic, confidence: medium). Policy `semantic`: a limit on the
-number of push neighbours. It applies only when the game rule `max_entity_cramming` is 0. Then the
-push of PHY-CMP-012 uses only the `K` nearest neighbours of each entity, with `K = 24` by default.
+**PHY-CMP-019** (`design`, semantic, confidence: medium). Policy `semantic`: a limit on the
+number of push neighbours. The setting `entities.collisions.max-per-tick` (`MCRS_ENTITIES_COLLISIONS_MAX_PER_TICK`,
+a count from 0 to 65535, default 8) gives `K`. With `K = 0` the push of PHY-CMP-012 uses every
+neighbour, as the reference does. With `K > 0`:
 
-1. The distance of a pair is `m` of PHY-PSH-004, from the positions at the start of the tick.
-2. Each entity sorts its neighbours by the distance, and then by the UUID.
-3. A pair pushes only when each entity of the pair is among the first `K` neighbours of the other.
+1. The neighbours of an entity come from the body grid in one pass, in the order of the cells of
+   the grid (tile, then bucket row, then bucket column) and, inside a cell, in the order of the UUID
+   (PHY-CMP-013). The pass visits every intersecting row.
+2. The crowd check of PHY-PSH-007 counts the pushing candidates over every visited row, so the
+   counts of steps 2 and 4 stay exact; DMG-CRW-002 subtracts the deaths of the tick from them.
+3. The push uses the first `K` rows of that order, sorted by the UUID as in PHY-CMP-012.
 
-Step 3 makes the rule symmetric, so each pair still gets equal and opposite pushes (PHY-PSH-005).
-PHY-DEV-008 records the difference.
+The order depends on positions and UUIDs at the start of the tick, never on the thread count or on
+the task split (PHY-CMP-012). The limit is per entity, so a pair can push one way only when one of
+the two is beyond the `K`-th neighbour of the other; PHY-DEV-008 records the difference. The game
+rule `max_entity_cramming` stays the only threshold of the crowd damage; the density of spawning
+is a separate limit of the spawning plan.
 
 **PHY-CMP-020** (`source_suggested`, semantic, confidence: medium). Policy `semantic`, with the
 visible behaviour of the reference: explosions in the order-independent pass.
@@ -3259,15 +3266,23 @@ the deviations of this section for server-simulated entities. An implementation 
   reaches the client only after a change of at least `0.00276` block (PHY-CMP-002).
 - **Test:** a parity test sets the phase offset from the vanilla network id (PHY-CMP-016).
 
-### PHY-DEV-008: Push limit without crowd damage
+### PHY-DEV-008: Push limit per entity and tick
 
 - **Rule:** PHY-CMP-019.
-- **Reference:** the reference pushes every candidate, also when `max_entity_cramming` is 0.
-- **Visible to the client:** yes, but only when the game rule is 0. More than 24 entities must
-  touch one entity. The crowd presses closer together, because each entity gets at
-  most 24 pairs of pushes.
-- **Test:** a differential test with `max_entity_cramming` 0 skips each entity with more than `K`
-  neighbours.
+- **Reference:** the reference pushes every intersecting neighbour, whatever the game rule.
+- **Reason:** load. In a heap the pairs grow with the square of the entities; a thousand zombies
+  on one spot take 229 ms a tick, two thousand take 2.6 s (measurement of 2026-11-22). With a limit
+  of 8 each entity costs a bounded amount of work.
+- **Visible to the client:** yes, in heaps of more than `K` entities around one entity: the entity
+  gets at most `K` pushes a tick, so a dense heap presses closer and spreads slower, and the pushes
+  of a pair are not always equal and opposite: PHY-PSH-005 holds for pairs inside each other's
+  first `K` neighbours and not in heaps of more than `K`, as in Paper's collision limit. With
+  `entities.collisions.max-per-tick` 0 the behaviour is the vanilla one.
+- **Bug reference:** none.
+- **Test:** `cmp_019_the_cap_takes_the_first_neighbours_by_cell_and_key` and
+  `cmp_019_a_cap_of_zero_pushes_every_neighbour` in `mcrs_minecraft_physics`; the heap of 2000 on
+  one spot ends on the same body hash with 1 and 8 threads (`mcrs_minecraft_engine_physics`); the
+  measurement table of `benchmarks/mob-bench/2026-11-22-stage` before and after.
 
 ### PHY-DEV-009: Explosions that the start of the tick does not show
 

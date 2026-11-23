@@ -31,7 +31,7 @@ pub(crate) fn hit_crowds(
         return;
     };
     let hit = Hit::new(CROWD_DAMAGE, DamageSource::of(damage_type));
-    let limit = i64::from(push_rules(rules.as_deref()).max_entity_cramming) - 1;
+    let limit = i64::from(push_rules(rules.as_deref(), None).max_entity_cramming) - 1;
     let gone = expired.entries();
     for candidate in crowds.entries() {
         let own = candidate.own;

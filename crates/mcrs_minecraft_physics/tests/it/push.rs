@@ -101,26 +101,69 @@ fn cmp_012_any_row_order_and_task_split_give_equal_velocities() {
 }
 
 #[test]
-fn cmp_019_the_cap_keeps_pairs_symmetric() {
+fn cmp_019_the_cap_takes_the_first_neighbours_by_cell_and_key() {
     let mut rng = TestRng(19);
-    let rules = PushRules {
+    let capped = PushRules {
+        max_entity_cramming: 24,
+        cap: 8,
+    };
+    let open = PushRules {
+        max_entity_cramming: 24,
+        cap: 0,
+    };
+    for _ in 0..CASES / 10 {
+        let mut rows: Vec<GridRow> = (0..40)
+            .map(|index| TestFixture::mob(index, rng.range(0.0, 0.6), rng.range(0.0, 0.6)))
+            .collect();
+        rows.sort_by_key(|row| row.key);
+        let of = rows[20];
+        let (velocity, outcome) = pushed(&rows, &of, &capped);
+        let first: Vec<GridRow> = rows
+            .iter()
+            .filter(|row| row.key != of.key)
+            .take(8)
+            .copied()
+            .collect();
+        let (expected, _) = pushed(&first, &of, &open);
+        assert_eq!(
+            bits(velocity),
+            bits(expected),
+            "the first eight rows by key push"
+        );
+        assert_eq!(
+            outcome.candidates,
+            pushed(&rows, &of, &open).1.candidates,
+            "the crowd count stays exact under the cap"
+        );
+    }
+}
+
+#[test]
+fn cmp_019_a_cap_of_zero_pushes_every_neighbour() {
+    let mut rng = TestRng(23);
+    let open = PushRules {
         max_entity_cramming: 0,
-        cap: 24,
+        cap: 0,
+    };
+    let wide = PushRules {
+        max_entity_cramming: 0,
+        cap: 64,
     };
     for _ in 0..CASES / 10 {
         let rows: Vec<GridRow> = (0..40)
             .map(|index| TestFixture::mob(index, rng.range(0.0, 0.6), rng.range(0.0, 0.6)))
             .collect();
-        let total: DVec3 = rows.iter().map(|row| pushed(&rows, row, &rules).0).sum();
+        let total: DVec3 = rows.iter().map(|row| pushed(&rows, row, &open).0).sum();
         assert!(
             total.abs().max_element() < 1.0e-12,
-            "the pushes of the crowd do not cancel: {total}"
+            "every pair pushes both ways: {total}"
         );
-        let uncapped: DVec3 = rows
-            .iter()
-            .map(|row| pushed(&rows, row, &PushRules::default()).0)
-            .sum();
-        assert!(uncapped.abs().max_element() < 1.0e-12);
+        for row in &rows {
+            assert_eq!(
+                bits(pushed(&rows, row, &open).0),
+                bits(pushed(&rows, row, &wide).0)
+            );
+        }
     }
 }
 
@@ -173,7 +216,11 @@ fn cmp_027_a_pair_that_is_too_near_gets_the_push_of_the_earlier_entity() {
 #[test]
 fn cmp_027_the_pushes_of_a_stack_cancel_in_any_row_order() {
     let mut rng = TestRng(27);
-    let rules = PushRules::default();
+    let rules = PushRules {
+        cap: 0,
+        ..PushRules::default()
+    };
+    let capped = PushRules::default();
     for _ in 0..CASES / 10 {
         let rows: Vec<GridRow> = (0..20)
             .map(|index| GridRow {
@@ -190,6 +237,11 @@ fn cmp_027_the_pushes_of_a_stack_cancel_in_any_row_order() {
         for row in &rows {
             let (velocity, _) = pushed(&rows, row, &rules);
             assert_eq!(bits(velocity), bits(pushed(&shuffled, row, &rules).0));
+            assert_eq!(
+                bits(pushed(&rows, row, &capped).0),
+                bits(pushed(&shuffled, row, &capped).0),
+                "the first rows by key push whatever the row order"
+            );
             total += velocity;
             moved += usize::from(velocity != DVec3::ZERO);
         }

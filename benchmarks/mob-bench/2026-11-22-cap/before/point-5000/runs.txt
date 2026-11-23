@@ -1,0 +1,4 @@
+[17:17:31] zombies-point start; other processes: none
+[17:18:56] zombies-point end; other processes: none
+[17:18:56] pigs-point start; other processes: none
+[17:22:26] pigs-point end; other processes: none

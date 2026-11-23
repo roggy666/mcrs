@@ -1,0 +1,2131 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe10probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_brewing_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at -1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "potions_16_in_hotbar_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe10probeplyr with [Uncraftable Potion]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 16,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "swiftness_in_bottle_slot",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) at -1, -60, 0 with [Potion of Swiftness]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_brewing_stand",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:brewing_stand",
+          "title": {
+            "translate": "container.brewing"
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 1,
+              "components": {
+                "added": [
+                  "minecraft:potion_contents"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:potion",
+              "count": 16,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 0,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 1,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 2,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 3,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "swap_bottle_slot_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 3,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 15,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 4,
+          "slot": 33,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:potion_contents"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "swap_bottle_slot_button_0_read_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "-1, -60, 0 has the following block data: [{components: {\"minecraft:max_stack_size\": 16}, count: 1, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "swap_bottle_slot_button_0_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: [{components: {\"minecraft:max_stack_size\": 16}, count: 15, Slot: 0b, id: \"minecraft:potion\"}, {components: {\"minecraft:potion_contents\": {potion: \"minecraft:swiftness\"}}, count: 1, Slot: 1b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "full_inventory_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 16 item(s) from player itxe10probeplyr",
+            "No entity was found",
+            "Gave 2304 [Dirt] to itxe10probeplyr",
+            "Replaced 1 slot(s) on itxe10probeplyr with [Uncraftable Potion]",
+            "Replaced 1 slot(s) at -1, -60, 0 with [Potion of Swiftness]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 37,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 38,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 39,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 40,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 41,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 42,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 43,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 44,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 16,
+          "slot": 10,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 17,
+          "slot": 11,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 18,
+          "slot": 12,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 19,
+          "slot": 13,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 20,
+          "slot": 14,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 21,
+          "slot": 15,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 22,
+          "slot": 16,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 23,
+          "slot": 17,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 24,
+          "slot": 18,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 25,
+          "slot": 19,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 26,
+          "slot": 20,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 27,
+          "slot": 21,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 28,
+          "slot": 22,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 29,
+          "slot": 23,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 30,
+          "slot": 24,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 31,
+          "slot": 25,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 32,
+          "slot": 26,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 33,
+          "slot": 27,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 34,
+          "slot": 28,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 35,
+          "slot": 29,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 36,
+          "slot": 30,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 37,
+          "slot": 31,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 38,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 39,
+          "slot": 33,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 40,
+          "slot": 34,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 41,
+          "slot": 35,
+          "stack": {
+            "item": "minecraft:dirt",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 42,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 16,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "full_inventory_open_brewing_stand",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "open_screen",
+          "container": 2,
+          "menu": "minecraft:brewing_stand",
+          "title": {
+            "translate": "container.brewing"
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_content",
+          "container": 2,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 1,
+              "components": {
+                "added": [
+                  "minecraft:potion_contents"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:potion",
+              "count": 16,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:dirt",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            }
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 2,
+          "id": 0,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 2,
+          "id": 1,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 2,
+          "id": 2,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 2,
+          "id": 3,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "full_inventory_swap_bottle_slot_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{components: {\"minecraft:potion_contents\": {potion: \"minecraft:swiftness\"}}, count: 1, id: \"minecraft:potion\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 2,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 2,
+          "state_id": 3,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 15,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "full_inventory_read_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "-1, -60, 0 has the following block data: [{components: {\"minecraft:max_stack_size\": 16}, count: 1, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "full_inventory_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: [{components: {\"minecraft:max_stack_size\": 16}, count: 15, Slot: 0b, id: \"minecraft:potion\"}, {count: 64, Slot: 1b, id: \"minecraft:dirt\"}, {count: 64, Slot: 2b, id: \"minecraft:dirt\"}, {count: 64, Slot: 3b, id: \"minecraft:dirt\"}, {count: 64, Slot: 4b, id: \"minecraft:dirt\"}, {count: 64, Slot: 5b, id: \"minecraft:dirt\"}, {count: 64, Slot: 6b, id: \"minecraft:dirt\"}, {count: 64, Slot: 7b, id: \"minecraft:dirt\"}, {count: 64, Slot: 8b, id: \"minecraft:dirt\"}, {count: 64, Slot: 9b, id: \"minecraft:dirt\"}, {count: 64, Slot: 10b, id: \"minecraft:dirt\"}, {count: 64, Slot: 11b, id: \"minecraft:dirt\"}, {count: 64, Slot: 12b, id: \"minecraft:dirt\"}, {count: 64, Slot: 13b, id: \"minecraft:dirt\"}, {count: 64, Slot: 14b, id: \"minecraft:dirt\"}, {count: 64, Slot: 15b, id: \"minecraft:dirt\"}, {count: 64, Slot: 16b, id: \"minecraft:dirt\"}, {count: 64, Slot: 17b, id: \"minecraft:dirt\"}, {count: 64, Slot: 18b, id: \"minecraft:dirt\"}, {count: 64, Slot: 19b, id: \"minecraft:dirt\"}, {count: 64, Slot: 20b, id: \"minecraft:dirt\"}, {count: 64, Slot: 21b, id: \"minecraft:dirt\"}, {count: 64, Slot: 22b, id: \"minecraft:dirt\"}, {count: 64, Slot: 23b, id: \"minecraft:dirt\"}, {count: 64, Slot: 24b, id: \"minecraft:dirt\"}, {count: 64, Slot: 25b, id: \"minecraft:dirt\"}, {count: 64, Slot: 26b, id: \"minecraft:dirt\"}, {count: 64, Slot: 27b, id: \"minecraft:dirt\"}, {count: 64, Slot: 28b, id: \"minecraft:dirt\"}, {count: 64, Slot: 29b, id: \"minecraft:dirt\"}, {count: 64, Slot: 30b, id: \"minecraft:dirt\"}, {count: 64, Slot: 31b, id: \"minecraft:dirt\"}, {count: 64, Slot: 32b, id: \"minecraft:dirt\"}, {count: 64, Slot: 33b, id: \"minecraft:dirt\"}, {count: 64, Slot: 34b, id: \"minecraft:dirt\"}, {count: 64, Slot: 35b, id: \"minecraft:dirt\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "full_inventory_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: {}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "off_hand_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 2255 item(s) from player itxe10probeplyr",
+            "Killed Potion of Swiftness",
+            "Replaced 1 slot(s) on itxe10probeplyr with [Uncraftable Potion]",
+            "Replaced 1 slot(s) at -1, -60, 0 with [Potion of Swiftness]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 43,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 44,
+          "slot": 10,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 45,
+          "slot": 11,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 46,
+          "slot": 12,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 47,
+          "slot": 13,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 48,
+          "slot": 14,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 49,
+          "slot": 15,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 50,
+          "slot": 16,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 51,
+          "slot": 17,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 52,
+          "slot": 18,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 53,
+          "slot": 19,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 54,
+          "slot": 20,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 55,
+          "slot": 21,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 56,
+          "slot": 22,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 57,
+          "slot": 23,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 58,
+          "slot": 24,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 59,
+          "slot": 25,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 60,
+          "slot": 26,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 61,
+          "slot": 27,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 62,
+          "slot": 28,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 63,
+          "slot": 29,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 64,
+          "slot": 30,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 65,
+          "slot": 31,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 66,
+          "slot": 32,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 67,
+          "slot": 33,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 68,
+          "slot": 34,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 69,
+          "slot": 35,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 70,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 71,
+          "slot": 37,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 72,
+          "slot": 38,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 73,
+          "slot": 39,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 74,
+          "slot": 40,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 75,
+          "slot": 41,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 76,
+          "slot": 42,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 77,
+          "slot": 43,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 78,
+          "slot": 44,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 79,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 80,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 16,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "off_hand_open_brewing_stand",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "open_screen",
+          "container": 3,
+          "menu": "minecraft:brewing_stand",
+          "title": {
+            "translate": "container.brewing"
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_content",
+          "container": 3,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 1,
+              "components": {
+                "added": [
+                  "minecraft:potion_contents"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 0,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 1,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 2,
+          "value": 0
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 3,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "off_hand_swap_bottle_slot_button_40",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 3,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:potion_contents"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "off_hand_read_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "-1, -60, 0 has the following block data: [{components: {\"minecraft:max_stack_size\": 16}, count: 1, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "off_hand_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: [{components: {\"minecraft:potion_contents\": {potion: \"minecraft:swiftness\"}}, count: 1, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "off_hand_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: {offhand: {components: {\"minecraft:max_stack_size\": 16}, count: 15, id: \"minecraft:potion\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_bottle_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 16 item(s) from player itxe10probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe10probeplyr with [Stone]",
+            "Replaced 1 slot(s) at -1, -60, 0 with [Air]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 4,
+          "slot": 32,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 81,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 5,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 10,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 6,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "empty_bottle_slot_swap_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_bottle_slot_read_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "-1, -60, 0 has the following block data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_bottle_slot_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: [{count: 10, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_hotbar_slot_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 10 item(s) from player itxe10probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe10probeplyr with [Air]",
+            "Replaced 1 slot(s) at -1, -60, 0 with [Potion of Swiftness]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 7,
+          "slot": 32,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 82,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 8,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:potion_contents"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty_hotbar_slot_swap_button_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 9,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 10,
+          "slot": 32,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:potion_contents"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty_hotbar_slot_read_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "-1, -60, 0 has the following block data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_hotbar_slot_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe10probeplyr has the following entity data: [{components: {\"minecraft:potion_contents\": {potion: \"minecraft:swiftness\"}}, count: 1, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_3",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe10probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 83,
+          "slot": 45,
+          "stack": null
+        }
+      ]
+    }
+  ]
+}

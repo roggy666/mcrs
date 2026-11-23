@@ -1,0 +1,428 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "inve05probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp inve05probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival inve05probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "survival_gamemode",
+      "console": {
+        "lines": [
+          "gamemode survival inve05probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_one_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve05probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_one_action",
+      "sequence": {
+        "steps": [
+          {
+            "player_action": {
+              "client": "inve05probeplyr",
+              "status": "drop_item"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_one_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_all_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve05probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_all_action",
+      "sequence": {
+        "steps": [
+          {
+            "player_action": {
+              "client": "inve05probeplyr",
+              "status": "drop_all_items"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_all_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_empty_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "survival_drop_empty_action",
+      "sequence": {
+        "steps": [
+          {
+            "player_action": {
+              "client": "inve05probeplyr",
+              "status": "drop_item"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "survival_swap_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve05probeplyr hotbar.0 with iron_helmet",
+          "item replace entity inve05probeplyr weapon.offhand with shield"
+        ]
+      }
+    },
+    {
+      "id": "survival_swap_action",
+      "player_action": {
+        "client": "inve05probeplyr",
+        "status": "swap_item_with_offhand"
+      }
+    },
+    {
+      "id": "survival_swap_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "survival_swap_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "survival_swap_empty_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "survival_swap_empty_action",
+      "player_action": {
+        "client": "inve05probeplyr",
+        "status": "swap_item_with_offhand"
+      }
+    },
+    {
+      "id": "survival_swap_empty_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "spectator_gamemode",
+      "console": {
+        "lines": [
+          "gamemode spectator inve05probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_one_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve05probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_one_action",
+      "sequence": {
+        "steps": [
+          {
+            "player_action": {
+              "client": "inve05probeplyr",
+              "status": "drop_item"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_one_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_all_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve05probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_all_action",
+      "sequence": {
+        "steps": [
+          {
+            "player_action": {
+              "client": "inve05probeplyr",
+              "status": "drop_all_items"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_all_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_empty_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "spectator_drop_empty_action",
+      "sequence": {
+        "steps": [
+          {
+            "player_action": {
+              "client": "inve05probeplyr",
+              "status": "drop_item"
+            }
+          },
+          {
+            "wait": {
+              "ms": 150
+            }
+          },
+          {
+            "console": {
+              "lines": [
+                "data remove storage mcrs:probe items",
+                "execute as @e[type=minecraft:item] run data modify storage mcrs:probe items append from entity @s Item",
+                "data get storage mcrs:probe items",
+                "execute if entity @e[type=minecraft:item]"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "spectator_swap_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity inve05probeplyr hotbar.0 with iron_helmet",
+          "item replace entity inve05probeplyr weapon.offhand with shield"
+        ]
+      }
+    },
+    {
+      "id": "spectator_swap_action",
+      "player_action": {
+        "client": "inve05probeplyr",
+        "status": "swap_item_with_offhand"
+      }
+    },
+    {
+      "id": "spectator_swap_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "spectator_swap_read_equipment",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr equipment"
+        ]
+      }
+    },
+    {
+      "id": "spectator_swap_empty_reset",
+      "console": {
+        "lines": [
+          "clear inve05probeplyr",
+          "kill @e[type=minecraft:item]"
+        ]
+      }
+    },
+    {
+      "id": "spectator_swap_empty_action",
+      "player_action": {
+        "client": "inve05probeplyr",
+        "status": "swap_item_with_offhand"
+      }
+    },
+    {
+      "id": "spectator_swap_empty_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity inve05probeplyr Inventory"
+        ]
+      }
+    }
+  ]
+}

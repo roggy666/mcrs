@@ -1,0 +1,564 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe03probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "damaged_stackable_in_hotbar_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Malformed item: 'Item cannot be both damageable and stackable'"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "damaged_pickaxe_in_hotbar_0",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe03probeplyr has made the advancement [Isn't It Iron Pick?]",
+            "Replaced 1 slot(s) on itxe03probeplyr with [Iron Pickaxe]"
+          ],
+          "chat": [
+            {
+              "client": "itxe03probeplyr",
+              "text": {
+                "translate": "chat.type.advancement.task",
+                "with": [
+                  {
+                    "text": "itxe03probeplyr",
+                    "click_event": {
+                      "action": "suggest_command",
+                      "command": "/tell itxe03probeplyr "
+                    },
+                    "hover_event": {
+                      "action": "show_entity",
+                      "id": "minecraft:player",
+                      "uuid": [
+                        -1541840911,
+                        -75416539,
+                        -2070863045,
+                        -1851861019
+                      ],
+                      "name": "itxe03probeplyr"
+                    },
+                    "insertion": "itxe03probeplyr"
+                  },
+                  {
+                    "translate": "chat.square_brackets",
+                    "with": [
+                      {
+                        "translate": "advancements.story.iron_tools.title",
+                        "hover_event": {
+                          "action": "show_text",
+                          "value": {
+                            "translate": "advancements.story.iron_tools.title",
+                            "extra": [
+                              "\n",
+                              {
+                                "translate": "advancements.story.iron_tools.description"
+                              }
+                            ],
+                            "color": "green"
+                          }
+                        }
+                      }
+                    ],
+                    "color": "green"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:damage"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "damaged_pickaxe_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe03probeplyr with [Iron Pickaxe]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:damage"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "damaged_on_damaged_primary",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:damage"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "damaged_on_damaged_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe03probeplyr has the following entity data: [{components: {\"minecraft:damage\": 3}, count: 1, Slot: 0b, id: \"minecraft:iron_pickaxe\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "damaged_pickaxe_in_inventory_0",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe03probeplyr with [Iron Pickaxe]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:damage"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "damaged_quick_move_to_hotbar_row",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:damage"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:damage"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "damaged_quick_move_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe03probeplyr has the following entity data: [{components: {\"minecraft:damage\": 3}, count: 1, Slot: 0b, id: \"minecraft:iron_pickaxe\"}, {components: {\"minecraft:damage\": 3}, count: 1, Slot: 1b, id: \"minecraft:iron_pickaxe\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "undamaged_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 3 item(s) from player itxe03probeplyr",
+            "No entity was found",
+            "Replaced 1 slot(s) on itxe03probeplyr with [Iron Pickaxe]",
+            "Replaced 1 slot(s) on itxe03probeplyr with [Iron Pickaxe]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 37,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 9,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 10,
+          "slot": 9,
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "undamaged_pickaxe_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe03probeplyr with [Iron Pickaxe]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "undamaged_on_undamaged_primary",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "undamaged_quick_move_to_hotbar_row",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 11,
+          "slot": 9,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 12,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:iron_pickaxe",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "undamaged_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe03probeplyr has the following entity data: [{count: 1, Slot: 0b, id: \"minecraft:iron_pickaxe\"}, {count: 1, Slot: 1b, id: \"minecraft:iron_pickaxe\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "damaged_stackable_tools_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 3 item(s) from player itxe03probeplyr",
+            "No entity was found",
+            "Malformed item: 'Item cannot be both damageable and stackable'"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 13,
+          "slot": 36,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 14,
+          "slot": 37,
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        },
+        {
+          "client": "itxe03probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 15,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "damaged_stackable_tools_read",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe03probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

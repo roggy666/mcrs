@@ -45,6 +45,13 @@ impl StrollGoal {
     }
 
     #[must_use]
+    pub fn idle_limit_at<W: ?Sized>(turn: &Turn<'_, W>) -> Option<u64> {
+        let idle = u64::from(turn.view.idle_time);
+        let limit = u64::from(STROLL_IDLE_LIMIT);
+        (idle < limit).then(|| turn.tick.saturating_add(limit - idle))
+    }
+
+    #[must_use]
     pub fn can_continue<W: ?Sized>(turn: &Turn<'_, W>, path_running: bool) -> bool {
         path_running && !turn.view.flags.contains(MobFlags::CONTROLLED)
     }

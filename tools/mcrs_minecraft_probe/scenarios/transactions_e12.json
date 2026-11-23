@@ -1,0 +1,292 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe12probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe12probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "creative",
+      "console": {
+        "lines": [
+          "gamemode creative itxe12probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_chest",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 chest"
+        ]
+      }
+    },
+    {
+      "id": "stone_5_in_chest_0",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.0 with stone 5"
+        ]
+      }
+    },
+    {
+      "id": "open_chest",
+      "use_block": {
+        "client": "itxe12probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "clone_stone_slot",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 0,
+        "button": 2,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_stone_slot_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "clone_with_full_cursor",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 0,
+        "button": 2,
+        "mode": "clone",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "clone_with_full_cursor_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "drag_kind_2_start",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": -999,
+        "button": 8,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_add_1",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 1,
+        "button": 9,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_add_2",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 2,
+        "button": 9,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_add_3",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 3,
+        "button": 9,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_end",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": -999,
+        "button": 10,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "drag_kind_2_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "stone_60_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe12probeplyr player.cursor with stone 60"
+        ]
+      }
+    },
+    {
+      "id": "stone_62_in_chest_4",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.4 with stone 62"
+        ]
+      }
+    },
+    {
+      "id": "drag_kind_2_partial_start",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": -999,
+        "button": 8,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 60
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_partial_add_4",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 4,
+        "button": 9,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 60
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_partial_add_5",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 5,
+        "button": 9,
+        "mode": "quick_craft",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 60
+        }
+      }
+    },
+    {
+      "id": "drag_kind_2_partial_end",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": -999,
+        "button": 10,
+        "mode": "quick_craft"
+      }
+    },
+    {
+      "id": "drag_kind_2_partial_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "clear_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe12probeplyr player.cursor with air"
+        ]
+      }
+    },
+    {
+      "id": "clone_empty_slot",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 10,
+        "button": 2,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe12probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "clone_in_survival",
+      "click": {
+        "client": "itxe12probeplyr",
+        "slot": 0,
+        "button": 2,
+        "mode": "clone"
+      }
+    },
+    {
+      "id": "clone_in_survival_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_chest",
+      "close": {
+        "client": "itxe12probeplyr"
+      }
+    }
+  ]
+}

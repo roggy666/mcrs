@@ -1,0 +1,345 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe01probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe01probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe01probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_chest",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 chest"
+        ]
+      }
+    },
+    {
+      "id": "place_brewing_stand",
+      "console": {
+        "lines": [
+          "setblock -1 -60 0 brewing_stand"
+        ]
+      }
+    },
+    {
+      "id": "open_brewing_stand",
+      "use_block": {
+        "client": "itxe01probeplyr",
+        "position": [
+          -1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "potions_64_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe01probeplyr player.cursor with potion[max_stack_size=64] 64"
+        ]
+      }
+    },
+    {
+      "id": "potions_to_bottle_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:potion",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "potions_to_bottle_slot_read",
+      "console": {
+        "lines": [
+          "data get block -1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_brewing_stand_1",
+      "close": {
+        "client": "itxe01probeplyr"
+      }
+    },
+    {
+      "id": "open_chest_1",
+      "use_block": {
+        "client": "itxe01probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "potions_63_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe01probeplyr player.cursor with potion[max_stack_size=64] 63"
+        ]
+      }
+    },
+    {
+      "id": "potions_to_chest_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 0,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:potion",
+          "count": 63
+        }
+      }
+    },
+    {
+      "id": "potions_to_chest_slot_read",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_chest_1",
+      "close": {
+        "client": "itxe01probeplyr"
+      }
+    },
+    {
+      "id": "open_brewing_stand_2",
+      "use_block": {
+        "client": "itxe01probeplyr",
+        "position": [
+          -1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "stone_64_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe01probeplyr player.cursor with stone 64"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_bottle_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "stone_to_ingredient_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 3,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "close_brewing_stand_2",
+      "close": {
+        "client": "itxe01probeplyr"
+      }
+    },
+    {
+      "id": "open_chest_2",
+      "use_block": {
+        "client": "itxe01probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "stone_64_in_cursor_again",
+      "console": {
+        "lines": [
+          "item replace entity itxe01probeplyr player.cursor with stone 64"
+        ]
+      }
+    },
+    {
+      "id": "stone_to_chest_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 1,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 64
+        }
+      }
+    },
+    {
+      "id": "close_chest_2",
+      "close": {
+        "client": "itxe01probeplyr"
+      }
+    },
+    {
+      "id": "open_chest_3",
+      "use_block": {
+        "client": "itxe01probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "small_stone_16_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe01probeplyr player.cursor with stone[max_stack_size=16] 16"
+        ]
+      }
+    },
+    {
+      "id": "small_stone_to_chest_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 2,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 16
+        }
+      }
+    },
+    {
+      "id": "small_stone_slot_pick_up_half",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 2,
+        "button": 1,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "close_chest_3",
+      "close": {
+        "client": "itxe01probeplyr"
+      }
+    },
+    {
+      "id": "open_chest_4",
+      "use_block": {
+        "client": "itxe01probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "big_stone_99_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe01probeplyr player.cursor with stone[max_stack_size=99] 99"
+        ]
+      }
+    },
+    {
+      "id": "big_stone_to_chest_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 3,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 99
+        }
+      }
+    },
+    {
+      "id": "big_stone_to_hotbar_slot",
+      "click": {
+        "client": "itxe01probeplyr",
+        "slot": 54,
+        "button": 0,
+        "mode": "pickup"
+      }
+    },
+    {
+      "id": "big_stone_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "big_stone_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe01probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "close_chest_4",
+      "close": {
+        "client": "itxe01probeplyr"
+      }
+    }
+  ]
+}

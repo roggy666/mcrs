@@ -24,9 +24,13 @@ impl Default for PushRules {
     fn default() -> Self {
         Self {
             max_entity_cramming: 24,
-            cap: 24,
+            cap: Self::DEFAULT_CAP,
         }
     }
+}
+
+impl PushRules {
+    pub const DEFAULT_CAP: usize = 8;
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -122,98 +126,47 @@ pub fn push_entity<B: BodyView>(
 ) -> PushOutcome {
     let neighbours = &mut scratch.neighbours;
     neighbours.clear();
-    bodies.neighbours(of, neighbours);
-    let bounds = of.bounds();
-    neighbours.retain(|other| other.key != of.key && other.bounds().intersects(&bounds));
-    neighbours.sort_by_key(|other| other.key);
+    let (mut candidates, mut free) = (0u32, 0u32);
+    bodies.neighbours_up_to(of, neighbours, rules.cap, |other| {
+        if pushes(of, other) {
+            candidates = candidates.saturating_add(1);
+            if !other.flags.contains(GridFlags::IS_PASSENGER) {
+                free = free.saturating_add(1);
+            }
+        }
+    });
     let mut outcome = PushOutcome {
-        candidates: neighbours.iter().filter(|other| pushes(of, other)).count() as u32,
+        candidates,
         ..PushOutcome::default()
     };
     let limit = rules.max_entity_cramming;
-    if limit > 0 && i64::from(outcome.candidates) > i64::from(limit) - 1 && stream.below(4) == 0 {
-        let free = neighbours
-            .iter()
-            .filter(|other| pushes(of, other) && !other.flags.contains(GridFlags::IS_PASSENGER))
-            .count();
-        outcome.free_candidates = u32::try_from(free).unwrap_or(u32::MAX);
-        outcome.crowd_damage = i64::from(outcome.free_candidates) > i64::from(limit) - 1;
+    if limit > 0 && i64::from(candidates) > i64::from(limit) - 1 && stream.below(4) == 0 {
+        outcome.free_candidates = free;
+        outcome.crowd_damage = i64::from(free) > i64::from(limit) - 1;
     }
-    let capped = limit == 0;
-    for index in 0..neighbours.len() {
-        let Some(other) = neighbours.get(index).copied() else {
-            continue;
-        };
-        if capped
-            && !mutual_nearest(
-                bodies,
-                of,
-                &other,
-                neighbours,
-                rules.cap,
-                &mut scratch.ranked,
-            )
-        {
-            continue;
-        }
+    neighbours.sort_by_key(|other| other.key);
+    for other in neighbours.iter() {
         let mut add = |push: DVec3, outcome: &mut PushOutcome| {
             *velocity += push;
             outcome.pushed = true;
         };
-        if pushes(&other, of)
+        if pushes(other, of)
             && takes_push(of)
-            && let Some(push) = push_vector(&other, of)
+            && let Some(push) = push_vector(other, of)
         {
             add(-push, &mut outcome);
         }
-        if pushes(of, &other)
+        if pushes(of, other)
             && takes_push(of)
-            && let Some(push) = push_vector(of, &other)
+            && let Some(push) = push_vector(of, other)
         {
             add(push, &mut outcome);
         }
         if takes_push(of)
-            && let Some(push) = staggered_push(of, &other)
+            && let Some(push) = staggered_push(of, other)
         {
             add(push, &mut outcome);
         }
     }
     outcome
-}
-
-fn mutual_nearest<B: BodyView>(
-    bodies: &B,
-    of: &GridRow,
-    other: &GridRow,
-    neighbours: &[GridRow],
-    cap: usize,
-    ranked: &mut Vec<GridRow>,
-) -> bool {
-    if !within_nearest(of, other, neighbours, cap) {
-        return false;
-    }
-    ranked.clear();
-    bodies.neighbours(other, ranked);
-    let bounds = other.bounds();
-    ranked.retain(|row| row.key != other.key && row.bounds().intersects(&bounds));
-    within_nearest(other, of, ranked, cap)
-}
-
-fn within_nearest(centre: &GridRow, target: &GridRow, neighbours: &[GridRow], cap: usize) -> bool {
-    let rank = |row: &GridRow| (distance(centre, row), row.key);
-    let own = rank(target);
-    let nearer = neighbours
-        .iter()
-        .filter(|row| {
-            let (distance, key) = rank(row);
-            distance < own.0 || (distance == own.0 && key < own.1)
-        })
-        .count();
-    nearer < cap
-}
-
-fn distance(a: &GridRow, b: &GridRow) -> f64 {
-    (a.position.x - b.position.x)
-        .abs()
-        .max((a.position.z - b.position.z).abs())
 }

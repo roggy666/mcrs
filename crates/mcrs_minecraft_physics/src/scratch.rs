@@ -10,7 +10,6 @@ pub struct Scratch {
     pub(crate) lines: Vec<f64>,
     pub(crate) candidates: Vec<f32>,
     pub(crate) neighbours: Vec<GridRow>,
-    pub(crate) ranked: Vec<GridRow>,
 }
 
 impl Scratch {

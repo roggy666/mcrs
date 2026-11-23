@@ -1,0 +1,1426 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe01probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at 1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_brewing_stand",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at -1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_brewing_stand",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:brewing_stand",
+          "title": {
+            "translate": "container.brewing"
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 0,
+          "value": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 1,
+          "value": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 2,
+          "value": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 1,
+          "id": 3,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "potions_64_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe01probeplyr with [Uncraftable Potion]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 64,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "potions_to_bottle_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 1,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "potions_to_bottle_slot_read",
+      "observed": {
+        "console": {
+          "output": [
+            "-1, -60, 0 has the following block data: [{components: {\"minecraft:max_stack_size\": 64}, count: 1, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_brewing_stand_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_player_inventory",
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "open_chest_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "open_screen",
+          "container": 2,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 2,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "potions_63_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe01probeplyr with [Uncraftable Potion]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "potions_to_chest_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 2,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "potions_to_chest_slot_read",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{components: {\"minecraft:max_stack_size\": 64}, count: 63, Slot: 0b, id: \"minecraft:potion\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_chest_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_brewing_stand_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "open_screen",
+          "container": 3,
+          "menu": "minecraft:brewing_stand",
+          "title": {
+            "translate": "container.brewing"
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 3,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 1,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 0,
+          "value": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 1,
+          "value": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 2,
+          "value": 0
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_data",
+          "container": 3,
+          "id": 3,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "stone_64_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe01probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone_to_bottle_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_ingredient_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 3,
+          "state_id": 2,
+          "slot": 3,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "close_brewing_stand_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_chest_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "open_screen",
+          "container": 4,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 4,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "stone_64_in_cursor_again",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe01probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone_to_chest_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 4,
+          "state_id": 2,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 64,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "close_chest_2",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_chest_3",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "open_screen",
+          "container": 5,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 5,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:stone",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "small_stone_16_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe01probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 16,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "small_stone_to_chest_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 5,
+          "state_id": 2,
+          "slot": 2,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 16,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "small_stone_slot_pick_up_half",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 5,
+          "state_id": 3,
+          "slot": 2,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 8,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 8,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "close_chest_3",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_player_inventory",
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 8,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 37,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 8,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "open_chest_4",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "open_screen",
+          "container": 6,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_content",
+          "container": 6,
+          "state_id": 1,
+          "slots": [
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:stone",
+              "count": 64,
+              "components": {
+                "added": [],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:stone",
+              "count": 8,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+              "item": "minecraft:potion",
+              "count": 63,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            {
+              "item": "minecraft:stone",
+              "count": 8,
+              "components": {
+                "added": [
+                  "minecraft:max_stack_size"
+                ],
+                "removed": []
+              }
+            },
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "big_stone_99_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe01probeplyr with [Stone]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 99,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "big_stone_to_chest_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 6,
+          "state_id": 2,
+          "slot": 3,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 99,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "big_stone_to_hotbar_slot",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 6,
+          "state_id": 3,
+          "slot": 54,
+          "stack": null
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "big_stone_read_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "1, -60, 0 has the following block data: [{components: {\"minecraft:max_stack_size\": 64}, count: 63, Slot: 0b, id: \"minecraft:potion\"}, {count: 64, Slot: 1b, id: \"minecraft:stone\"}, {components: {\"minecraft:max_stack_size\": 16}, count: 8, Slot: 2b, id: \"minecraft:stone\"}, {components: {\"minecraft:max_stack_size\": 99}, count: 99, Slot: 3b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "big_stone_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe01probeplyr has the following entity data: [{components: {\"minecraft:max_stack_size\": 16}, count: 8, Slot: 1b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_chest_4",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe01probeplyr",
+          "kind": "set_player_inventory",
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe01probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 36,
+          "stack": {
+            "item": "minecraft:potion",
+            "count": 63,
+            "components": {
+              "added": [
+                "minecraft:max_stack_size"
+              ],
+              "removed": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

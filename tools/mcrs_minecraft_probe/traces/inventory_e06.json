@@ -1,0 +1,629 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "inve06probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported inve06probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "creative",
+      "observed": {
+        "console": {
+          "output": [
+            "Set inve06probeplyr's game mode to Creative Mode"
+          ],
+          "chat": [
+            {
+              "client": "inve06probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.creative"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "datapacks_available",
+      "observed": {
+        "console": {
+          "output": [
+            "There are no more data packs available"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "datapacks_enabled",
+      "observed": {
+        "console": {
+          "output": [
+            "There are 1 data pack(s) enabled: [vanilla (built-in)]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slot_0",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slot_1",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:stone_button",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stone_to_slot_5",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slot_36",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slot_45",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slot_46",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slots_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: [{count: 3, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slots_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: {head: {count: 3, id: \"minecraft:stone\"}, offhand: {count: 3, id: \"minecraft:stone\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slots_read_grid",
+      "observed": {
+        "console": {
+          "output": [
+            "Found no elements matching Inventory[{Slot:9b}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_65_to_slot_36",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_65_to_slot_36_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: [{count: 3, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_to_slot_36",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "empty_to_slot_36_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_helmets_to_slot_5",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "two_helmets_to_slot_5_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: {head: {count: 3, id: \"minecraft:stone\"}, offhand: {count: 3, id: \"minecraft:stone\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "stone_to_slot_minus_1",
+      "observed": {
+        "sent": {
+          "disconnects": [],
+          "console_output": [
+            "Nothing changed. The specified properties already have these values",
+            "Modified storage mcrs:probe",
+            "Storage mcrs:probe has the following contents: [{count: 4, id: \"minecraft:stone\"}]",
+            "Test passed. Count: 1"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_case_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "Removed 9 item(s) from player inve06probeplyr",
+            "Killed Stone"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 3,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 4,
+          "slot": 1,
+          "stack": null
+        },
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 5,
+          "slot": 5,
+          "stack": null
+        },
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 6,
+          "slot": 45,
+          "stack": null
+        },
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 7,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "survival_case_gamemode",
+      "observed": {
+        "console": {
+          "output": [
+            "Set inve06probeplyr's game mode to Survival Mode"
+          ],
+          "chat": [
+            {
+              "client": "inve06probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.survival"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_case_stone_to_slot_36",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival_case_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: []"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chest_case_gamemode",
+      "observed": {
+        "console": {
+          "output": [
+            "Set inve06probeplyr's game mode to Creative Mode"
+          ],
+          "chat": [
+            {
+              "client": "inve06probeplyr",
+              "text": {
+                "translate": "gameMode.changed",
+                "with": [
+                  {
+                    "translate": "gameMode.creative"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chest_case_reset",
+      "observed": {
+        "console": {
+          "output": [
+            "No items were found on player inve06probeplyr",
+            "No entity was found"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 8,
+          "slot": 0,
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "chest_case_place_chest",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at 1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chest_case_open_chest",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve06probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:generic_9x3",
+          "title": {
+            "translate": "container.chest"
+          }
+        },
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "chest_case_stone_to_slot_36",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "inve06probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 2,
+          "slot": 54,
+          "stack": {
+            "item": "minecraft:stone",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "chest_case_dirt_to_slot_5",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chest_case_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: [{count: 3, Slot: 0b, id: \"minecraft:stone\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chest_case_read_equipment",
+      "observed": {
+        "console": {
+          "output": [
+            "inve06probeplyr has the following entity data: {head: {count: 3, id: \"minecraft:dirt\"}}"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "chest_case_close",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    }
+  ]
+}

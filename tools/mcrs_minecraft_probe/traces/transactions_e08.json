@@ -1,0 +1,567 @@
+{
+  "version": {
+    "name": "26.4 Snapshot 7",
+    "protocol": 1073742169
+  },
+  "steps": [
+    {
+      "id": "join",
+      "observed": "joined",
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_held_slot",
+          "slot": 0
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_content",
+          "container": 0,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "peaceful",
+      "observed": {
+        "console": {
+          "output": [
+            "The difficulty has been set to Peaceful"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "teleport_to_origin",
+      "observed": {
+        "console": {
+          "output": [
+            "Teleported itxe08probeplyr to 0.500000, -60.000000, 0.500000"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "survival",
+      "observed": {
+        "console": {
+          "output": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "place_crafting_table",
+      "observed": {
+        "console": {
+          "output": [
+            "Changed the block at 1, -60, 0"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "open_crafting_table",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "open_screen",
+          "container": 1,
+          "menu": "minecraft:crafting",
+          "title": {
+            "translate": "container.crafting"
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_content",
+          "container": 1,
+          "state_id": 1,
+          "slots": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "carried": null
+        }
+      ]
+    },
+    {
+      "id": "logs_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe08probeplyr with [Oak Log]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:oak_log",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "logs_to_grid",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 2,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 3,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:oak_log",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "result_primary_empty_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 4,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 5,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:oak_log",
+            "count": 3,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "result_secondary_planks_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 6,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 7,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:oak_log",
+            "count": 2,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 8,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "planks_62_in_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe08probeplyr with [Oak Planks]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 62,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "result_primary_planks_62_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "clear_cursor",
+      "observed": {
+        "console": {
+          "output": [
+            "Replaced 1 slot(s) on itxe08probeplyr with [Air]"
+          ]
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": null
+        }
+      ]
+    },
+    {
+      "id": "result_secondary_empty_cursor",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 8,
+          "slot": 0,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 9,
+          "slot": 1,
+          "stack": {
+            "item": "minecraft:oak_log",
+            "count": 1,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "result_quick_move",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 10,
+          "slot": 0,
+          "stack": null
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 11,
+          "slot": 1,
+          "stack": null
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 1,
+          "state_id": 12,
+          "slot": 45,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_cursor_item",
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 4,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "end_read_inventory",
+      "observed": {
+        "console": {
+          "output": [
+            "itxe08probeplyr has the following entity data: [{count: 4, Slot: 8b, id: \"minecraft:oak_planks\"}]"
+          ]
+        }
+      },
+      "inventory": []
+    },
+    {
+      "id": "close_crafting_table",
+      "observed": {
+        "sent": {
+          "disconnects": []
+        }
+      },
+      "inventory": [
+        {
+          "client": "itxe08probeplyr",
+          "kind": "set_player_inventory",
+          "slot": 8,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 8,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        },
+        {
+          "client": "itxe08probeplyr",
+          "kind": "container_set_slot",
+          "container": 0,
+          "state_id": 2,
+          "slot": 44,
+          "stack": {
+            "item": "minecraft:oak_planks",
+            "count": 8,
+            "components": {
+              "added": [],
+              "removed": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe11probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe11probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe11probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_chest",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 chest"
+        ]
+      }
+    },
+    {
+      "id": "fill_chest_forward",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.0 with stone 10",
+          "item replace block 1 -60 0 container.1 with stone 64",
+          "item replace block 1 -60 0 container.2 with stone 20",
+          "item replace block 1 -60 0 container.3 with stone 5"
+        ]
+      }
+    },
+    {
+      "id": "open_chest",
+      "use_block": {
+        "client": "itxe11probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "forward_stone_3_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe11probeplyr player.cursor with stone 3"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_all_forward_on_empty",
+      "click": {
+        "client": "itxe11probeplyr",
+        "slot": 10,
+        "button": 0,
+        "mode": "pickup_all",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "pick_up_all_forward_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_1",
+      "close": {
+        "client": "itxe11probeplyr"
+      }
+    },
+    {
+      "id": "fill_chest_backward",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.0 with air",
+          "item replace block 1 -60 0 container.1 with air",
+          "item replace block 1 -60 0 container.2 with air",
+          "item replace block 1 -60 0 container.3 with air",
+          "item replace block 1 -60 0 container.0 with stone 10",
+          "item replace block 1 -60 0 container.1 with stone 64",
+          "item replace block 1 -60 0 container.2 with stone 20",
+          "item replace block 1 -60 0 container.3 with stone 5"
+        ]
+      }
+    },
+    {
+      "id": "open_chest_2",
+      "use_block": {
+        "client": "itxe11probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "backward_stone_3_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe11probeplyr player.cursor with stone 3"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_all_backward_on_empty",
+      "click": {
+        "client": "itxe11probeplyr",
+        "slot": 10,
+        "button": 1,
+        "mode": "pickup_all",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "pick_up_all_backward_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_2",
+      "close": {
+        "client": "itxe11probeplyr"
+      }
+    },
+    {
+      "id": "fill_chest_occupied",
+      "console": {
+        "lines": [
+          "item replace block 1 -60 0 container.0 with air",
+          "item replace block 1 -60 0 container.1 with air",
+          "item replace block 1 -60 0 container.2 with air",
+          "item replace block 1 -60 0 container.3 with air",
+          "item replace block 1 -60 0 container.0 with stone 10",
+          "item replace block 1 -60 0 container.1 with stone 64",
+          "item replace block 1 -60 0 container.2 with stone 20",
+          "item replace block 1 -60 0 container.3 with stone 5"
+        ]
+      }
+    },
+    {
+      "id": "open_chest_3",
+      "use_block": {
+        "client": "itxe11probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "occupied_stone_3_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe11probeplyr player.cursor with stone 3"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_all_on_occupied_slot",
+      "click": {
+        "client": "itxe11probeplyr",
+        "slot": 2,
+        "button": 0,
+        "mode": "pickup_all",
+        "carried": {
+          "item": "minecraft:stone",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "pick_up_all_on_occupied_slot_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "dirt_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe11probeplyr player.cursor with dirt 3"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_all_dirt_cursor",
+      "click": {
+        "client": "itxe11probeplyr",
+        "slot": 10,
+        "button": 0,
+        "mode": "pickup_all",
+        "carried": {
+          "item": "minecraft:dirt",
+          "count": 3
+        }
+      }
+    },
+    {
+      "id": "pick_up_all_dirt_cursor_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "clear_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe11probeplyr player.cursor with air"
+        ]
+      }
+    },
+    {
+      "id": "pick_up_all_empty_cursor",
+      "click": {
+        "client": "itxe11probeplyr",
+        "slot": 10,
+        "button": 0,
+        "mode": "pickup_all"
+      }
+    },
+    {
+      "id": "pick_up_all_empty_cursor_read_chest",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "close_3",
+      "close": {
+        "client": "itxe11probeplyr"
+      }
+    }
+  ]
+}

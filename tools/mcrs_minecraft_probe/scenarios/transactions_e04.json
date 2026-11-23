@@ -1,0 +1,273 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe04probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe04probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe04probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "place_chest",
+      "console": {
+        "lines": [
+          "setblock 1 -60 0 chest"
+        ]
+      }
+    },
+    {
+      "id": "stone_10_in_hotbar_0",
+      "console": {
+        "lines": [
+          "item replace entity itxe04probeplyr hotbar.0 with stone 10"
+        ]
+      }
+    },
+    {
+      "id": "granite_7_in_cursor_before_open",
+      "console": {
+        "lines": [
+          "item replace entity itxe04probeplyr player.cursor with granite 7"
+        ]
+      }
+    },
+    {
+      "id": "open_chest",
+      "use_block": {
+        "client": "itxe04probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "click_with_cursor_claim_after_open",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 10,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:granite",
+          "count": 7
+        }
+      }
+    },
+    {
+      "id": "read_chest_after_cursor_claim",
+      "console": {
+        "lines": [
+          "data get block 1 -60 0 Items"
+        ]
+      }
+    },
+    {
+      "id": "click_with_other_container_id",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 54,
+        "button": 0,
+        "mode": "pickup",
+        "container": 5
+      }
+    },
+    {
+      "id": "click_with_inventory_container_id",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "container": 0
+      }
+    },
+    {
+      "id": "spectator",
+      "console": {
+        "lines": [
+          "gamemode spectator itxe04probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "click_as_spectator",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 54,
+        "button": 0,
+        "mode": "pickup",
+        "container": 1
+      }
+    },
+    {
+      "id": "survival_again",
+      "console": {
+        "lines": [
+          "gamemode survival itxe04probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "click_slot_500",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 500,
+        "button": 0,
+        "mode": "pickup",
+        "container": 1
+      }
+    },
+    {
+      "id": "click_slot_minus_1",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": -1,
+        "button": 0,
+        "mode": "pickup",
+        "container": 1
+      }
+    },
+    {
+      "id": "click_slot_63",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 63,
+        "button": 0,
+        "mode": "pickup",
+        "container": 1
+      }
+    },
+    {
+      "id": "after_bad_slots_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe04probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "move_away",
+      "console": {
+        "lines": [
+          "tp itxe04probeplyr 12.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "wait_after_move",
+      "wait": {
+        "ms": 1500
+      }
+    },
+    {
+      "id": "click_after_move",
+      "click": {
+        "client": "itxe04probeplyr",
+        "slot": 54,
+        "button": 0,
+        "mode": "pickup",
+        "container": 1
+      }
+    },
+    {
+      "id": "after_move_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe04probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "back_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe04probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "close_inventory_menu_with_cursor",
+      "close": {
+        "client": "itxe04probeplyr"
+      }
+    },
+    {
+      "id": "after_inventory_menu_close_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe04probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "to_creative",
+      "console": {
+        "lines": [
+          "gamemode creative itxe04probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "to_nether",
+      "console": {
+        "lines": [
+          "execute in minecraft:the_nether run tp itxe04probeplyr 0.5 40.5 0.5"
+        ]
+      }
+    },
+    {
+      "id": "back_to_overworld",
+      "console": {
+        "lines": [
+          "execute in minecraft:overworld run tp itxe04probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "open_chest_after_dimension_change",
+      "use_block": {
+        "client": "itxe04probeplyr",
+        "position": [
+          1,
+          -60,
+          0
+        ]
+      }
+    },
+    {
+      "id": "close_chest_after_dimension_change",
+      "close": {
+        "client": "itxe04probeplyr"
+      }
+    }
+  ]
+}

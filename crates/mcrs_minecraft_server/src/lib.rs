@@ -18,6 +18,7 @@ use mcrs_minecraft_engine_attributes::PlayerAttributesPlugin;
 use mcrs_minecraft_engine_brain::MobBrainPlugin;
 use mcrs_minecraft_engine_item::ItemPersistencePlugin;
 use mcrs_minecraft_engine_mob_attributes::MobAttributesPlugin;
+pub use mcrs_minecraft_engine_physics::CollisionCap;
 use mcrs_minecraft_engine_player_vitals::PlayerVitalsPlugin;
 use mcrs_minecraft_engine_server::{DimensionWorldsPlugin, ServerCorePlugin, ServerNetworkPlugin};
 use mcrs_minecraft_engine_world::world::dimension_builders::DimensionBuilders;
@@ -109,6 +110,8 @@ pub struct VanillaEntityPhysicsPlugin;
 
 impl Plugin for VanillaEntityPhysicsPlugin {
     fn build(&self, app: &mut App) {
+        app.world_mut()
+            .get_resource_or_insert_with(CollisionCap::default);
         app.world_mut()
             .get_resource_or_init::<DimensionBuilders>()
             .add(entity_motion::build_dimension_mobs);

@@ -63,7 +63,7 @@ const HALF_TILES: i32 = 3;
 const CACTUS: u32 = 7;
 const HIT_TICK: u64 = 50;
 static THREADS: AtomicUsize = AtomicUsize::new(1);
-const SHORT_GOLDEN: u64 = 10_570_632_312_352_256_482;
+const SHORT_GOLDEN: u64 = 15_051_530_398_365_880_483;
 const LONG_GOLDEN: u64 = 7_854_557_506_117_327_600;
 
 fn positions() -> Vec<DVec3> {

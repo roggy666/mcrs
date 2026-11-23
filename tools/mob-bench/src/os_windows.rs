@@ -72,9 +72,7 @@ pub fn process(pid: i32) -> Option<ProcessUsage> {
     let mut exit = zero_time();
     let mut kernel = zero_time();
     let mut user = zero_time();
-    // SAFETY: the out-pointers point to live locals; the handle is open with the query right.
-    let timed =
-        unsafe { GetProcessTimes(handle, &mut creation, &mut exit, &mut kernel, &mut user) };
+    let timed = process_times(handle, &mut creation, &mut exit, &mut kernel, &mut user);
     let mut counters = MaybeUninit::<PROCESS_MEMORY_COUNTERS>::zeroed();
     // SAFETY: the buffer is the size the call is told; it writes at most that many bytes.
     let measured = unsafe {
@@ -143,4 +141,15 @@ pub fn name(pid: i32) -> String {
         .next()
         .unwrap_or_default()
         .to_owned()
+}
+
+fn process_times(
+    handle: HANDLE,
+    creation: &mut FILETIME,
+    exit: &mut FILETIME,
+    kernel: &mut FILETIME,
+    user: &mut FILETIME,
+) -> i32 {
+    // SAFETY: the out-pointers point to live locals; the handle is open with the query right.
+    unsafe { GetProcessTimes(handle, creation, exit, kernel, user) }
 }

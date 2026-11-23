@@ -1,0 +1,175 @@
+{
+  "target": {
+    "operators": []
+  },
+  "observe": {
+    "inventory": true
+  },
+  "steps": [
+    {
+      "id": "join",
+      "join": "itxe03probeplyr"
+    },
+    {
+      "id": "peaceful",
+      "console": {
+        "lines": [
+          "difficulty peaceful"
+        ]
+      }
+    },
+    {
+      "id": "teleport_to_origin",
+      "console": {
+        "lines": [
+          "tp itxe03probeplyr 0.5 -60 0.5"
+        ]
+      }
+    },
+    {
+      "id": "survival",
+      "console": {
+        "lines": [
+          "gamemode survival itxe03probeplyr"
+        ]
+      }
+    },
+    {
+      "id": "damaged_stackable_in_hotbar_0",
+      "console": {
+        "lines": [
+          "item replace entity itxe03probeplyr hotbar.0 with stone[max_stack_size=16,max_damage=10,damage=3]"
+        ]
+      }
+    },
+    {
+      "id": "damaged_pickaxe_in_hotbar_0",
+      "console": {
+        "lines": [
+          "item replace entity itxe03probeplyr hotbar.0 with iron_pickaxe[damage=3]"
+        ]
+      }
+    },
+    {
+      "id": "damaged_pickaxe_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe03probeplyr player.cursor with iron_pickaxe[damage=3]"
+        ]
+      }
+    },
+    {
+      "id": "damaged_on_damaged_primary",
+      "click": {
+        "client": "itxe03probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_pickaxe",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "damaged_on_damaged_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe03probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "damaged_pickaxe_in_inventory_0",
+      "console": {
+        "lines": [
+          "item replace entity itxe03probeplyr inventory.0 with iron_pickaxe[damage=3]"
+        ]
+      }
+    },
+    {
+      "id": "damaged_quick_move_to_hotbar_row",
+      "click": {
+        "client": "itxe03probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "damaged_quick_move_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe03probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "undamaged_reset",
+      "console": {
+        "lines": [
+          "clear itxe03probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe03probeplyr hotbar.0 with iron_pickaxe",
+          "item replace entity itxe03probeplyr inventory.0 with iron_pickaxe"
+        ]
+      }
+    },
+    {
+      "id": "undamaged_pickaxe_in_cursor",
+      "console": {
+        "lines": [
+          "item replace entity itxe03probeplyr player.cursor with iron_pickaxe"
+        ]
+      }
+    },
+    {
+      "id": "undamaged_on_undamaged_primary",
+      "click": {
+        "client": "itxe03probeplyr",
+        "slot": 36,
+        "button": 0,
+        "mode": "pickup",
+        "carried": {
+          "item": "minecraft:iron_pickaxe",
+          "count": 1
+        }
+      }
+    },
+    {
+      "id": "undamaged_quick_move_to_hotbar_row",
+      "click": {
+        "client": "itxe03probeplyr",
+        "slot": 9,
+        "button": 0,
+        "mode": "quick_move"
+      }
+    },
+    {
+      "id": "undamaged_read_inventory",
+      "console": {
+        "lines": [
+          "data get entity itxe03probeplyr Inventory"
+        ]
+      }
+    },
+    {
+      "id": "damaged_stackable_tools_reset",
+      "console": {
+        "lines": [
+          "clear itxe03probeplyr",
+          "kill @e[type=minecraft:item]",
+          "item replace entity itxe03probeplyr hotbar.0 with iron_pickaxe[max_stack_size=16,damage=3]"
+        ]
+      }
+    },
+    {
+      "id": "damaged_stackable_tools_read",
+      "console": {
+        "lines": [
+          "data get entity itxe03probeplyr Inventory"
+        ]
+      }
+    }
+  ]
+}

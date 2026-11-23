@@ -5,6 +5,7 @@ use bevy_ecs::world::World;
 use mcrs_minecraft_engine::block_simulation::BlockSimulationSet;
 use mcrs_minecraft_engine_damage::DamageSet;
 use mcrs_minecraft_engine_entity_motion_replication::EntityMotionReplicationPlugin;
+use mcrs_minecraft_engine_physics::CollisionCap;
 use mcrs_minecraft_engine_physics::EntityMotionPlugin;
 use mcrs_minecraft_engine_physics::EntityPhysicsPlugin;
 use mcrs_minecraft_engine_world::world::dimension_builders::DimensionBuild;
@@ -18,10 +19,15 @@ pub(crate) fn add_entity_motion(sub_app: &mut SubApp) {
     }
 }
 
-pub(crate) fn build_dimension_mobs(_: &World, _: &DimensionBuild<'_>, sub_app: &mut SubApp) {
+pub(crate) fn build_dimension_mobs(host: &World, _: &DimensionBuild<'_>, sub_app: &mut SubApp) {
     if !sub_app.is_plugin_added::<EntityPhysicsPlugin>() {
         sub_app.add_plugins(EntityPhysicsPlugin);
     }
+    let cap = host
+        .get_resource::<CollisionCap>()
+        .copied()
+        .unwrap_or_default();
+    sub_app.insert_resource(cap);
     add_entity_motion(sub_app);
     sub_app.configure_sets(FixedUpdate, BlockSimulationSet.before(DamageSet::Collect));
 }
