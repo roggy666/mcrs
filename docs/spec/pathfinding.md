@@ -925,9 +925,8 @@ Each step from one node to the next is a neighbour of PATH-NOD-004.
 
 ## 12. Flight
 
-The rules of this section come from a fresh reading of the reference of `26.4-snapshot-7` on
-2026-11-22, with the one-time permission of the owner, in a scratch copy outside the repositories.
-They are `source_suggested` until the experiments of 12.8 run.
+The rules of this section are `source_suggested` for `26.4-snapshot-7` unless an experiment of 12.8
+confirms them.
 
 ### 12.1 Scope and inputs
 

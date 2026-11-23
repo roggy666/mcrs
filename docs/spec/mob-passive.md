@@ -336,8 +336,8 @@ the server, and stands still. The bat has no navigation and moves with a move co
 
 **PAS-FLY-001** (`source_suggested`, semantic, confidence: medium, fidelity: exact). The goal list
 of the parrot, in this order. Its navigation is the flying navigation of `pathfinding.md`, section
-12, with the data of PATH-FLY-001. The reading of the reference of 2026-11-22 corrected the
-priorities of the earlier hook table.
+12, with the data of PATH-FLY-001. It replaces the earlier hook table, whose priorities were
+wrong.
 
 | Priority | Goal | Flags | Parameters |
 |----------|------|-------|------------|
